@@ -1,0 +1,1344 @@
+
+===== waist (169) =====
+0001	3/4 sit-up	body weight	abs
+0002	45° side bend	body weight	abs
+0003	air bike	body weight	abs
+0006	alternate heel touchers	body weight	abs
+2355	arm slingers hanging bent knee legs	body weight	abs
+2333	arm slingers hanging straight legs	body weight	abs
+3204	arms overhead full sit-up (male)	body weight	abs
+0011	assisted hanging knee raise	assisted	abs
+0010	assisted hanging knee raise with throw down	assisted	abs
+0012	assisted lying leg raise with lateral throw down	assisted	abs
+0013	assisted lying leg raise with throw down	assisted	abs
+0014	assisted motion russian twist	medicine ball	abs
+1714	assisted prone rectus femoris stretch	assisted	abs
+1758	assisted sit-up	assisted	abs
+0969	band alternating v-up	band	abs
+0971	band assisted wheel rollerout	band	abs
+0972	band bicycle crunch	band	abs
+0979	band horizontal pallof press	band	abs
+0981	band jack knife sit-up	band	abs
+0985	band kneeling twisting crunch	band	abs
+1002	band lying straight leg raise	band	abs
+0992	band push sit-up	band	abs
+1011	band seated twist	band	abs
+1005	band standing crunch	band	abs
+1007	band standing twisting crunch	band	abs
+1014	band v-up	band	abs
+1015	band vertical pallof press	band	abs
+0071	barbell press sit-up	barbell	abs
+0084	barbell rollerout	barbell	abs
+0083	barbell rollerout from bench	barbell	abs
+0094	barbell seated twist	barbell	abs
+0096	barbell side bent v. 2	barbell	abs
+2799	barbell sitted alternate leg raise	barbell	abs
+2800	barbell sitted alternate leg raise (female)	barbell	abs
+0103	barbell standing ab rollerout	barbell	abs
+0112	barbell standing twist	barbell	abs
+3544	bodyweight incline side plank	body weight	abs
+0138	bottoms-up	body weight	abs
+2466	bridge - mountain climber (cross body)	body weight	abs
+0870	butt-ups	body weight	abs
+0174	cable judo flip	cable	abs
+0175	cable kneeling crunch	cable	abs
+0873	cable reverse crunch	cable	abs
+0211	cable russian twists (on stability ball)	cable	abs
+0212	cable seated crunch	cable	abs
+2399	cable seated twist	cable	abs
+0222	cable side bend	cable	abs
+0221	cable side bend crunch (bosu ball)	cable	abs
+0223	cable side crunch	cable	abs
+0226	cable standing crunch	cable	abs
+0874	cable standing crunch (with rope attachment)	cable	abs
+0230	cable standing lift	cable	abs
+0242	cable tuck reverse crunch	cable	abs
+0243	cable twist	cable	abs
+0862	cable twist (up-down)	cable	abs
+2963	captains chair straight leg raise	body weight	abs
+0260	cocoons	body weight	abs
+1468	crab twist toe touch	body weight	abs
+0262	cross body crunch	body weight	abs
+0267	crunch (hands overhead)	body weight	abs
+0271	crunch (on stability ball)	stability ball	abs
+0272	crunch (on stability ball, arms straight)	stability ball	abs
+0274	crunch floor	body weight	abs
+3016	curl-up	body weight	abs
+0276	dead bug	body weight	abs
+0277	decline crunch	body weight	abs
+0282	decline sit-up	body weight	abs
+0407	dumbbell side bend	dumbbell	abs
+0443	elbow-to-knee	body weight	abs
+3303	flag	body weight	abs
+0456	flexion leg sit up (bent knee)	body weight	abs
+0457	flexion leg sit up (straight arm)	body weight	abs
+2429	frog crunch	body weight	abs
+3301	frog planche	body weight	abs
+3296	front lever	body weight	abs
+0464	front plank with twist	body weight	abs
+3315	full maltese	body weight	abs
+3299	full planche	body weight	abs
+0467	gorilla chin	body weight	abs
+0469	groin crunch	body weight	abs
+3202	half sit-up (male)	body weight	abs
+1764	hanging leg hip raise	body weight	abs
+0472	hanging leg raise	body weight	abs
+1761	hanging oblique knee raise	body weight	abs
+0473	hanging pike	body weight	abs
+0474	hanging straight leg hip raise	body weight	abs
+0475	hanging straight leg raise	body weight	abs
+0476	hanging straight twisting leg hip raise	body weight	abs
+0484	hip raise (bent knee)	body weight	abs
+1471	inchworm	body weight	abs
+3698	inchworm v. 2	body weight	abs
+0491	incline leg hip raise (leg straight)	body weight	abs
+0495	incline twisting sit-up	body weight	abs
+0507	jackknife sit-up	body weight	abs
+0508	janda sit-up	body weight	abs
+0517	kettlebell advanced windmill	kettlebell	abs
+0524	kettlebell bent press	kettlebell	abs
+0530	kettlebell double windmill	kettlebell	abs
+0532	kettlebell figure 8	kettlebell	abs
+0554	kettlebell windmill	kettlebell	abs
+3640	knee touch crunch	body weight	abs
+3239	kneeling plank tap shoulder (male)	body weight	abs
+3419	l-sit on floor	body weight	abs
+0562	landmine 180	barbell	abs
+3300	lean planche	body weight	abs
+0570	leg pull in flat bench	body weight	abs
+0583	lever kneeling twist	leverage machine	abs
+1452	lever seated crunch	leverage machine	abs
+0595	lever seated crunch (chest pad)	leverage machine	abs
+3760	lever seated crunch v. 2	leverage machine	abs
+0600	lever seated leg raise crunch	leverage machine	abs
+1688	lunge with twist	body weight	abs
+2312	lying elbow to knee	body weight	abs
+0620	lying leg raise flat bench	body weight	abs
+0865	lying leg-hip raise	body weight	abs
+0634	negative crunch	body weight	abs
+1495	oblique crunch v. 2	body weight	abs
+0635	oblique crunches floor	body weight	abs
+0640	one arm slam (with medicine ball)	medicine ball	abs
+0641	otis up	weighted	abs
+3147	pelvic tilt	body weight	abs
+1687	posterior step to overhead reach	body weight	abs
+3119	potty squat	body weight	abs
+3665	power point plank	body weight	abs
+3203	prisoner half sit-up (male)	body weight	abs
+1707	prone twist on stability ball	stability ball	abs
+0650	pull-in (on stability ball)	stability ball	abs
+0664	push-up to side plank	body weight	abs
+3201	quarter sit-up	body weight	abs
+0872	reverse crunch	body weight	abs
+3663	reverse plank with leg lift	body weight	abs
+2204	roller body saw	roller	abs
+2206	roller reverse crunch	roller	abs
+0687	russian twist	body weight	abs
+0689	seated leg raise	body weight	abs
+0691	seated side crunch (wall)	body weight	abs
+3699	shoulder tap	body weight	abs
+0705	side bridge v. 2	body weight	abs
+0709	side hip (on parallel bars)	body weight	abs
+3213	side-to-side toe touch (male)	body weight	abs
+0735	sit-up v. 2	body weight	abs
+3679	sit-up with arms on chest	body weight	abs
+1496	sledge hammer	hammer	abs
+0756	smith hip raise	smith machine	abs
+0777	spell caster	dumbbell	abs
+2329	spine twist	body weight	abs
+2297	stability ball crunch (full range hands behind head)	stability ball	abs
+0796	standing wheel rollerout	wheel roller	abs
+3314	straddle maltese	body weight	abs
+3298	straddle planche	body weight	abs
+0805	suspended abdominal fallout	body weight	abs
+0807	suspended reverse crunch	body weight	abs
+0871	tuck crunch	body weight	abs
+2802	twisted leg raise	body weight	abs
+2801	twisted leg raise (female)	body weight	abs
+3420	v-sit on floor	body weight	abs
+0826	vertical leg raise (on parallel bars)	body weight	abs
+0832	weighted crunch	weighted	abs
+3670	weighted decline sit-up	weighted	abs
+2135	weighted front plank	weighted	abs
+0866	weighted hanging leg-hip raise	weighted	abs
+0840	weighted overhead crunch (on stability ball)	weighted	abs
+0846	weighted russian twist	weighted	abs
+0845	weighted russian twist (legs up)	weighted	abs
+2371	weighted russian twist v. 2	weighted	abs
+0849	weighted seated twist (on stability ball)	weighted	abs
+0850	weighted side bend (on stability ball)	weighted	abs
+0857	wheel rollerout	wheel roller	abs
+0858	wind sprints	body weight	abs
+
+===== upper legs (227) =====
+1512	all fours squad stretch	body weight	quads
+3214	arms apart circular toe touch (male)	body weight	glutes
+1709	assisted lying glutes stretch	assisted	glutes
+1710	assisted lying gluteus and piriformis stretch	assisted	glutes
+0016	assisted prone hamstring	assisted	hamstrings
+1713	assisted prone lying quads stretch	assisted	quads
+1712	assisted side lying adductor stretch	assisted	adductors
+1473	backward jump	body weight	quads
+0020	balance board	body weight	quads
+0980	band bent-over hip extension	band	glutes
+1408	band hip lift	band	glutes
+0984	band lying hip internal rotation	band	glutes
+0987	band one arm single leg split squat	band	quads
+0991	band pull through	band	glutes
+0996	band seated hip internal rotation	band	glutes
+1001	band single leg split squat	band	quads
+1004	band squat	band	glutes
+1003	band squat row	band	glutes
+1008	band step-up	band	glutes
+1009	band stiff leg deadlift	band	glutes
+1023	band straight back stiff leg deadlift	band	glutes
+0024	barbell bench front squat	barbell	quads
+0026	barbell bench squat	barbell	quads
+0028	barbell clean and press	barbell	quads
+0029	barbell clean-grip front squat	barbell	glutes
+0032	barbell deadlift	barbell	glutes
+0039	barbell front chest squat	barbell	glutes
+0042	barbell front squat	barbell	glutes
+0043	barbell full squat	barbell	glutes
+1461	barbell full squat (back pov)	barbell	glutes
+1462	barbell full squat (side pov)	barbell	glutes
+1545	barbell full zercher squat	barbell	glutes
+1409	barbell glute bridge	barbell	glutes
+3562	barbell glute bridge two legs on bench (male)	barbell	glutes
+0044	barbell good morning	barbell	hamstrings
+0046	barbell hack squat	barbell	glutes
+1436	barbell high bar squat	barbell	glutes
+0051	barbell jefferson squat	barbell	glutes
+0053	barbell jump squat	barbell	glutes
+1410	barbell lateral lunge	barbell	glutes
+1435	barbell low bar squat	barbell	glutes
+0054	barbell lunge	barbell	glutes
+0058	barbell lying lifting (on hip)	barbell	glutes
+0063	barbell narrow stance squat	barbell	glutes
+0066	barbell one arm side deadlift	barbell	glutes
+0068	barbell one leg squat	barbell	quads
+0069	barbell overhead squat	barbell	quads
+0074	barbell rack pull	barbell	glutes
+0078	barbell rear lunge	barbell	glutes
+0077	barbell rear lunge v. 2	barbell	glutes
+0085	barbell romanian deadlift	barbell	glutes
+0090	barbell seated good morning	barbell	glutes
+0098	barbell side split squat	barbell	quads
+0097	barbell side split squat v. 2	barbell	quads
+1756	barbell single leg deadlift	barbell	glutes
+0099	barbell single leg split squat	barbell	quads
+0101	barbell speed squat	barbell	glutes
+2810	barbell split squat v. 2	barbell	quads
+0102	barbell squat (on knees)	barbell	quads
+2798	barbell squat jump step rear lunge	barbell	quads
+0114	barbell step-up	barbell	glutes
+0115	barbell stiff leg good morning	barbell	glutes
+0116	barbell straight leg deadlift	barbell	hamstrings
+0117	barbell sumo deadlift	barbell	glutes
+0124	barbell wide squat	barbell	quads
+0127	barbell zercher squat	barbell	glutes
+3212	basic toe touch (male)	body weight	glutes
+0130	bench hip extension	body weight	glutes
+3639	bent knee lying twist (male)	body weight	glutes
+3543	bodyweight drop jump squat	body weight	glutes
+1494	butterfly yoga pose	body weight	adductors
+3235	cable assisted inverse leg curl	cable	hamstrings
+0157	cable deadlift	cable	glutes
+0168	cable hip adduction	cable	adductors
+0196	cable pull through (with rope)	cable	glutes
+0228	cable standing hip extension	cable	glutes
+1548	chair leg extended stretch	body weight	quads
+3769	curtsey squat	body weight	glutes
+0291	dumbbell bench squat	dumbbell	glutes
+0295	dumbbell clean	dumbbell	glutes
+3635	dumbbell contralateral forward lunge	dumbbell	glutes
+0300	dumbbell deadlift	dumbbell	glutes
+1760	dumbbell goblet squat	dumbbell	quads
+0336	dumbbell lunge	dumbbell	glutes
+0339	dumbbell lying femoral	dumbbell	hamstrings
+3888	dumbbell one arm snatch	dumbbell	glutes
+0371	dumbbell plyo squat	dumbbell	glutes
+0381	dumbbell rear lunge	dumbbell	glutes
+1459	dumbbell romanian deadlift	dumbbell	glutes
+1757	dumbbell single leg deadlift	dumbbell	glutes
+2805	dumbbell single leg deadlift with stepbox support	dumbbell	glutes
+0410	dumbbell single leg split squat	dumbbell	quads
+0411	dumbbell single leg squat	dumbbell	glutes
+0413	dumbbell squat	dumbbell	glutes
+0431	dumbbell step-up	dumbbell	glutes
+2796	dumbbell step-up lunge	dumbbell	quads
+2812	dumbbell step-up split squat	dumbbell	quads
+0432	dumbbell stiff leg deadlift	dumbbell	glutes
+0434	dumbbell straight leg deadlift	dumbbell	glutes
+2808	dumbbell sumo pull through	dumbbell	glutes
+2803	dumbbell supported squat	dumbbell	quads
+1559	exercise ball hip flexor stretch	stability ball	glutes
+1416	exercise ball one leg prone lower body rotation	stability ball	glutes
+1417	exercise ball one legged diagonal kick hamstring curl	stability ball	glutes
+1560	exercise ball seated hamstring stretch	stability ball	hamstrings
+2133	farmers walk	dumbbell	quads
+0459	flutter kicks	body weight	glutes
+1472	forward jump	body weight	quads
+3470	forward lunge (male)	body weight	glutes
+3194	frankenstein squat	barbell	glutes
+3561	glute bridge march	body weight	glutes
+3523	glute bridge two legs on bench (male)	body weight	glutes
+3193	glute-ham raise	body weight	hamstrings
+1511	hamstring stretch	body weight	hamstrings
+3218	hands clasped circular toe touch (male)	body weight	glutes
+3215	hands reversed clasped circular toe touch (male)	body weight	glutes
+1418	hug keens to chest	body weight	glutes
+1564	intermediate hip flexor and quad stretch	rope	quads
+0496	inverse leg curl (bench support)	body weight	hamstrings
+2400	inverse leg curl (on pull-up cable machine)	body weight	hamstrings
+1419	iron cross stretch	body weight	glutes
+0514	jump squat	body weight	glutes
+0513	jump squat v. 2	body weight	glutes
+0533	kettlebell front squat	kettlebell	glutes
+0534	kettlebell goblet squat	kettlebell	glutes
+0535	kettlebell hang clean	kettlebell	hamstrings
+0536	kettlebell lunge pass through	kettlebell	glutes
+0544	kettlebell pistol squat	kettlebell	glutes
+0549	kettlebell swing	kettlebell	glutes
+0551	kettlebell turkish get up (squat style)	kettlebell	glutes
+0555	kick out sit	body weight	hamstrings
+1420	kneeling jump squat	barbell	glutes
+1576	leg up hamstring stretch	body weight	hamstrings
+2287	lever alternate leg press	leverage machine	quads
+0578	lever deadlift	leverage machine	glutes
+2286	lever hip extension v. 2	leverage machine	glutes
+2611	lever horizontal one leg press	leverage machine	glutes
+0582	lever kneeling leg curl	leverage machine	hamstrings
+0585	lever leg extension	leverage machine	quads
+0586	lever lying leg curl	leverage machine	hamstrings
+3195	lever lying two-one leg curl	leverage machine	hamstrings
+0593	lever reverse hyperextension	leverage machine	glutes
+3759	lever seated good morning	leverage machine	glutes
+0597	lever seated hip abduction	leverage machine	abductors
+0598	lever seated hip adduction	leverage machine	adductors
+0599	lever seated leg curl	leverage machine	hamstrings
+3013	low glute bridge on floor	body weight	glutes
+3582	lunge with jump	body weight	glutes
+0613	lying (side) quads stretch	body weight	quads
+0624	march sit (wall)	body weight	glutes
+0628	monster walk	body weight	glutes
+1476	one leg squat	body weight	glutes
+0642	outside leg kick push-up	body weight	glutes
+1422	pelvic tilt into bridge	body weight	glutes
+3662	pike-to-cobra push-up	body weight	glutes
+3132	potty squat with support	body weight	glutes
+0648	power clean	barbell	hamstrings
+0661	push-up inside leg kick	body weight	glutes
+3533	quads	body weight	quads
+3552	quick feet v. 2	body weight	quads
+0668	rear decline bridge	body weight	glutes
+1582	reclining big toe pose with rope	rope	hamstrings
+3236	resistance band hip thrusts on knees (female)	resistance band	glutes
+3007	resistance band leg extension	resistance band	quads
+3006	resistance band seated hip abduction	resistance band	abductors
+0675	reverse hyper extension (on stability ball)	stability ball	glutes
+1423	reverse hyper on flat bench	body weight	glutes
+2571	rocking frog stretch	body weight	glutes
+2205	roller hip lat stretch	roller	glutes
+2202	roller hip stretch	roller	glutes
+1585	runners stretch	body weight	hamstrings
+1424	seated glute stretch	body weight	glutes
+2567	seated piriformis stretch	body weight	glutes
+1587	seated wide angle pose sequence	body weight	hamstrings
+0697	self assisted inverse leg curl	body weight	hamstrings
+1766	self assisted inverse leg curl	body weight	hamstrings
+0696	self assisted inverse leg curl (on floor)	body weight	hamstrings
+1774	side bridge hip abduction	body weight	abductors
+0710	side hip abduction	body weight	abductors
+3667	side lying hip adduction (male)	body weight	adductors
+1775	side plank hip adduction	body weight	adductors
+3645	single leg bridge with outstretched leg	body weight	glutes
+0730	single leg platform slide	body weight	hamstrings
+1759	single leg squat (pistol) male	body weight	glutes
+1489	sissy squat	body weight	quads
+1425	sled 45 degrees one leg press	sled machine	glutes
+0739	sled 45в° leg press	sled machine	glutes
+1464	sled 45в° leg press (back pov)	sled machine	glutes
+1463	sled 45° leg press (side pov)	sled machine	glutes
+0740	sled 45в° leg wide press	sled machine	glutes
+0741	sled closer hack squat	sled machine	glutes
+0743	sled hack squat	sled machine	glutes
+0744	sled lying squat	sled machine	glutes
+0749	smith bent knee good morning	smith machine	glutes
+0750	smith chair squat	smith machine	quads
+0752	smith deadlift	smith machine	glutes
+1433	smith front squat (clean grip)	smith machine	glutes
+3281	smith full squat	smith machine	glutes
+0755	smith hack squat	smith machine	glutes
+0760	smith leg press	smith machine	glutes
+1434	smith low bar squat	smith machine	glutes
+0768	smith single leg split squat	smith machine	quads
+0769	smith sprint lunge	smith machine	glutes
+0770	smith squat	smith machine	glutes
+3142	smith sumo squat	smith machine	glutes
+0776	snatch pull	barbell	quads
+0778	spider crawl push up	body weight	glutes
+2368	split squats	body weight	quads
+0786	squat jerk	barbell	quads
+1705	squat on bosu ball	bosu ball	quads
+1685	squat to overhead reach	body weight	quads
+1686	squat to overhead reach with twist	body weight	quads
+1599	standing hamstring and calf stretch with strap	rope	hamstrings
+0795	standing single leg curl	body weight	hamstrings
+1427	straight leg outer hip abductor	body weight	abductors
+0809	suspended split squat	body weight	quads
+3433	swimmer kicks v. 2 (male)	body weight	glutes
+2459	tire flip	tire	glutes
+0811	trap bar deadlift	trap bar	glutes
+1466	twist hip lift	body weight	glutes
+1460	walking lunge	body weight	glutes
+3643	weighted cossack squats (male)	weighted	glutes
+3644	weighted lunge with swing	weighted	glutes
+0851	weighted sissy squat	weighted	quads
+0852	weighted squat	weighted	glutes
+3642	weighted stretch lunge	weighted	glutes
+1604	world greatest stretch	body weight	hamstrings
+
+===== back (203) =====
+0007	alternate lateral pulldown	cable	lats
+3293	archer pull up	body weight	lats
+0015	assisted parallel close grip pull-up	leverage machine	lats
+0017	assisted pull-up	leverage machine	lats
+1431	assisted standing chin-up	leverage machine	lats
+1432	assisted standing pull-up	leverage machine	lats
+1314	back extension on exercise ball	stability ball	spine
+3297	back lever	body weight	upper back
+1405	back pec stretch	body weight	lats
+0970	band assisted pull-up	band	lats
+0974	band close-grip pulldown	band	lats
+3117	band fixed back close grip pulldown	band	lats
+3116	band fixed back underhand pulldown	band	lats
+0983	band kneeling one arm pulldown	band	lats
+0988	band one arm standing low row	band	upper back
+0990	band one arm twisting seated row	band	upper back
+1018	band shrug	band	traps
+1010	band straight leg deadlift	band	spine
+1013	band underhand pulldown	band	lats
+1316	barbell bent arm pullover	barbell	lats
+0027	barbell bent over row	barbell	upper back
+0034	barbell decline bent arm pullover	barbell	lats
+0037	barbell decline wide-grip pullover	barbell	lats
+0049	barbell incline row	barbell	upper back
+0064	barbell one arm bent over row	barbell	upper back
+3017	barbell pendlay row	barbell	upper back
+0073	barbell pullover	barbell	lats
+0022	barbell pullover to press	barbell	lats
+0118	barbell reverse grip bent over row	barbell	upper back
+1317	barbell reverse grip incline bench row	barbell	upper back
+0095	barbell shrug	barbell	traps
+3019	bench pull-ups	body weight	lats
+3168	bodyweight squatting row	body weight	upper back
+3167	bodyweight squatting row (with towel)	body weight	upper back
+3156	bodyweight standing close-grip one arm row	body weight	upper back
+3158	bodyweight standing close-grip row	body weight	upper back
+3162	bodyweight standing one arm row	body weight	upper back
+3161	bodyweight standing one arm row (with towel)	body weight	upper back
+3166	bodyweight standing row	body weight	upper back
+3165	bodyweight standing row (with towel)	body weight	upper back
+0150	cable bar lateral pulldown	cable	lats
+0153	cable cross-over lateral pulldown	cable	lats
+0159	cable decline seated wide-grip row	cable	upper back
+0160	cable floor seated wide-grip row	cable	upper back
+0167	cable high row (kneeling)	cable	upper back
+1318	cable incline bench row	cable	upper back
+0172	cable incline pushdown	cable	lats
+2330	cable lat pulldown full range of motion	cable	lats
+0177	cable lateral pulldown (with rope attachment)	cable	lats
+2616	cable lateral pulldown with v-bar	cable	lats
+0180	cable low seated row	cable	upper back
+0184	cable lying extension pullover (with rope attachment)	cable	lats
+0189	cable one arm bent over row	cable	upper back
+3563	cable one arm pulldown	cable	lats
+0193	cable one arm straight back high row (kneeling)	cable	upper back
+1319	cable palm rotational row	cable	upper back
+0198	cable pulldown	cable	lats
+0197	cable pulldown (pro lat bar)	cable	lats
+0199	cable pushdown (straight arm) v. 2	cable	lats
+0205	cable rear pulldown	cable	lats
+0208	cable reverse-grip straight back seated high row	cable	upper back
+1320	cable rope crossover seated row	cable	upper back
+1321	cable rope elevated seated row	cable	upper back
+1322	cable rope extension incline bench row	cable	upper back
+1323	cable rope seated row	cable	upper back
+0213	cable seated high row (v-bar)	cable	lats
+0214	cable seated one arm alternate row	cable	upper back
+0861	cable seated row	cable	upper back
+0218	cable seated wide-grip row	cable	upper back
+0220	cable shrug	cable	traps
+1717	cable squat row (with rope attachment)	cable	lats
+0234	cable standing row (v-bar)	cable	upper back
+0236	cable standing twist row (v-bar)	cable	upper back
+0238	cable straight arm pulldown	cable	lats
+0237	cable straight arm pulldown (with rope)	cable	lats
+0239	cable straight back seated row	cable	upper back
+2464	cable thibaudeau kayak row	cable	lats
+0244	cable twisting pull	cable	lats
+0245	cable underhand pulldown	cable	lats
+1324	cable upper row	cable	upper back
+1325	cable wide grip rear pulldown behind neck	cable	lats
+0248	cambered bar lying row	barbell	upper back
+1326	chin-up	body weight	lats
+0253	chin-ups (narrow parallel grip)	body weight	upper back
+1327	close grip chin-up	body weight	lats
+0293	dumbbell bent over row	dumbbell	upper back
+0305	dumbbell decline shrug	dumbbell	traps
+0304	dumbbell decline shrug v. 2	dumbbell	traps
+0327	dumbbell incline row	dumbbell	upper back
+0329	dumbbell incline shrug	dumbbell	traps
+3541	dumbbell incline y-raise	dumbbell	upper back
+1328	dumbbell lying rear delt row	dumbbell	upper back
+0292	dumbbell one arm bent-over row	dumbbell	upper back
+1329	dumbbell palm rotational bent over row	dumbbell	upper back
+1330	dumbbell reverse grip incline bench one arm row	dumbbell	upper back
+1331	dumbbell reverse grip incline bench two arm row	dumbbell	upper back
+2327	dumbbell reverse grip row (female)	dumbbell	upper back
+0406	dumbbell shrug	dumbbell	traps
+3664	dumbbell side plank with rear fly	dumbbell	upper back
+1772	elbow lift - reverse push-up	body weight	upper back
+3292	elevator	body weight	upper back
+1332	exercise ball alternating arm ups	stability ball	lats
+1333	exercise ball back extension with arms extended	stability ball	spine
+1334	exercise ball back extension with hands behind head	stability ball	spine
+1335	exercise ball back extension with knees off ground	stability ball	spine
+1336	exercise ball back extension with rotation	stability ball	spine
+1338	exercise ball hug	stability ball	spine
+1339	exercise ball lat stretch	stability ball	lats
+1341	exercise ball lower back stretch (pyramid)	stability ball	lats
+1342	exercise ball lying side lat stretch	stability ball	lats
+1343	exercise ball prone leg raise	stability ball	spine
+3010	ez bar lying bent arms pullover	ez barbell	lats
+1344	ez bar reverse grip bent over row	ez barbell	upper back
+3295	front lever reps	body weight	upper back
+0466	gironda sternum chin	body weight	lats
+0489	hyperextension	body weight	spine
+0488	hyperextension (on bench)	body weight	spine
+0499	inverted row	body weight	upper back
+2300	inverted row bent knees	body weight	upper back
+2298	inverted row on bench	body weight	upper back
+0497	inverted row v. 2	body weight	upper back
+0498	inverted row with straps	body weight	upper back
+0521	kettlebell alternating renegade row	kettlebell	upper back
+0522	kettlebell alternating row	kettlebell	upper back
+0541	kettlebell one arm row	kettlebell	upper back
+0548	kettlebell sumo high pull	kettlebell	traps
+1345	kettlebell two arm row	kettlebell	upper back
+0558	kipping muscle up	body weight	lats
+1346	kneeling lat stretch	body weight	lats
+3418	l-pull-up	body weight	lats
+0571	lever alternating narrow grip seated row	leverage machine	upper back
+0572	lever assisted chin-up	leverage machine	lats
+0573	lever back extension	leverage machine	spine
+0574	lever bent over row	barbell	upper back
+3200	lever bent-over row with v-bar	leverage machine	upper back
+0579	lever front pulldown	leverage machine	lats
+0580	lever gripless shrug	leverage machine	traps
+1439	lever gripless shrug v. 2	leverage machine	traps
+0581	lever high row	leverage machine	upper back
+0588	lever narrow grip seated row	leverage machine	upper back
+0589	lever one arm bent over row	barbell	upper back
+1356	lever one arm lateral high row	leverage machine	upper back
+1347	lever one arm lateral wide pulldown	leverage machine	lats
+2285	lever pullover	leverage machine	lats
+2736	lever reverse grip lateral pulldown	leverage machine	lats
+1348	lever reverse grip vertical row	leverage machine	upper back
+1349	lever reverse t-bar row	leverage machine	upper back
+1350	lever seated row	leverage machine	upper back
+0604	lever shrug	leverage machine	traps
+0606	lever t bar row	leverage machine	upper back
+1351	lever t-bar reverse grip row	leverage machine	upper back
+1313	lever unilateral row	leverage machine	upper back
+0609	london bridge	rope	upper back
+1352	lower back curl	body weight	spine
+1353	medicine ball catch and overhead throw	medicine ball	lats
+1354	medicine ball overhead slam	medicine ball	upper back
+0627	mixed grip chin-up	body weight	lats
+0631	muscle up	body weight	lats
+1401	muscle-up (on vertical bar)	body weight	lats
+1355	one arm against wall	body weight	lats
+0638	one arm chin-up	body weight	lats
+1773	one arm towel row	body weight	upper back
+0651	pull up (neutral grip)	body weight	lats
+0652	pull-up	body weight	lats
+0670	rear pull-up	body weight	lats
+3144	resistance band seated straight back row	resistance band	upper back
+0673	reverse grip machine lat pulldown	leverage machine	lats
+0674	reverse grip pull-up	body weight	lats
+0678	rocky pull-up pulldown	body weight	lats
+2208	roller back stretch	roller	spine
+2207	roller side lat stretch	roller	lats
+0680	rope climb	rope	upper back
+3012	scapula dips	body weight	traps
+0688	scapular pull-up	body weight	traps
+0690	seated lower back stretch	body weight	lats
+1763	shoulder grip pull-up	body weight	lats
+1358	side lying floor stretch	body weight	lats
+0720	side-to-side chin	body weight	lats
+3304	skin the cat	body weight	upper back
+0746	smith back shrug	smith machine	traps
+1359	smith bent over row	smith machine	upper back
+0761	smith narrow row	smith machine	upper back
+1360	smith one arm row	smith machine	upper back
+1361	smith reverse grip bent over row	smith machine	upper back
+0767	smith shrug	smith machine	traps
+1362	sphinx	body weight	spine
+1363	spine stretch	body weight	spine
+3669	standing archer	body weight	upper back
+0794	standing lateral stretch	body weight	lats
+1364	standing pelvic tilt	body weight	spine
+0808	suspended row	body weight	upper back
+0818	twin handle parallel grip lat pulldown	cable	lats
+3231	two toe touch (male)	body weight	spine
+1365	upper back stretch	body weight	upper back
+1366	upward facing dog	body weight	spine
+2987	weighted close grip chin-up on dip cage	weighted	lats
+0835	weighted hyperextension (on stability ball)	weighted	spine
+3286	weighted muscle up	weighted	lats
+3312	weighted muscle up (on bar)	weighted	lats
+3290	weighted one hand pull up	weighted	lats
+0841	weighted pull-up	weighted	lats
+1429	wide grip pull-up	body weight	lats
+1367	wide grip rear pull-up	body weight	lats
+
+===== lower legs (59) =====
+1368	ankle circles	body weight	calves
+1708	assisted lying calves stretch	assisted	calves
+0999	band single leg calf raise	band	calves
+1000	band single leg reverse calf raise	band	calves
+1369	band two legs calf raise - (band under both legs) v. 2	band	calves
+1370	barbell floor calf raise	barbell	calves
+0088	barbell seated calf raise	barbell	calves
+1371	barbell seated calf raise	barbell	calves
+1372	barbell standing calf raise	barbell	calves
+0108	barbell standing leg calf raise	barbell	calves
+0111	barbell standing rocking leg calf raise	barbell	calves
+1373	bodyweight standing calf raise	body weight	calves
+1374	box jump down with one leg stabilization	body weight	calves
+1375	cable standing calf raise	cable	calves
+1376	cable standing one leg calf raise	cable	calves
+1407	calf push stretch with hands against wall	body weight	calves
+1377	calf stretch with hands against wall	body weight	calves
+1378	calf stretch with rope	rope	calves
+0257	circles knee stretch	body weight	calves
+0284	donkey calf raise	body weight	calves
+1379	dumbbell seated calf raise	dumbbell	calves
+0400	dumbbell seated one leg calf raise	dumbbell	calves
+1380	dumbbell seated one leg calf raise - hammer grip	dumbbell	calves
+1381	dumbbell seated one leg calf raise - palm up	dumbbell	calves
+0409	dumbbell single leg calf raise	dumbbell	calves
+0417	dumbbell standing calf raise	dumbbell	calves
+1382	exercise ball on the wall calf raise	dumbbell	calves
+3241	exercise ball on the wall calf raise (tennis ball between ankles)	dumbbell	calves
+3240	exercise ball on the wall calf raise (tennis ball between knees)	dumbbell	calves
+1383	hack calf raise	sled machine	calves
+1384	hack one leg calf raise	sled machine	calves
+2289	lever calf press	leverage machine	calves
+1253	lever donkey calf raise	leverage machine	calves
+2315	lever rotary calf	leverage machine	calves
+2335	lever seated calf press	leverage machine	calves
+0594	lever seated calf raise	leverage machine	calves
+1385	lever seated squat calf raise on leg press machine	leverage machine	calves
+0605	lever standing calf raise	leverage machine	calves
+1386	one leg donkey calf raise	body weight	calves
+1387	one leg floor calf raise	body weight	calves
+1388	peroneals stretch	rope	calves
+1389	posterior tibialis stretch	rope	calves
+1390	seated calf stretch (male)	body weight	calves
+0727	single leg calf raise (on a dumbbell)	dumbbell	calves
+0738	sled 45в° calf press	sled machine	calves
+1391	sled calf press on leg press	sled machine	calves
+0742	sled forward angled calf raise	sled machine	calves
+2334	sled lying calf press	sled machine	calves
+1392	sled one leg calf press on leg press	sled machine	calves
+1393	smith one leg floor calf raise	smith machine	calves
+0763	smith reverse calf raises	smith machine	calves
+1394	smith reverse calf raises	smith machine	calves
+1395	smith seated one leg calf raise	smith machine	calves
+0773	smith standing leg calf raise	smith machine	calves
+1396	smith toe raise	smith machine	calves
+1490	standing calf raise (on a staircase)	body weight	calves
+1397	standing calves	body weight	calves
+1398	standing calves calf stretch	body weight	calves
+0833	weighted donkey calf raise	weighted	calves
+
+===== chest (163) =====
+3294	archer push up	body weight	pectorals
+0009	assisted chest dip (kneeling)	leverage machine	pectorals
+1716	assisted seated pectoralis major stretch with stability ball	assisted	pectorals
+2364	assisted wide-grip chest dip (kneeling)	leverage machine	pectorals
+1254	band bench press	band	pectorals
+0989	band one arm twisting chest press	band	pectorals
+0025	barbell bench press	barbell	pectorals
+0033	barbell decline bench press	barbell	pectorals
+1255	barbell decline pullover	barbell	pectorals
+0036	barbell decline wide-grip press	barbell	pectorals
+0040	barbell front raise and pullover	barbell	pectorals
+0045	barbell guillotine bench press	barbell	pectorals
+0047	barbell incline bench press	barbell	pectorals
+0050	barbell incline shoulder raise	barbell	serratus anterior
+1256	barbell reverse grip decline bench press	barbell	pectorals
+1257	barbell reverse grip incline bench press	barbell	pectorals
+0122	barbell wide bench press	barbell	pectorals
+1258	barbell wide reverse grip bench press	barbell	pectorals
+1259	behind head chest stretch	assisted	pectorals
+0151	cable bench press	cable	pectorals
+0155	cable cross-over variation	cable	pectorals
+0158	cable decline fly	cable	pectorals
+1260	cable decline one arm press	cable	pectorals
+1261	cable decline press	cable	pectorals
+0169	cable incline bench press	cable	pectorals
+0171	cable incline fly	cable	pectorals
+0170	cable incline fly (on stability ball)	cable	pectorals
+0179	cable low fly	cable	pectorals
+0185	cable lying fly	cable	pectorals
+0188	cable middle fly	cable	pectorals
+1262	cable one arm decline chest fly	cable	pectorals
+1263	cable one arm fly on exercise ball	cable	pectorals
+1264	cable one arm incline fly on exercise ball	cable	pectorals
+1265	cable one arm incline press	cable	pectorals
+1266	cable one arm incline press on exercise ball	cable	pectorals
+0191	cable one arm lateral bent-over	cable	pectorals
+1267	cable one arm press on exercise ball	cable	pectorals
+1268	cable press on exercise ball	cable	pectorals
+2144	cable seated chest press	cable	pectorals
+0227	cable standing fly	cable	pectorals
+1269	cable standing up straight crossovers	cable	pectorals
+1270	cable upper chest crossovers	cable	pectorals
+1271	chest and front of shoulder stretch	body weight	pectorals
+0251	chest dip	body weight	pectorals
+1430	chest dip (on dip-pull-up cage)	body weight	pectorals
+2462	chest dip on straight bar	body weight	pectorals
+1272	chest stretch with exercise ball	stability ball	pectorals
+3216	chest tap push-up (male)	body weight	pectorals
+1273	clap push up	body weight	pectorals
+0258	clock push-up	body weight	pectorals
+0279	decline push-up	body weight	pectorals
+1274	deep push up	dumbbell	pectorals
+1275	drop push up	body weight	pectorals
+0288	dumbbell around pullover	dumbbell	pectorals
+0289	dumbbell bench press	dumbbell	pectorals
+0301	dumbbell decline bench press	dumbbell	pectorals
+0302	dumbbell decline fly	dumbbell	pectorals
+0303	dumbbell decline hammer press	dumbbell	pectorals
+1276	dumbbell decline one arm fly	dumbbell	pectorals
+0307	dumbbell decline twist fly	dumbbell	pectorals
+0308	dumbbell fly	dumbbell	pectorals
+1277	dumbbell fly on exercise ball	dumbbell	pectorals
+3545	dumbbell incline alternate press	dumbbell	pectorals
+0314	dumbbell incline bench press	dumbbell	pectorals
+0316	dumbbell incline breeding	dumbbell	pectorals
+0319	dumbbell incline fly	dumbbell	pectorals
+1278	dumbbell incline fly on exercise ball	dumbbell	pectorals
+0321	dumbbell incline hammer press	dumbbell	pectorals
+1279	dumbbell incline one arm fly	dumbbell	pectorals
+1280	dumbbell incline one arm fly on exercise ball	dumbbell	pectorals
+1281	dumbbell incline one arm press	dumbbell	pectorals
+1282	dumbbell incline one arm press on exercise ball	dumbbell	pectorals
+0324	dumbbell incline palm-in press	dumbbell	pectorals
+1283	dumbbell incline press on exercise ball	dumbbell	pectorals
+0328	dumbbell incline shoulder raise	dumbbell	serratus anterior
+0331	dumbbell incline twisted flyes	dumbbell	pectorals
+0340	dumbbell lying hammer press	dumbbell	pectorals
+0343	dumbbell lying one arm press	dumbbell	pectorals
+0342	dumbbell lying one arm press v. 2	dumbbell	pectorals
+1284	dumbbell lying pullover on exercise ball	dumbbell	pectorals
+1285	dumbbell one arm bench fly	dumbbell	pectorals
+1286	dumbbell one arm chest fly on exercise ball	dumbbell	pectorals
+1287	dumbbell one arm decline chest press	dumbbell	pectorals
+1288	dumbbell one arm fly on exercise ball	dumbbell	pectorals
+1289	dumbbell one arm incline chest press	dumbbell	pectorals
+1290	dumbbell one arm press on exercise ball	dumbbell	pectorals
+1291	dumbbell one arm pullover on exercise ball	dumbbell	pectorals
+1622	dumbbell one arm reverse grip press	dumbbell	pectorals
+1292	dumbbell one leg fly on exercise ball	dumbbell	pectorals
+1293	dumbbell press on exercise ball	dumbbell	pectorals
+0375	dumbbell pullover	dumbbell	pectorals
+1294	dumbbell pullover hip extension on exercise ball	dumbbell	pectorals
+1295	dumbbell pullover on exercise ball	dumbbell	pectorals
+1624	dumbbell reverse bench press	dumbbell	pectorals
+0433	dumbbell straight arm pullover	dumbbell	pectorals
+1167	dynamic chest stretch (male)	body weight	pectorals
+1296	exercise ball pike push up	stability ball	pectorals
+0458	floor fly (with barbell)	barbell	pectorals
+3327	full planche push-up	body weight	pectorals
+2139	hands bike	upper body ergometer	pectorals
+3234	hyght dumbbell fly	dumbbell	pectorals
+0492	incline push up depth jump	body weight	pectorals
+0493	incline push-up	body weight	pectorals
+3785	incline push-up (on box)	body weight	pectorals
+0494	incline reverse grip push-up	body weight	pectorals
+3011	incline scapula push up	body weight	serratus anterior
+1297	isometric chest squeeze	body weight	pectorals
+0500	isometric wipers	body weight	pectorals
+0519	kettlebell alternating press on floor	kettlebell	pectorals
+0531	kettlebell extended range one arm press on floor	kettlebell	pectorals
+1298	kettlebell one arm floor press	kettlebell	pectorals
+0545	kettlebell plyo push-up	kettlebell	pectorals
+3211	kneeling push-up (male)	body weight	pectorals
+3288	korean dips	body weight	pectorals
+0577	lever chest press	leverage machine	pectorals
+0576	lever chest press	leverage machine	pectorals
+1300	lever decline chest press	leverage machine	pectorals
+1299	lever incline chest press	leverage machine	pectorals
+1479	lever incline chest press v. 2	leverage machine	pectorals
+0596	lever seated fly	leverage machine	pectorals
+3758	lever standing chest press	leverage machine	pectorals
+1301	machine inner chest press	leverage machine	pectorals
+1302	medicine ball chest pass	medicine ball	pectorals
+1303	medicine ball chest push from 3 point stance	medicine ball	pectorals
+1304	medicine ball chest push multiple response	medicine ball	pectorals
+1305	medicine ball chest push single response	medicine ball	pectorals
+1312	medicine ball chest push with run release	medicine ball	pectorals
+3217	modified hindu push-up (male)	body weight	pectorals
+1306	plyo push up	body weight	pectorals
+1689	push and pull bodyweight	body weight	pectorals
+1307	push up on bosu ball	bosu ball	pectorals
+0662	push-up	body weight	pectorals
+0653	push-up (bosu ball)	bosu ball	pectorals
+0655	push-up (on stability ball)	stability ball	pectorals
+0656	push-up (on stability ball)	stability ball	pectorals
+0659	push-up (wall)	body weight	pectorals
+0658	push-up (wall) v. 2	body weight	pectorals
+0663	push-up medicine ball	medicine ball	pectorals
+3145	push-up plus	body weight	pectorals
+0666	raise single arm push-up	body weight	pectorals
+3124	resistance band seated chest press	resistance band	pectorals
+2203	roller seated shoulder flexor depresor retractor	roller	pectorals
+2209	roller seated single leg shoulder flexor depresor retractor	roller	pectorals
+3021	scapula push-up	body weight	serratus anterior
+0699	shoulder tap push-up	body weight	pectorals
+0725	single arm push-up	body weight	pectorals
+0748	smith bench press	smith machine	pectorals
+0753	smith decline bench press	smith machine	pectorals
+0754	smith decline reverse-grip press	smith machine	pectorals
+0757	smith incline bench press	smith machine	pectorals
+0758	smith incline reverse-grip press	smith machine	pectorals
+0759	smith incline shoulder raises	smith machine	serratus anterior
+1626	smith machine reverse decline close grip bench press	smith machine	pectorals
+0764	smith reverse-grip press	smith machine	pectorals
+1308	smith wide grip bench press	smith machine	pectorals
+1309	smith wide grip decline bench press	smith machine	pectorals
+0803	superman push-up	body weight	pectorals
+0806	suspended push-up	body weight	pectorals
+1310	weighted drop push up	weighted	pectorals
+3313	weighted straight bar dip	weighted	pectorals
+0856	weighted svend press	weighted	pectorals
+1311	wide hand push up	body weight	pectorals
+2363	wide-grip chest dip on high parallel bars	body weight	pectorals
+
+===== upper arms (292) =====
+0018	assisted standing triceps extension (with towel)	assisted	triceps
+0019	assisted triceps dip (kneeling)	leverage machine	triceps
+0968	band alternating biceps curl	band	biceps
+0975	band close-grip push-up	band	triceps
+0976	band concentration curl	band	biceps
+0986	band one arm overhead biceps curl	band	biceps
+0998	band side triceps extension	band	triceps
+0023	barbell alternate biceps curl	barbell	biceps
+2407	barbell biceps curl (with arm blaster)	barbell	biceps
+0030	barbell close-grip bench press	barbell	triceps
+0031	barbell curl	barbell	biceps
+0035	barbell decline close grip to skull press	barbell	triceps
+0038	barbell drag curl	barbell	biceps
+1719	barbell incline close grip bench press	barbell	triceps
+0048	barbell incline reverse-grip press	barbell	triceps
+0052	barbell jm bench press	barbell	triceps
+1720	barbell lying back of the head tricep extension	barbell	triceps
+0055	barbell lying close-grip press	barbell	triceps
+0056	barbell lying close-grip triceps extension	barbell	triceps
+0057	barbell lying extension	barbell	triceps
+0059	barbell lying preacher curl	barbell	biceps
+0061	barbell lying triceps extension	barbell	triceps
+0060	barbell lying triceps extension skull crusher	barbell	triceps
+0065	barbell one arm floor press	barbell	triceps
+1751	barbell pin presses	barbell	triceps
+0070	barbell preacher curl	barbell	biceps
+0072	barbell prone incline curl	barbell	biceps
+2187	barbell reverse close-grip bench press	barbell	triceps
+0080	barbell reverse curl	barbell	biceps
+1721	barbell reverse grip skullcrusher	barbell	triceps
+0081	barbell reverse preacher curl	barbell	biceps
+1718	barbell seated close grip behind neck triceps extension	barbell	triceps
+0089	barbell seated close-grip concentration curl	barbell	biceps
+0092	barbell seated overhead triceps extension	barbell	triceps
+0106	barbell standing close grip curl	barbell	biceps
+2414	barbell standing concentration curl	barbell	biceps
+0109	barbell standing overhead triceps extension	barbell	triceps
+0110	barbell standing reverse grip curl	barbell	biceps
+1629	barbell standing wide grip biceps curl	barbell	biceps
+0113	barbell standing wide-grip curl	barbell	biceps
+0129	bench dip (knees bent)	body weight	triceps
+1399	bench dip on floor	body weight	triceps
+1770	biceps leg concentration curl	body weight	biceps
+0139	biceps narrow pull-ups	body weight	biceps
+0140	biceps pull-up	body weight	biceps
+0137	body-up	body weight	triceps
+1771	bodyweight kneeling triceps extension	body weight	triceps
+1769	bodyweight side lying biceps curl	body weight	biceps
+0149	cable alternate triceps extension	cable	triceps
+1630	cable close grip curl	cable	biceps
+1631	cable concentration curl	cable	biceps
+0152	cable concentration extension (on knee)	cable	triceps
+0868	cable curl	cable	biceps
+1632	cable drag curl	cable	biceps
+0165	cable hammer curl (with rope)	cable	biceps
+1722	cable high pulley overhead tricep extension	cable	triceps
+0173	cable incline triceps extension	cable	triceps
+0860	cable kickback	cable	triceps
+0176	cable kneeling triceps extension	cable	triceps
+1634	cable lying bicep curl	cable	biceps
+0182	cable lying close-grip curl	cable	biceps
+0186	cable lying triceps extension v. 2	cable	triceps
+0190	cable one arm curl	cable	biceps
+1633	cable one arm preacher curl	cable	biceps
+1635	cable one arm reverse preacher curl	cable	biceps
+1723	cable one arm tricep pushdown	cable	triceps
+1636	cable overhead curl	cable	biceps
+1637	cable overhead curl on exercise ball	cable	biceps
+0194	cable overhead triceps extension (rope attachment)	cable	triceps
+0195	cable preacher curl	cable	biceps
+1638	cable pulldown bicep curl	cable	biceps
+0201	cable pushdown	cable	triceps
+0200	cable pushdown (with rope attachment)	cable	triceps
+0204	cable rear drive	cable	triceps
+0206	cable reverse curl	cable	biceps
+2406	cable reverse grip triceps pushdown (sz-bar) (with arm blaster)	cable	triceps
+1413	cable reverse one arm curl	cable	biceps
+0209	cable reverse preacher curl	cable	biceps
+0207	cable reverse-grip pushdown	cable	triceps
+1639	cable rope hammer preacher curl	cable	biceps
+1724	cable rope high pulley overhead tricep extension	cable	triceps
+1725	cable rope incline tricep extension	cable	triceps
+1726	cable rope lying on floor tricep extension	cable	triceps
+1640	cable rope one arm hammer preacher curl	cable	biceps
+1641	cable seated curl	cable	biceps
+1642	cable seated one arm concentration curl	cable	biceps
+1643	cable seated overhead curl	cable	biceps
+1644	cable squatting curl	cable	biceps
+0229	cable standing inner curl	cable	biceps
+0231	cable standing one arm triceps extension	cable	triceps
+0232	cable standing pulldown (with rope)	cable	biceps
+1727	cable standing reverse grip one arm overhead tricep extension	cable	triceps
+0241	cable triceps pushdown (v-bar)	cable	triceps
+2405	cable triceps pushdown (v-bar) (with arm blaster)	cable	triceps
+1645	cable two arm curl on incline bench	cable	biceps
+1728	cable two arm tricep kickback	cable	triceps
+0259	close-grip push-up	body weight	triceps
+2398	close-grip push-up (on knees)	body weight	triceps
+0283	diamond push-up	body weight	triceps
+0285	dumbbell alternate biceps curl	dumbbell	biceps
+2403	dumbbell alternate biceps curl (with arm blaster)	dumbbell	biceps
+1646	dumbbell alternate hammer preacher curl	dumbbell	biceps
+1647	dumbbell alternate preacher curl	dumbbell	biceps
+1648	dumbbell alternate seated hammer curl	dumbbell	biceps
+1649	dumbbell alternating bicep curl with leg raised on exercise ball	dumbbell	biceps
+1650	dumbbell alternating seated bicep curl on exercise ball	dumbbell	biceps
+1651	dumbbell bicep curl lunge with bowling motion	dumbbell	biceps
+1652	dumbbell bicep curl on exercise ball with leg raised	dumbbell	biceps
+1653	dumbbell bicep curl with stork stance	dumbbell	biceps
+0294	dumbbell biceps curl	dumbbell	biceps
+2401	dumbbell biceps curl (with arm blaster)	dumbbell	biceps
+1654	dumbbell biceps curl reverse	dumbbell	biceps
+1655	dumbbell biceps curl squat	dumbbell	biceps
+1656	dumbbell biceps curl v sit on bosu ball	dumbbell	biceps
+1731	dumbbell close grip press	dumbbell	triceps
+0296	dumbbell close-grip press	dumbbell	triceps
+0297	dumbbell concentration curl	dumbbell	biceps
+0298	dumbbell cross body hammer curl	dumbbell	biceps
+1657	dumbbell cross body hammer curl v. 2	dumbbell	biceps
+1617	dumbbell decline one arm hammer press	dumbbell	triceps
+0306	dumbbell decline triceps extension	dumbbell	triceps
+1732	dumbbell forward lunge triceps extension	dumbbell	triceps
+0313	dumbbell hammer curl	dumbbell	biceps
+1659	dumbbell hammer curl on exercise ball	dumbbell	biceps
+0312	dumbbell hammer curl v. 2	dumbbell	biceps
+2402	dumbbell hammer curls (with arm blaster)	dumbbell	biceps
+1664	dumbbell high curl	dumbbell	biceps
+0315	dumbbell incline biceps curl	dumbbell	biceps
+0318	dumbbell incline curl	dumbbell	biceps
+0317	dumbbell incline curl v. 2	dumbbell	biceps
+0320	dumbbell incline hammer curl	dumbbell	biceps
+1618	dumbbell incline hammer press on exercise ball	dumbbell	triceps
+0322	dumbbell incline inner biceps curl	dumbbell	biceps
+1619	dumbbell incline one arm hammer press	dumbbell	triceps
+1620	dumbbell incline one arm hammer press on exercise ball	dumbbell	triceps
+0330	dumbbell incline triceps extension	dumbbell	triceps
+1733	dumbbell incline two arm extension	dumbbell	triceps
+0333	dumbbell kickback	dumbbell	triceps
+1734	dumbbell kickbacks on exercise ball	dumbbell	triceps
+1660	dumbbell kneeling bicep curl exercise ball	dumbbell	biceps
+1658	dumbbell lunge with bicep curl	dumbbell	biceps
+0337	dumbbell lying extension (across face)	dumbbell	triceps
+1729	dumbbell lying alternate extension	dumbbell	triceps
+0338	dumbbell lying elbow press	dumbbell	triceps
+0344	dumbbell lying one arm pronated triceps extension	dumbbell	triceps
+0346	dumbbell lying one arm supinated triceps extension	dumbbell	triceps
+1735	dumbbell lying single extension	dumbbell	triceps
+1661	dumbbell lying supine biceps curl	dumbbell	biceps
+0350	dumbbell lying supine curl	dumbbell	biceps
+0351	dumbbell lying triceps extension	dumbbell	triceps
+1662	dumbbell lying wide curl	dumbbell	biceps
+0352	dumbbell neutral grip bench press	dumbbell	triceps
+0353	dumbbell one arm concentration curl (on stability ball)	dumbbell	biceps
+1736	dumbbell one arm french press on exercise ball	dumbbell	triceps
+1663	dumbbell one arm hammer preacher curl	dumbbell	biceps
+1621	dumbbell one arm hammer press on exercise ball	dumbbell	triceps
+0354	dumbbell one arm kickback	dumbbell	triceps
+1665	dumbbell one arm prone curl	dumbbell	biceps
+1666	dumbbell one arm prone hammer curl	dumbbell	biceps
+1414	dumbbell one arm reverse preacher curl	dumbbell	biceps
+1667	dumbbell one arm reverse spider curl	dumbbell	biceps
+1668	dumbbell one arm seated bicep curl on exercise ball	dumbbell	biceps
+1669	dumbbell one arm seated hammer curl	dumbbell	biceps
+1670	dumbbell one arm standing curl	dumbbell	biceps
+1671	dumbbell one arm standing hammer curl	dumbbell	biceps
+0362	dumbbell one arm triceps extension (on bench)	dumbbell	triceps
+1672	dumbbell one arm zottman preacher curl	dumbbell	biceps
+0365	dumbbell over bench neutral wrist curl	dumbbell	biceps
+0366	dumbbell over bench one arm neutral wrist curl	dumbbell	biceps
+1623	dumbbell palms in incline bench press	dumbbell	triceps
+0370	dumbbell peacher hammer curl	dumbbell	biceps
+0372	dumbbell preacher curl	dumbbell	biceps
+1673	dumbbell preacher curl over exercise ball	dumbbell	biceps
+0373	dumbbell pronate-grip triceps extension	dumbbell	triceps
+0374	dumbbell prone incline curl	dumbbell	biceps
+1674	dumbbell prone incline hammer curl	dumbbell	biceps
+0382	dumbbell revers grip biceps curl	dumbbell	biceps
+0384	dumbbell reverse preacher curl	dumbbell	biceps
+1675	dumbbell reverse spider curl	dumbbell	biceps
+1676	dumbbell seated alternate hammer curl on exercise ball	dumbbell	biceps
+0389	dumbbell seated bench extension	dumbbell	triceps
+1730	dumbbell seated bent over alternate kickback	dumbbell	triceps
+1737	dumbbell seated bent over triceps extension	dumbbell	triceps
+1677	dumbbell seated bicep curl	dumbbell	biceps
+0390	dumbbell seated biceps curl (on stability ball)	dumbbell	biceps
+3547	dumbbell seated biceps curl to shoulder press	dumbbell	biceps
+0391	dumbbell seated curl	dumbbell	biceps
+1678	dumbbell seated hammer curl	dumbbell	biceps
+0393	dumbbell seated inner biceps curl	dumbbell	biceps
+0394	dumbbell seated kickback	dumbbell	triceps
+0397	dumbbell seated neutral wrist curl	dumbbell	biceps
+1679	dumbbell seated one arm bicep curl on exercise ball with leg raised	dumbbell	biceps
+0398	dumbbell seated one arm kickback	dumbbell	triceps
+0402	dumbbell seated preacher curl	dumbbell	biceps
+0403	dumbbell seated revers grip concentration curl	dumbbell	biceps
+1738	dumbbell seated reverse grip one arm overhead tricep extension	dumbbell	triceps
+2188	dumbbell seated triceps extension	dumbbell	triceps
+3560	dumbbell standing alternate hammer curl and press	dumbbell	biceps
+1739	dumbbell standing alternating tricep kickback	dumbbell	triceps
+1740	dumbbell standing bent over one arm triceps extension	dumbbell	triceps
+1741	dumbbell standing bent over two arm triceps extension	dumbbell	triceps
+0416	dumbbell standing biceps curl	dumbbell	biceps
+0418	dumbbell standing concentration curl	dumbbell	biceps
+2321	dumbbell standing inner biceps curl v. 2	dumbbell	biceps
+0420	dumbbell standing kickback	dumbbell	triceps
+0421	dumbbell standing one arm concentration curl	dumbbell	biceps
+0422	dumbbell standing one arm curl (over incline bench)	dumbbell	biceps
+1680	dumbbell standing one arm curl over incline bench	dumbbell	biceps
+0423	dumbbell standing one arm extension	dumbbell	triceps
+0425	dumbbell standing one arm reverse curl	dumbbell	biceps
+0428	dumbbell standing preacher curl	dumbbell	biceps
+0429	dumbbell standing reverse curl	dumbbell	biceps
+0430	dumbbell standing triceps extension	dumbbell	triceps
+2293	dumbbell standing zottman preacher curl	dumbbell	biceps
+1684	dumbbell step up single leg balance with bicep curl	dumbbell	biceps
+0436	dumbbell tate press	dumbbell	triceps
+1742	dumbbell tricep kickback with stork stance	dumbbell	triceps
+1743	dumbbell twisting bench press	dumbbell	triceps
+5201	dumbbell waiter biceps curl	dumbbell	biceps
+0439	dumbbell zottman curl	dumbbell	biceps
+2294	dumbbell zottman preacher curl	dumbbell	biceps
+2189	dumbbells seated triceps extension	dumbbell	triceps
+3287	elbow dips	body weight	triceps
+1744	exercise ball dip	stability ball	triceps
+1745	exercise ball seated triceps stretch	stability ball	triceps
+1746	exercise ball supine triceps extension	dumbbell	triceps
+1747	ez bar french press on exercise ball	ez barbell	triceps
+1748	ez bar lying close grip triceps extension behind head	ez barbell	triceps
+1682	ez bar seated close grip concentration curl	ez barbell	biceps
+1749	ez bar standing french press	ez barbell	triceps
+1627	ez barbell close grip preacher curl	ez barbell	biceps
+0446	ez barbell close-grip curl	ez barbell	biceps
+0447	ez barbell curl	ez barbell	biceps
+0448	ez barbell decline close grip face press	ez barbell	triceps
+2186	ez barbell decline triceps extension	ez barbell	triceps
+0449	ez barbell incline triceps extension	ez barbell	triceps
+0450	ez barbell jm bench press	ez barbell	triceps
+0451	ez barbell reverse grip curl	ez barbell	biceps
+0452	ez barbell reverse grip preacher curl	ez barbell	biceps
+1458	ez barbell seated curls	ez barbell	biceps
+0453	ez barbell seated triceps extension	ez barbell	triceps
+0454	ez barbell spider curl	ez barbell	biceps
+1628	ez barbell spider curl	ez barbell	biceps
+2404	ez-bar biceps curl (with arm blaster)	ez barbell	biceps
+2432	ez-bar close-grip bench press	ez barbell	triceps
+2741	ez-barbell standing wide grip biceps curl	ez barbell	biceps
+3302	handstand	body weight	triceps
+0471	handstand push-up	body weight	triceps
+3289	impossible dips	body weight	triceps
+0490	incline close-grip push-up	body weight	triceps
+0525	kettlebell bottoms up clean from the hang position	kettlebell	biceps
+0526	kettlebell double alternating hang clean	kettlebell	biceps
+0575	lever bicep curl	leverage machine	biceps
+1615	lever hammer grip preacher curl	leverage machine	biceps
+0591	lever overhand triceps dip	leverage machine	triceps
+0592	lever preacher curl	leverage machine	biceps
+1614	lever preacher curl v. 2	leverage machine	biceps
+1616	lever reverse grip preacher curl	leverage machine	biceps
+1451	lever seated dip	leverage machine	triceps
+0607	lever triceps extension	leverage machine	triceps
+1701	medicine ball close grip push up	medicine ball	triceps
+1750	medicine ball supine chest throw	medicine ball	triceps
+2328	narrow push-up on exercise ball	stability ball	triceps
+0636	olympic barbell hammer curl	olympic barbell	biceps
+0637	olympic barbell triceps extension	olympic barbell	triceps
+0639	one arm dip	body weight	triceps
+0643	overhead triceps stretch	body weight	triceps
+0660	push-up close-grip off dumbbell	dumbbell	triceps
+1467	push-up on lower arms	body weight	triceps
+3123	resistance band seated biceps curl	resistance band	biceps
+0672	reverse dip	body weight	triceps
+0677	ring dips	body weight	triceps
+0717	side push-up	body weight	triceps
+2142	ski ergometer	skierg machine	triceps
+0751	smith close-grip bench press	smith machine	triceps
+1683	smith machine bicep curl	smith machine	biceps
+1625	smith machine decline close grip bench press	smith machine	triceps
+1752	smith machine incline tricep extension	smith machine	triceps
+3291	stalder press	body weight	triceps
+1753	three bench dip	body weight	triceps
+0814	triceps dip	body weight	triceps
+0812	triceps dip (bench leg)	body weight	triceps
+0813	triceps dip (between benches)	body weight	triceps
+0815	triceps dips floor	body weight	triceps
+0816	triceps press	body weight	triceps
+0817	triceps stretch	body weight	triceps
+0830	weighted bench dip	weighted	triceps
+0847	weighted seated bicep curl (on stability ball)	medicine ball	biceps
+0853	weighted standing curl	weighted	biceps
+1754	weighted three bench dips	weighted	triceps
+1755	weighted tricep dips	weighted	triceps
+1767	weighted triceps dip on high parallel bars	weighted	triceps
+
+===== cardio (29) =====
+3220	astride jumps (male)	body weight	cardiovascular system
+3672	back and forth step	body weight	cardiovascular system
+3360	bear crawl	body weight	cardiovascular system
+1160	burpee	body weight	cardiovascular system
+2331	cycle cross trainer	leverage machine	cardiovascular system
+1201	dumbbell burpee	dumbbell	cardiovascular system
+3221	half knee bends (male)	body weight	cardiovascular system
+3636	high knee against wall	body weight	cardiovascular system
+0501	jack burpee	body weight	cardiovascular system
+3224	jack jump (male)	body weight	cardiovascular system
+2612	jump rope	rope	cardiovascular system
+0630	mountain climber	body weight	cardiovascular system
+3638	push to run	body weight	cardiovascular system
+0685	run	body weight	cardiovascular system
+0684	run (equipment)	body weight	cardiovascular system
+3219	scissor jumps (male)	body weight	cardiovascular system
+3222	semi squat jump (male)	body weight	cardiovascular system
+3656	short stride run	body weight	cardiovascular system
+3361	skater hops	body weight	cardiovascular system
+3671	ski step	body weight	cardiovascular system
+3223	star jump (male)	body weight	cardiovascular system
+2138	stationary bike run v. 3	stationary bike	cardiovascular system
+0798	stationary bike walk	leverage machine	cardiovascular system
+3318	swing 360	body weight	cardiovascular system
+2141	walk elliptical cross trainer	elliptical machine	cardiovascular system
+3655	walking high knees lunge	body weight	cardiovascular system
+3666	walking on incline treadmill	leverage machine	cardiovascular system
+2311	walking on stepmill	stepmill machine	cardiovascular system
+3637	wheel run	body weight	cardiovascular system
+
+===== shoulders (143) =====
+0977	band front lateral raise	band	delts
+0978	band front raise	band	delts
+0993	band reverse fly	band	delts
+0997	band shoulder press	band	delts
+1022	band standing rear delt row	band	delts
+1012	band twisting overhead press	band	delts
+1017	band y-raise	band	delts
+0041	barbell front raise	barbell	delts
+0067	barbell one arm snatch	barbell	delts
+0075	barbell rear delt raise	barbell	delts
+0076	barbell rear delt row	barbell	delts
+0086	barbell seated behind head military press	barbell	delts
+0087	barbell seated bradford rocky press	barbell	delts
+0091	barbell seated overhead press	barbell	delts
+0100	barbell skier	barbell	delts
+0105	barbell standing bradford press	barbell	delts
+1456	barbell standing close grip military press	barbell	delts
+0107	barbell standing front raise over head	barbell	delts
+1457	barbell standing wide military press	barbell	delts
+3305	barbell thruster	barbell	delts
+0120	barbell upright row	barbell	delts
+0119	barbell upright row v. 2	barbell	delts
+0121	barbell upright row v. 3	barbell	delts
+0123	barbell wide-grip upright row	barbell	delts
+0128	battling ropes	rope	delts
+0148	cable alternate shoulder press	cable	delts
+0154	cable cross-over revers fly	cable	delts
+0161	cable forward raise	cable	delts
+0162	cable front raise	cable	delts
+0164	cable front shoulder raise	cable	delts
+3697	cable kneeling rear delt row (with rope) (male)	cable	delts
+0178	cable lateral raise	cable	delts
+0192	cable one arm lateral raise	cable	delts
+0202	cable rear delt row (stirrups)	cable	delts
+0203	cable rear delt row (with rope)	cable	delts
+0215	cable seated rear lateral raise	cable	delts
+0216	cable seated shoulder internal rotation	cable	delts
+0219	cable shoulder press	cable	delts
+0225	cable standing cross-over high reverse fly	cable	delts
+0233	cable standing rear delt row (with rope)	cable	delts
+0235	cable standing shoulder external rotation	cable	delts
+0240	cable supine reverse fly	cable	delts
+0246	cable upright row	cable	delts
+0286	dumbbell alternate side press	dumbbell	delts
+2137	dumbbell arnold press	dumbbell	delts
+0287	dumbbell arnold press v. 2	dumbbell	delts
+0290	dumbbell bench seated press	dumbbell	delts
+0299	dumbbell cuban press	dumbbell	delts
+2136	dumbbell cuban press v. 2	dumbbell	delts
+0310	dumbbell front raise	dumbbell	delts
+0309	dumbbell front raise v. 2	dumbbell	delts
+0311	dumbbell full can lateral raise	dumbbell	delts
+0323	dumbbell incline one arm lateral raise	dumbbell	delts
+0325	dumbbell incline raise	dumbbell	delts
+0326	dumbbell incline rear lateral raise	dumbbell	delts
+3542	dumbbell incline t-raise	dumbbell	delts
+0332	dumbbell iron cross	dumbbell	delts
+0334	dumbbell lateral raise	dumbbell	delts
+0335	dumbbell lateral to front raise	dumbbell	delts
+0863	dumbbell lying external shoulder rotation	dumbbell	delts
+2470	dumbbell lying on floor rear delt raise	dumbbell	delts
+0341	dumbbell lying one arm deltoid rear	dumbbell	delts
+0345	dumbbell lying one arm rear lateral raise	dumbbell	delts
+0348	dumbbell lying rear lateral raise	dumbbell	delts
+0355	dumbbell one arm lateral raise	dumbbell	delts
+0356	dumbbell one arm lateral raise with support	dumbbell	delts
+0359	dumbbell one arm reverse fly (with support)	dumbbell	delts
+0361	dumbbell one arm shoulder press	dumbbell	delts
+0360	dumbbell one arm shoulder press v. 2	dumbbell	delts
+0363	dumbbell one arm upright row	dumbbell	delts
+1700	dumbbell push press	dumbbell	delts
+0376	dumbbell raise	dumbbell	delts
+2292	dumbbell rear delt raise	dumbbell	delts
+0377	dumbbell rear delt row_shoulder	dumbbell	delts
+0378	dumbbell rear fly	dumbbell	delts
+0380	dumbbell rear lateral raise	dumbbell	delts
+0379	dumbbell rear lateral raise (support head)	dumbbell	delts
+0383	dumbbell reverse fly	dumbbell	delts
+0386	dumbbell rotation reverse fly	dumbbell	delts
+2397	dumbbell scott press	dumbbell	delts
+0387	dumbbell seated alternate front raise	dumbbell	delts
+0388	dumbbell seated alternate press	dumbbell	delts
+3546	dumbbell seated alternate shoulder	dumbbell	delts
+2317	dumbbell seated bent arm lateral raise	dumbbell	delts
+0392	dumbbell seated front raise	dumbbell	delts
+0396	dumbbell seated lateral raise	dumbbell	delts
+0395	dumbbell seated lateral raise v. 2	dumbbell	delts
+0405	dumbbell seated shoulder press	dumbbell	delts
+0404	dumbbell seated shoulder press (parallel grip)	dumbbell	delts
+0408	dumbbell side lying one hand raise	dumbbell	delts
+3548	dumbbell single arm overhead carry	dumbbell	delts
+0414	dumbbell standing alternate overhead press	dumbbell	delts
+0415	dumbbell standing alternate raise	dumbbell	delts
+2143	dumbbell standing around world	dumbbell	delts
+0419	dumbbell standing front raise above head	dumbbell	delts
+0424	dumbbell standing one arm palm in press	dumbbell	delts
+0426	dumbbell standing overhead press	dumbbell	delts
+0427	dumbbell standing palms in press	dumbbell	delts
+0437	dumbbell upright row	dumbbell	delts
+1765	dumbbell upright row (back pov)	dumbbell	delts
+0864	dumbbell upright shoulder external rotation	dumbbell	delts
+0438	dumbbell w-press	dumbbell	delts
+0445	ez barbell anti gravity press	ez barbell	delts
+0520	kettlebell alternating press	kettlebell	delts
+0523	kettlebell arnold press	kettlebell	delts
+0527	kettlebell double jerk	kettlebell	delts
+0528	kettlebell double push press	kettlebell	delts
+0529	kettlebell double snatch	kettlebell	delts
+0537	kettlebell one arm clean and jerk	kettlebell	delts
+0538	kettlebell one arm jerk	kettlebell	delts
+0539	kettlebell one arm military press to the side	kettlebell	delts
+0540	kettlebell one arm push press	kettlebell	delts
+0542	kettlebell one arm snatch	kettlebell	delts
+0543	kettlebell pirate supper legs	kettlebell	delts
+0546	kettlebell seated press	kettlebell	delts
+1438	kettlebell seated two arm military press	kettlebell	delts
+0547	kettlebell seesaw press	kettlebell	delts
+0550	kettlebell thruster	kettlebell	delts
+0552	kettlebell two arm clean	kettlebell	delts
+0553	kettlebell two arm military press	kettlebell	delts
+3237	landmine lateral raise	barbell	delts
+2271	left hook. boxing	body weight	delts
+0584	lever lateral raise	leverage machine	delts
+0587	lever military press	leverage machine	delts
+0590	lever one arm shoulder press	leverage machine	delts
+0602	lever seated reverse fly	leverage machine	delts
+0601	lever seated reverse fly (parallel grip)	leverage machine	delts
+0603	lever shoulder press	leverage machine	delts
+0869	lever shoulder press v. 2	leverage machine	delts
+2318	lever shoulder press v. 3	leverage machine	delts
+0669	rear deltoid stretch	body weight	delts
+3122	resistance band seated shoulder press	resistance band	delts
+0747	smith behind neck press	smith machine	delts
+0762	smith rear delt row	smith machine	delts
+0765	smith seated shoulder press	smith machine	delts
+0766	smith shoulder press	smith machine	delts
+0772	smith standing behind head military press	smith machine	delts
+0774	smith standing military press	smith machine	delts
+0775	smith upright row	smith machine	delts
+0788	standing behind neck press	barbell	delts
+0834	weighted front raise	weighted	delts
+3641	weighted kneeling step with swing	weighted	delts
+0844	weighted round arm	weighted	delts
+
+===== lower arms (37) =====
+0994	band reverse wrist curl	band	forearms
+1016	band wrist curl	band	forearms
+1411	barbell palms down wrist curl over a bench	barbell	forearms
+1412	barbell palms up wrist curl over a bench	barbell	forearms
+0079	barbell revers wrist curl v. 2	barbell	forearms
+0082	barbell reverse wrist curl	barbell	forearms
+0104	barbell standing back wrist curl	barbell	forearms
+0126	barbell wrist curl	barbell	forearms
+0125	barbell wrist curl v. 2	barbell	forearms
+0210	cable reverse wrist curl	cable	forearms
+0224	cable standing back wrist curl	cable	forearms
+0247	cable wrist curl	cable	forearms
+1437	dumbbell finger curls	dumbbell	forearms
+0347	dumbbell lying pronation	dumbbell	forearms
+2705	dumbbell lying pronation on floor	dumbbell	forearms
+0349	dumbbell lying supination	dumbbell	forearms
+2706	dumbbell lying supination on floor	dumbbell	forearms
+0358	dumbbell one arm reverse wrist curl	dumbbell	forearms
+1415	dumbbell one arm seated neutral wrist curl	dumbbell	forearms
+0364	dumbbell one arm wrist curl	dumbbell	forearms
+1441	dumbbell over bench one arm reverse wrist curl	dumbbell	forearms
+0367	dumbbell over bench one arm wrist curl	dumbbell	forearms
+0368	dumbbell over bench revers wrist curl	dumbbell	forearms
+0369	dumbbell over bench wrist curl	dumbbell	forearms
+0385	dumbbell reverse wrist curl	dumbbell	forearms
+0399	dumbbell seated one arm rotate	dumbbell	forearms
+0401	dumbbell seated palms up wrist curl	dumbbell	forearms
+0455	finger curls	barbell	forearms
+0518	kettlebell alternating hang clean	kettlebell	forearms
+2288	lever gripper hands	leverage machine	forearms
+1421	modified push up to lower arms	body weight	forearms
+0721	side wrist pull stretch	body weight	forearms
+1426	smith seated wrist curl	smith machine	forearms
+0771	smith standing back wrist curl	smith machine	forearms
+0854	weighted standing hand squeeze	weighted	forearms
+1428	wrist circles	body weight	forearms
+0859	wrist rollerer	weighted	forearms
+
+===== neck (2) =====
+1403	neck side stretch	body weight	levator scapulae
+0716	side push neck stretch	body weight	levator scapulae

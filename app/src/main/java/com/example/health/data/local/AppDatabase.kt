@@ -9,6 +9,7 @@ import com.example.health.data.local.dao.AdviceLogDao
 import com.example.health.data.local.dao.BodyWeightDao
 import com.example.health.data.local.dao.ChatMessageDao
 import com.example.health.data.local.dao.DietRecordDao
+import com.example.health.data.local.dao.ExerciseLibraryDao
 import com.example.health.data.local.dao.FoodLibraryDao
 import com.example.health.data.local.dao.MealTemplateDao
 import com.example.health.data.local.dao.TrainingRecordDao
@@ -16,6 +17,7 @@ import com.example.health.data.local.entity.AdviceLog
 import com.example.health.data.local.entity.BodyWeight
 import com.example.health.data.local.entity.ChatMessage
 import com.example.health.data.local.entity.DietRecord
+import com.example.health.data.local.entity.ExerciseLibrary
 import com.example.health.data.local.entity.FoodLibrary
 import com.example.health.data.local.entity.MealTemplate
 import com.example.health.data.local.entity.TrainingRecord
@@ -28,9 +30,10 @@ import com.example.health.data.local.entity.TrainingRecord
         ChatMessage::class,
         AdviceLog::class,
         FoodLibrary::class,
-        MealTemplate::class
+        MealTemplate::class,
+        ExerciseLibrary::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -42,6 +45,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun adviceLogDao(): AdviceLogDao
     abstract fun foodLibraryDao(): FoodLibraryDao
     abstract fun mealTemplateDao(): MealTemplateDao
+    abstract fun exerciseLibraryDao(): ExerciseLibraryDao
 
     companion object {
         @Volatile

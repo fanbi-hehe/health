@@ -74,7 +74,11 @@ fun AppNavigation() {
                     }
                 )
             }
-            composable(BottomNavItem.Training.route) { TrainingScreen() }
+            composable(BottomNavItem.Training.route) {
+                TrainingScreen(
+                    onNavigateToSettings = { navController.navigate("settings") }
+                )
+            }
             composable(BottomNavItem.Chat.route) { ChatScreen() }
             composable(BottomNavItem.Dashboard.route) { DashboardScreen() }
             composable("settings") {

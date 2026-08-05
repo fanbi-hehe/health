@@ -30,6 +30,7 @@ class AppPreferences(private val context: Context) {
 
         // ── 内置食物初始化标记 ──
         val FOODS_INITIALIZED = booleanPreferencesKey("foods_initialized")
+        val EXERCISES_INITIALIZED = booleanPreferencesKey("exercises_initialized")
 
         // ── 通知与个性化 ──
         val COACH_NOTIFICATION_ENABLED = booleanPreferencesKey("coach_notification_enabled")
@@ -80,6 +81,10 @@ class AppPreferences(private val context: Context) {
         prefs[FOODS_INITIALIZED] ?: false
     }
 
+    val exercisesInitialized: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[EXERCISES_INITIALIZED] ?: false
+    }
+
     val coachReminderHour: Flow<Int> = context.dataStore.data.map { prefs ->
         prefs[COACH_REMINDER_HOUR] ?: DEFAULT_REMINDER_HOUR
     }
@@ -127,5 +132,9 @@ class AppPreferences(private val context: Context) {
 
     suspend fun setFoodsInitialized(initialized: Boolean) {
         context.dataStore.edit { it[FOODS_INITIALIZED] = initialized }
+    }
+
+    suspend fun setExercisesInitialized(initialized: Boolean) {
+        context.dataStore.edit { it[EXERCISES_INITIALIZED] = initialized }
     }
 }
