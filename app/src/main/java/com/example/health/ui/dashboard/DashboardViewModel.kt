@@ -33,6 +33,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val weightRecords: StateFlow<List<BodyWeight>> = db.bodyWeightDao().getAllRecords()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    // ── 训练记录 ──
+    val trainingRecords = db.trainingRecordDao().getAllRecords()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     // ── 目标 ──
     val targetWeightKg: StateFlow<Double> = prefs.targetWeightKg
         .stateIn(viewModelScope, SharingStarted.Eagerly, AppPreferences.DEFAULT_TARGET_WEIGHT_KG)

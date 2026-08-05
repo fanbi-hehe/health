@@ -65,8 +65,13 @@ fun SettingsScreen(
     val coachEnabled by viewModel.coachNotificationEnabled.collectAsState()
     val coachHour by viewModel.coachReminderHour.collectAsState()
     val coachMinute by viewModel.coachReminderMinute.collectAsState()
+    val backupStatus by viewModel.backupStatus.collectAsState()
 
-    // ── 对话框 ──
+    // ── 导入弹窗 ──
+    var showImportDialog by remember { mutableStateOf(false) }
+    var importText by remember { mutableStateOf("") }
+
+    // ── 对话框状态 ──
     var showVisionUrl by remember { mutableStateOf(false) }
     var showVisionKey by remember { mutableStateOf(false) }
     var showVisionModel by remember { mutableStateOf(false) }
@@ -129,9 +134,15 @@ fun SettingsScreen(
 
             // ── 数据管理 ──
             SettingsGroup("数据管理") {
-                SettingsRow("导出所有数据（JSON）", "备份")
-                SettingsRow("导入数据（JSON）", "从备份恢复")
-                SettingsRow("清理旧照片", "释放存储空间")
+                SettingsRow("导出所有数据（JSON）", "备份") { viewModel.exportAllData() }
+                SettingsRow("导入数据（JSON）", "从备份恢复") { showImportDialog = true }
+                SettingsRow("清理旧照片", "释放存储空间") { viewModel.clearOldPhotos() }
+            }
+            backupStatus?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall,
+                    color = if (it.contains("成功") || it.contains("已清理")) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 4.dp))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -169,6 +180,22 @@ fun SettingsScreen(
     if (showReminderTime) TimePickerDialog(coachHour, coachMinute,
         onDismiss = { showReminderTime = false },
         onConfirm = { h, m -> viewModel.setCoachReminderTime(h, m); showReminderTime = false })
+    if (showImportDialog) {
+        AlertDialog(
+            onDismissRequest = { showImportDialog = false },
+            title = { Text("从备份恢复") },
+            text = {
+                OutlinedTextField(importText, { importText = it }, label = { Text("粘贴 JSON 数据") },
+                    modifier = Modifier.fillMaxWidth().height(200.dp), maxLines = 20)
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setImportJson(importText); viewModel.importData(); showImportDialog = false
+                }) { Text("导入") }
+            },
+            dismissButton = { TextButton(onClick = { showImportDialog = false }) { Text("取消") } }
+        )
+    }
 }
 
 // ──────────────────────────────────────────────────────────

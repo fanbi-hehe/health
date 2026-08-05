@@ -69,19 +69,13 @@ fun DashboardScreen(
     val targetWeight by viewModel.targetWeightKg.collectAsState()
     val targetCalories by viewModel.targetDailyCalories.collectAsState()
     val todayCals by viewModel.todayCalories.collectAsState()
+    val trainingRecords by viewModel.trainingRecords.collectAsState()
     val backupStatus by viewModel.backupStatus.collectAsState()
 
     var showWeightDialog by remember { mutableStateOf(false) }
     var weightDays by remember { mutableIntStateOf(30) }
-    var calorieDays by remember { mutableIntStateOf(7) }
-    var showExportDialog by remember { mutableStateOf(false) }
     var showImportDialog by remember { mutableStateOf(false) }
     var importJson by remember { mutableStateOf("") }
-
-    // 备份状态提示
-    LaunchedEffect(backupStatus) {
-        backupStatus?.let { viewModel.clearBackupStatus() }
-    }
 
     Scaffold(
         topBar = {
@@ -164,6 +158,48 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // ── 训练概览 ──
+            val todayStr = remember { LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE) }
+            val weekStart = remember { LocalDate.now().minusDays(6).format(DateTimeFormatter.ISO_LOCAL_DATE) }
+            val thisWeekRecords = remember(trainingRecords) {
+                trainingRecords.filter { it.date in weekStart..todayStr }
+            }
+            val thisWeekDays = remember(thisWeekRecords) { thisWeekRecords.map { it.date }.distinct().size }
+            val thisWeekParts = remember(thisWeekRecords) {
+                thisWeekRecords.flatMap { it.bodyParts.split(",").map { p -> p.trim() } }
+                    .groupingBy { it }.eachCount()
+            }
+
+            Text("训练概览", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Card(modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        StatItem("本周训练", "$thisWeekDays 天")
+                        StatItem("总训练次数", "${thisWeekRecords.size} 次")
+                    }
+                    if (thisWeekParts.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("训练部位分布", style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            thisWeekParts.entries.take(6).forEach { (part, count) ->
+                                Card(colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f))) {
+                                    Text("$part ×$count", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                        style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // ── 备份/恢复 ──
             Text("数据管理", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(8.dp))
@@ -224,6 +260,16 @@ fun DashboardScreen(
             },
             dismissButton = { TextButton(onClick = { showImportDialog = false }) { Text("取消") } }
         )
+    }
+}
+
+@Composable
+private fun StatItem(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary)
+        Text(label, style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
