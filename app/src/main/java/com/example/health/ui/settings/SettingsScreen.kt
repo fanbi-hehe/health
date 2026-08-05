@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -70,6 +72,7 @@ fun SettingsScreen(
     // ── 导入弹窗 ──
     var showImportDialog by remember { mutableStateOf(false) }
     var importText by remember { mutableStateOf("") }
+    var showQuotesDialog by remember { mutableStateOf(false) }
 
     // ── 对话框状态 ──
     var showVisionUrl by remember { mutableStateOf(false) }
@@ -153,7 +156,7 @@ fun SettingsScreen(
                 SettingsRow("提醒时间", "${coachHour}:${coachMinute.toString().padStart(2, '0')}") {
                     showReminderTime = true
                 }
-                SettingsRow("暴躁语录管理", "查看/添加/删除")
+                SettingsRow("暴躁语录管理", "查看/添加/删除") { showQuotesDialog = true }
             }
         }
     }
@@ -196,6 +199,54 @@ fun SettingsScreen(
             dismissButton = { TextButton(onClick = { showImportDialog = false }) { Text("取消") } }
         )
     }
+    if (showQuotesDialog) QuotesManageDialog(viewModel, onDismiss = { showQuotesDialog = false })
+}
+
+@Composable
+private fun QuotesManageDialog(viewModel: SettingsViewModel, onDismiss: () -> Unit) {
+    val quotes by viewModel.quotes.collectAsState()
+    var newQuote by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("暴躁语录管理") },
+        text = {
+            Column(modifier = Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())) {
+                if (quotes.isEmpty()) {
+                    Text("暂无自定义语录，使用内置默认语录",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                quotes.forEachIndexed { index, quote ->
+                    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(quote, modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodySmall)
+                        IconButton(onClick = { viewModel.deleteCoachQuote(index) },
+                            modifier = Modifier.size(32.dp)) {
+                            Text("✕", color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                    HorizontalDivider()
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedTextField(newQuote, { newQuote = it },
+                        label = { Text("新语录") }, singleLine = true,
+                        modifier = Modifier.weight(1f))
+                    IconButton(onClick = {
+                        if (newQuote.isNotBlank()) {
+                            viewModel.addCoachQuote(newQuote.trim())
+                            newQuote = ""
+                        }
+                    }) { Text("＋", style = MaterialTheme.typography.titleMedium) }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("关闭") } },
+        dismissButton = null
+    )
 }
 
 // ──────────────────────────────────────────────────────────

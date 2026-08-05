@@ -8,6 +8,8 @@ import com.example.health.data.local.AppDatabase
 import com.example.health.data.preference.AppPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -154,4 +156,44 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun clearBackupStatus() { _backupStatus.value = null }
+
+    // ── 暴躁教练语录管理 ──
+    private val _quotes = MutableStateFlow<List<String>>(emptyList())
+    val quotes: StateFlow<List<String>> = _quotes.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            prefs.coachQuotes.collect { json ->
+                _quotes.value = parseQuotes(json)
+            }
+        }
+    }
+
+    fun addCoachQuote(quote: String) {
+        val updated = _quotes.value.toMutableList()
+        updated.add(quote)
+        saveQuotes(updated)
+    }
+
+    fun deleteCoachQuote(index: Int) {
+        val updated = _quotes.value.toMutableList()
+        if (index in updated.indices) {
+            updated.removeAt(index)
+            saveQuotes(updated)
+        }
+    }
+
+    private fun saveQuotes(quotes: List<String>) {
+        viewModelScope.launch {
+            prefs.setCoachQuotes(gson.toJson(quotes))
+        }
+    }
+
+    private fun parseQuotes(json: String): List<String> {
+        if (json.isBlank()) return emptyList()
+        return try {
+            val listType = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(json, listType)
+        } catch (_: Exception) { emptyList() }
+    }
 }

@@ -8,6 +8,8 @@ import androidx.work.WorkManager
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.ExerciseRepository
 import com.example.health.data.repository.FoodRepository
+import com.example.health.worker.CoachNotificationWorker
+import com.example.health.worker.NotificationHelper
 import com.example.health.worker.PhotoCleanupWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +46,9 @@ class HealthApp : Application() {
             exerciseRepository.initializeBuiltinExercisesIfNeeded()
         }
 
+        // 创建通知渠道
+        NotificationHelper.createChannel(this)
+
         // 定期清理 30 天前的旧照片（每天一次）
         val cleanupRequest = PeriodicWorkRequestBuilder<PhotoCleanupWorker>(1, TimeUnit.DAYS)
             .build()
@@ -51,6 +56,15 @@ class HealthApp : Application() {
             "photo_cleanup",
             ExistingPeriodicWorkPolicy.KEEP,
             cleanupRequest
+        )
+
+        // 暴躁教练每日提醒（每 15 分钟检查一次，Worker 内部判断是否到时间 + 是否达标）
+        val coachRequest = PeriodicWorkRequestBuilder<CoachNotificationWorker>(15, TimeUnit.MINUTES)
+            .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "coach_notification",
+            ExistingPeriodicWorkPolicy.KEEP,
+            coachRequest
         )
     }
 }

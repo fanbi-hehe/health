@@ -31,6 +31,9 @@ class AppPreferences(private val context: Context) {
         val TARGET_WEIGHT_KG = doublePreferencesKey("target_weight_kg")
         val TARGET_DAILY_CALORIES = intPreferencesKey("target_daily_calories")
 
+        // ── 暴躁语录 ──
+        val COACH_QUOTES = stringPreferencesKey("coach_quotes")
+
         // ── 初始化标记 ──
         val FOODS_INITIALIZED = booleanPreferencesKey("foods_initialized")
         val EXERCISES_INITIALIZED = booleanPreferencesKey("exercises_initialized")
@@ -92,6 +95,11 @@ class AppPreferences(private val context: Context) {
         prefs[COACH_REMINDER_MINUTE] ?: DEFAULT_REMINDER_MINUTE
     }
 
+    // ────────── 暴躁语录 ──────────
+    val coachQuotes: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[COACH_QUOTES] ?: ""
+    }
+
     // ────────── 初始化标记 ──────────
     val foodsInitialized: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[FOODS_INITIALIZED] ?: false
@@ -115,4 +123,5 @@ class AppPreferences(private val context: Context) {
     }
     suspend fun setFoodsInitialized(initialized: Boolean) { context.dataStore.edit { it[FOODS_INITIALIZED] = initialized } }
     suspend fun setExercisesInitialized(initialized: Boolean) { context.dataStore.edit { it[EXERCISES_INITIALIZED] = initialized } }
+    suspend fun setCoachQuotes(json: String) { context.dataStore.edit { it[COACH_QUOTES] = json } }
 }
