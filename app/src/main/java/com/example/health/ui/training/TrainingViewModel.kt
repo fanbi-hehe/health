@@ -111,15 +111,39 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                 val result = aiRepo.chatCompletion(prompt, null, emptyList())
                 result.fold(
                     onSuccess = { json ->
-                        val cleaned = json.replace("```json", "").replace("```", "").trim()
-                        // 验证是否为合法 JSON 数组
+                        // 提取 JSON 数组：去掉 markdown 包裹，取第一个 [ 到最后一个 ]
+                        val cleaned = json
+                            .replace(Regex("```\\w*\\n?"), "")
+                            .replace("```", "")
+                            .trim()
+                        val start = cleaned.indexOf('[')
+                        val end = cleaned.lastIndexOf(']')
+                        val jsonStr = if (start >= 0 && end > start) cleaned.substring(start, end + 1) else cleaned
                         try {
-                            val type = object : TypeToken<List<DayPlan>>() {}.type
-                            gson.fromJson<List<DayPlan>>(cleaned, type)
-                            prefs.setTrainingPlanJson(cleaned)
+                            // 先解析为通用 Map，容忍 reps 是数字或字符串
+                            val rawType = object : TypeToken<List<Map<String, Any>>>() {}.type
+                            val raw: List<Map<String, Any>> = gson.fromJson(jsonStr, rawType)
+                            val plans = raw.map { dayMap ->
+                                val exs = (dayMap["exercises"] as? List<Map<String, Any>>)?.map { exMap ->
+                                    PlanExercise(
+                                        name = exMap["name"] as? String ?: "",
+                                        sets = (exMap["sets"] as? Double)?.toInt() ?: 3,
+                                        reps = exMap["reps"]?.toString() ?: "8-12",
+                                        notes = exMap["notes"] as? String
+                                    )
+                                } ?: emptyList()
+                                DayPlan(
+                                    day = dayMap["day"] as? String ?: "",
+                                    date = dayMap["date"] as? String ?: "",
+                                    focus = dayMap["focus"] as? String ?: "",
+                                    exercises = exs
+                                )
+                            }
+                            // 验证通过，保存标准化 JSON
+                            prefs.setTrainingPlanJson(gson.toJson(plans))
                             _planError.value = null
                         } catch (parseEx: Exception) {
-                            _planError.value = "AI 返回格式异常，请重试"
+                            _planError.value = "AI 返回格式异常: ${parseEx.message?.take(50)}"
                         }
                     },
                     onFailure = { e ->
