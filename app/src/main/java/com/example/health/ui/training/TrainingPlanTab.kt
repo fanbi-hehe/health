@@ -2,7 +2,6 @@ package com.example.health.ui.training
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,23 +15,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,23 +40,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.launch
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
 data class DayPlan(
-    val day: String,          // "周一", "周二" ...
-    val date: String,         // "08-11"
-    val focus: String,        // "胸+三头" / "休息日"
+    val day: String,
+    val date: String,
+    val focus: String,
     val exercises: List<PlanExercise> = emptyList()
 )
 
@@ -73,10 +70,11 @@ fun TrainingPlanTab(
     isGenerating: Boolean,
     planJson: String,
     planError: String?,
-    onGeneratePlan: () -> Unit,
+    todayRecords: List<com.example.health.data.local.entity.TrainingRecord>,
+    onGeneratePlan: (customPrompt: String) -> Unit,
     onStartOnboarding: () -> Unit,
     isOnboarded: Boolean,
-    onClearError: () -> Unit = {}
+    onCompleteExercise: (name: String, plannedSets: Int, plannedReps: String, weightKg: Double) -> Unit
 ) {
     val gson = remember { Gson() }
     val plan = remember(planJson) {
@@ -87,21 +85,76 @@ fun TrainingPlanTab(
         } catch (_: Exception) { emptyList() }
     }
 
+    var customPrompt by remember { mutableStateOf("") }
+    var completeDialog by remember { mutableStateOf<PlanExercise?>(null) }
+    val today = LocalDate.now()
+
+    // 完成训练弹窗
+    completeDialog?.let { ex ->
+        var actualSets by remember(ex) { mutableStateOf(ex.sets.toString()) }
+        var actualReps by remember(ex) { mutableStateOf(ex.reps) }
+        var actualWeight by remember { mutableStateOf("0") }
+        AlertDialog(
+            onDismissRequest = { completeDialog = null },
+            title = { Text("完成训练: ${ex.name}") },
+            text = {
+                Column {
+                    Text("计划: ${ex.sets}组 × ${ex.reps}", style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(actualSets, { actualSets = it }, label = { Text("组数") },
+                            singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.weight(1f))
+                        OutlinedTextField(actualReps, { actualReps = it }, label = { Text("次数") },
+                            singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.weight(1f))
+                        OutlinedTextField(actualWeight, { actualWeight = it }, label = { Text("重量kg") },
+                            singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.weight(1f))
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onCompleteExercise(ex.name,
+                        actualSets.toIntOrNull() ?: ex.sets,
+                        actualReps,
+                        actualWeight.toDoubleOrNull() ?: 0.0)
+                    completeDialog = null
+                }) { Text("保存") }
+            },
+            dismissButton = { TextButton(onClick = { completeDialog = null }) { Text("取消") } }
+        )
+    }
+
+    // 检查某个动作今天是否已完成
+    fun isCompleted(name: String): Boolean {
+        return todayRecords.any { it.date == today.format(DateTimeFormatter.ISO_LOCAL_DATE) && it.exerciseName == name }
+    }
+
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-        // 顶部操作
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
             Text("训练计划", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            if (!isOnboarded) {
-                TextButton(onClick = onStartOnboarding) { Text("设置档案") }
-            }
+            if (!isOnboarded) TextButton(onClick = onStartOnboarding) { Text("设置档案") }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // AI 生成按钮
+        // 自定义需求输入框
+        OutlinedTextField(
+            value = customPrompt,
+            onValueChange = { customPrompt = it },
+            placeholder = { Text("自定义需求，如：我想加强腿部、用哑铃为主...") },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 2
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Button(
-            onClick = onGeneratePlan,
+            onClick = { onGeneratePlan(customPrompt.trim()) },
             enabled = !isGenerating && isOnboarded,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -121,28 +174,27 @@ fun TrainingPlanTab(
         planError?.let { err ->
             val isFallback = err.contains("已使用内置")
             Text(err, style = MaterialTheme.typography.bodySmall,
-                color = if (isFallback) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.error,
+                color = if (isFallback) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(top = 4.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 周历视图
         if (plan.isNotEmpty()) {
-            val weekDays = plan.map { it.day }
-            val today = LocalDate.now().dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINESE)
-            // Normalize: "星期一" -> "周一"
-            val todayShort = today.replace("星期", "周")
-
+            val todayShort = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINESE).replace("星期", "周")
             plan.forEach { dayPlan ->
                 val isToday = dayPlan.day == todayShort
-                DayPlanCard(dayPlan = dayPlan, isToday = isToday)
+                DayPlanCard(
+                    dayPlan = dayPlan,
+                    isToday = isToday,
+                    isCompleted = ::isCompleted,
+                    onExerciseClick = { ex -> completeDialog = ex }
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
         } else if (!isGenerating && isOnboarded) {
             Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-                Text("点击上方按钮，AI 将根据你的档案和训练历史\n为你定制一周训练计划",
+                Text("点击上方按钮生成计划\n可在输入框中写自定义需求",
                     style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -151,7 +203,12 @@ fun TrainingPlanTab(
 }
 
 @Composable
-private fun DayPlanCard(dayPlan: DayPlan, isToday: Boolean) {
+private fun DayPlanCard(
+    dayPlan: DayPlan,
+    isToday: Boolean,
+    isCompleted: (String) -> Boolean,
+    onExerciseClick: (PlanExercise) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -174,14 +231,31 @@ private fun DayPlanCard(dayPlan: DayPlan, isToday: Boolean) {
             if (dayPlan.exercises.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 dayPlan.exercises.forEach { ex ->
+                    val done = isCompleted(ex.name)
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onExerciseClick(ex) }
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(ex.name, style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("${ex.sets}×${ex.reps}", style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                            if (done) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.primary)
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
+                            Text(ex.name, style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                color = if (done) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                else MaterialTheme.colorScheme.onSurface)
+                        }
+                        Text("${ex.sets}×${ex.reps}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (done) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }

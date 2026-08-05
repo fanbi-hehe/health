@@ -68,7 +68,18 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch { prefs.setUserProfile(height, weight, goal, experience, equipment, days) }
     }
 
-    fun generatePlan() {
+    fun completePlanExercise(name: String, sets: Int, reps: String, weightKg: Double) {
+        viewModelScope.launch {
+            val repsInt = reps.toIntOrNull() ?: 0
+            dao.insert(TrainingRecord(
+                date = todayDate, bodyParts = "", exerciseName = name,
+                sets = sets, reps = repsInt, weightKg = weightKg,
+                notes = "计划完成"
+            ))
+        }
+    }
+
+    fun generatePlan(customPrompt: String = "") {
         viewModelScope.launch {
             _isGenerating.value = true
             try {
@@ -97,6 +108,9 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                     append("- 训练经验: $experience\n")
                     append("- 可用器材: ${equipment.ifBlank { "哑铃、杠铃、自重" }}\n")
                     append("- 每周训练天数: $trainingDays\n\n")
+                    if (customPrompt.isNotBlank()) {
+                        append("用户自定义需求：$customPrompt\n\n")
+                    }
                     if (recentTraining.isNotBlank()) {
                         append("最近训练记录：\n$recentTraining\n\n")
                     }

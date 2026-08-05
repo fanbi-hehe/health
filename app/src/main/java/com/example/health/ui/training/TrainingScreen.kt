@@ -80,7 +80,7 @@ fun TrainingScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditTrainingDialog by remember { mutableStateOf<TrainingRecord?>(null) }
     var showTimer by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0=记录, 1=动作库, 2=计划
+    var selectedTab by remember { mutableIntStateOf(0) } // 0=计划, 1=记录, 2=动作库
     var exerciseSearchQuery by remember { mutableStateOf("") }
     var showOnboarding by remember { mutableStateOf(false) }
     // 折叠状态：记录每个"部位_器械组"是否展开，器械组默认折叠
@@ -117,13 +117,13 @@ fun TrainingScreen(
                 )
                 PrimaryTabRow(selectedTabIndex = selectedTab) {
                     Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
-                        Text("记录", modifier = Modifier.padding(12.dp))
+                        Text("计划", modifier = Modifier.padding(12.dp))
                     }
                     Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
-                        Text("动作库", modifier = Modifier.padding(12.dp))
+                        Text("记录", modifier = Modifier.padding(12.dp))
                     }
                     Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }) {
-                        Text("计划", modifier = Modifier.padding(12.dp))
+                        Text("动作库", modifier = Modifier.padding(12.dp))
                     }
                 }
             }
@@ -163,6 +163,20 @@ fun TrainingScreen(
             }
 
             if (selectedTab == 0) {
+                // ── 训练计划页 ──
+                TrainingPlanTab(
+                    isGenerating = planGenerating,
+                    planJson = planJson,
+                    planError = planError,
+                    todayRecords = todayRecords,
+                    onGeneratePlan = { prompt -> viewModel.generatePlan(prompt) },
+                    onStartOnboarding = { showOnboarding = true },
+                    isOnboarded = isOnboarded,
+                    onCompleteExercise = { name, sets, reps, w ->
+                        viewModel.completePlanExercise(name, sets, reps, w)
+                    }
+                )
+            } else if (selectedTab == 1) {
                 // ── 训练记录页 ──
                 if (todayRecords.isEmpty()) {
                     Box(
@@ -197,7 +211,7 @@ fun TrainingScreen(
                         item { Spacer(modifier = Modifier.height(80.dp)) }
                     }
                 }
-            } else if (selectedTab == 1) {
+            } else {
                 // ── 动作库浏览页 ──
                 Column(modifier = Modifier.fillMaxSize()) {
                     // 搜索栏
@@ -286,18 +300,7 @@ fun TrainingScreen(
                         }
                     }
                 }
-            } else {
-                // ── 训练计划页 ──
-                TrainingPlanTab(
-                    isGenerating = planGenerating,
-                    planJson = planJson,
-                    planError = planError,
-                    onGeneratePlan = { viewModel.generatePlan() },
-                    onStartOnboarding = { showOnboarding = true },
-                    isOnboarded = isOnboarded,
-                    onClearError = { viewModel.clearPlanError() }
-                )
-            }
+        }
         }
     }
 
