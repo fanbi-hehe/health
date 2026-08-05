@@ -66,7 +66,7 @@ fun FoodConfirmScreen(
 
     // 从 ViewModel 获取的识别结果
     var editableFoods by remember { mutableStateOf<List<MutableFoodItem>>(emptyList()) }
-    var mealType by remember { mutableStateOf("午餐") }
+    var mealType by remember { mutableStateOf(defaultMealType()) }
     var initialized by remember { mutableStateOf(false) }
 
     // 初始化：从 ViewModel 读取识别结果
@@ -361,3 +361,10 @@ data class MutableFoodItem(
     val weightG: Int,
     val caloriesKcal: Int
 )
+
+fun defaultMealType(): String = when (java.time.LocalTime.now().hour) {
+    in 5..10 -> "早餐"
+    in 10..14 -> "午餐"
+    in 14..20 -> "晚餐"
+    else -> "加餐"
+}

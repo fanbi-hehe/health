@@ -222,6 +222,62 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
         return all
     }
 
+    // ── 手动编辑计划 ──
+    fun addPlanExercise(dayIndex: Int) {
+        viewModelScope.launch {
+            val plans = parsePlan()
+            if (dayIndex in plans.indices) {
+                val updated = plans.toMutableList()
+                val exs = updated[dayIndex].exercises.toMutableList()
+                exs.add(PlanExercise("新动作", 3, "8-12", null))
+                updated[dayIndex] = updated[dayIndex].copy(exercises = exs)
+                if (updated[dayIndex].focus == "休息日") {
+                    updated[dayIndex] = updated[dayIndex].copy(focus = "自定义")
+                }
+                prefs.setTrainingPlanJson(gson.toJson(updated))
+            }
+        }
+    }
+
+    fun removePlanExercise(dayIndex: Int, exerciseIndex: Int) {
+        viewModelScope.launch {
+            val plans = parsePlan()
+            if (dayIndex in plans.indices) {
+                val updated = plans.toMutableList()
+                val exs = updated[dayIndex].exercises.toMutableList()
+                if (exerciseIndex in exs.indices) {
+                    exs.removeAt(exerciseIndex)
+                    updated[dayIndex] = updated[dayIndex].copy(exercises = exs)
+                    prefs.setTrainingPlanJson(gson.toJson(updated))
+                }
+            }
+        }
+    }
+
+    fun updatePlanExercise(dayIndex: Int, exerciseIndex: Int, ex: PlanExercise) {
+        viewModelScope.launch {
+            val plans = parsePlan()
+            if (dayIndex in plans.indices) {
+                val updated = plans.toMutableList()
+                val exs = updated[dayIndex].exercises.toMutableList()
+                if (exerciseIndex in exs.indices) {
+                    exs[exerciseIndex] = ex
+                    updated[dayIndex] = updated[dayIndex].copy(exercises = exs)
+                    prefs.setTrainingPlanJson(gson.toJson(updated))
+                }
+            }
+        }
+    }
+
+    private fun parsePlan(): List<DayPlan> {
+        val json = planJson.value
+        if (json.isBlank()) return emptyList()
+        return try {
+            val type = object : TypeToken<List<DayPlan>>() {}.type
+            gson.fromJson(json, type)
+        } catch (_: Exception) { emptyList() }
+    }
+
     fun clearPlanError() { _planError.value = null }
 
     fun clearHistoryExercises() {

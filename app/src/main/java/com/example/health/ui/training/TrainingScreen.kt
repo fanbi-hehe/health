@@ -174,7 +174,9 @@ fun TrainingScreen(
                     isOnboarded = isOnboarded,
                     onCompleteExercise = { name, sets, reps, w ->
                         viewModel.completePlanExercise(name, sets, reps, w)
-                    }
+                    },
+                    onAddExercise = { day -> viewModel.addPlanExercise(day) },
+                    onDeleteExercise = { day, ex -> viewModel.removePlanExercise(day, ex) }
                 )
             } else if (selectedTab == 1) {
                 // ── 训练记录页 ──

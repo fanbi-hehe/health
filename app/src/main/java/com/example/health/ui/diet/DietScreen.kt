@@ -321,7 +321,7 @@ private fun ManualInputDialog(
     var foodName by remember { mutableStateOf("") }
     var weightG by remember { mutableStateOf("100") }
     var caloriesKcal by remember { mutableStateOf("") }
-    var mealType by remember { mutableStateOf("午餐") }
+    var mealType by remember { mutableStateOf(defaultMealType()) }
     var showSuggestions by remember { mutableStateOf(false) }
     val mealTypes = listOf("早餐", "午餐", "晚餐", "加餐")
 

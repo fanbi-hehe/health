@@ -19,7 +19,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -27,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -74,7 +77,10 @@ fun TrainingPlanTab(
     onGeneratePlan: (customPrompt: String) -> Unit,
     onStartOnboarding: () -> Unit,
     isOnboarded: Boolean,
-    onCompleteExercise: (name: String, plannedSets: Int, plannedReps: String, weightKg: Double) -> Unit
+    onCompleteExercise: (name: String, plannedSets: Int, plannedReps: String, weightKg: Double) -> Unit,
+    onAddExercise: (dayIndex: Int) -> Unit = {},
+    onDeleteExercise: (dayIndex: Int, exIndex: Int) -> Unit = { _, _ -> },
+    onUpdateExercise: (dayIndex: Int, exIndex: Int, ex: PlanExercise) -> Unit = { _, _, _ -> }
 ) {
     val gson = remember { Gson() }
     val plan = remember(planJson) {
@@ -184,11 +190,14 @@ fun TrainingPlanTab(
             val todayShort = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINESE).replace("星期", "周")
             plan.forEach { dayPlan ->
                 val isToday = dayPlan.day == todayShort
+                val dayIndex = plan.indexOf(dayPlan)
                 DayPlanCard(
                     dayPlan = dayPlan,
                     isToday = isToday,
                     isCompleted = ::isCompleted,
-                    onExerciseClick = { ex -> completeDialog = ex }
+                    onExerciseClick = { ex -> completeDialog = ex },
+                    onAddExercise = { onAddExercise(dayIndex) },
+                    onDeleteExercise = { exIdx -> onDeleteExercise(dayIndex, exIdx) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -207,7 +216,9 @@ private fun DayPlanCard(
     dayPlan: DayPlan,
     isToday: Boolean,
     isCompleted: (String) -> Boolean,
-    onExerciseClick: (PlanExercise) -> Unit
+    onExerciseClick: (PlanExercise) -> Unit,
+    onAddExercise: () -> Unit,
+    onDeleteExercise: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -228,36 +239,51 @@ private fun DayPlanCard(
                     color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Medium)
             }
 
-            if (dayPlan.exercises.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                dayPlan.exercises.forEach { ex ->
-                    val done = isCompleted(ex.name)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onExerciseClick(ex) }
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                            if (done) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
-                                    tint = MaterialTheme.colorScheme.primary)
-                                Spacer(modifier = Modifier.width(4.dp))
-                            }
-                            Text(ex.name, style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1, overflow = TextOverflow.Ellipsis,
-                                color = if (done) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                                else MaterialTheme.colorScheme.onSurface)
+            Spacer(modifier = Modifier.height(6.dp))
+            dayPlan.exercises.forEachIndexed { i, ex ->
+                val done = isCompleted(ex.name)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onExerciseClick(ex) }
+                        .padding(vertical = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                        if (done) {
+                            Icon(Icons.Default.CheckCircle, contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.primary)
+                            Spacer(modifier = Modifier.width(4.dp))
                         }
-                        Text("${ex.sets}×${ex.reps}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (done) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(ex.name, style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis,
+                            color = if (done) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            else MaterialTheme.colorScheme.onSurface)
+                    }
+                    Text("${ex.sets}×${ex.reps}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    IconButton(
+                        onClick = { onDeleteExercise(i) },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Default.Close, "删除", modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
                     }
                 }
+            }
+            // 添加动作按钮
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { onAddExercise() }.padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.Add, null, modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
+                Text(" 添加动作", style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
             }
         }
     }
