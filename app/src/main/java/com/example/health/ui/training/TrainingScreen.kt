@@ -3,6 +3,8 @@ package com.example.health.ui.training
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -47,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -74,6 +77,8 @@ fun TrainingScreen(
     var showTimer by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0=记录, 1=动作库
     var exerciseSearchQuery by remember { mutableStateOf("") }
+    // 折叠状态：记录每个部位是否展开（搜索时全部展开）
+    val expandedParts = remember { mutableStateMapOf<String, Boolean>() }
 
     // 动作库过滤
     val filteredExercises = if (exerciseSearchQuery.isBlank()) {
@@ -216,29 +221,64 @@ fun TrainingScreen(
                             contentPadding = PaddingValues(bottom = 80.dp)
                         ) {
                             groupedExercises.forEach { (bodyPart, equipmentGroups) ->
-                                // 部位标题
-                                item {
-                                    Text(bodyPart, style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(top = 16.dp, bottom = 6.dp))
-                                }
-                                equipmentGroups.forEach { (equipGroup, exercises) ->
-                                    // 器械子标题
-                                    item {
+                                val isSearching = exerciseSearchQuery.isNotBlank()
+                                val isExpanded = isSearching || (expandedParts[bodyPart] ?: false)
+                                val totalCount = equipmentGroups.values.sumOf { it.size }
+
+                                // 部位标题（可点击折叠）
+                                item(key = "header_$bodyPart") {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                if (!isSearching) {
+                                                    expandedParts[bodyPart] = !isExpanded
+                                                }
+                                            }
+                                            .padding(vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isExpanded)
+                                                Icons.Default.KeyboardArrowUp
+                                            else Icons.Default.KeyboardArrowDown,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
                                         Text(
-                                            "  $equipGroup (${exercises.size})",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.padding(bottom = 4.dp)
+                                            bodyPart,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                        Text(
+                                            " ($totalCount)",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
-                                    items(exercises, key = { it.id }) { exercise ->
-                                        ExerciseLibraryCard(
-                                            exercise = exercise,
-                                            onClick = { onNavigateToExerciseDetail(exercise.name) }
-                                        )
-                                        Spacer(modifier = Modifier.height(6.dp))
+                                }
+
+                                // 展开后显示器械分组和动作
+                                if (isExpanded) {
+                                    equipmentGroups.forEach { (equipGroup, exercises) ->
+                                        item(key = "sub_${bodyPart}_$equipGroup") {
+                                            Text(
+                                                "  $equipGroup (${exercises.size})",
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+                                            )
+                                        }
+                                        items(exercises, key = { it.id }) { exercise ->
+                                            ExerciseLibraryCard(
+                                                exercise = exercise,
+                                                onClick = { onNavigateToExerciseDetail(exercise.name) }
+                                            )
+                                            Spacer(modifier = Modifier.height(6.dp))
+                                        }
                                     }
                                 }
                             }
