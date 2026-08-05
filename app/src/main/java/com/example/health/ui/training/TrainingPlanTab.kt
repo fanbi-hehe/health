@@ -135,110 +135,129 @@ fun TrainingPlanTab(
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Header
-        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-            Text("训练计划", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Row { if (!isOnboarded) TextButton(onClick = onStartOnboarding) { Text("设置") } }
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+        // ── 紧凑顶部栏：标题 + 一键生成 ──
+        var showPrompt by remember { mutableStateOf(false) }
+        Row(Modifier.fillMaxWidth().padding(top = 8.dp), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+            Text(if (plan.isEmpty()) "训练计划" else "今日计划", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Row {
+                if (plan.isNotEmpty()) {
+                    TextButton(onClick = { showPrompt = !showPrompt }, modifier = Modifier.padding(0.dp)) {
+                        Text(if (showPrompt) "收起" else "自定义", style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+                if (!isOnboarded) TextButton(onClick = onStartOnboarding) { Text("设置", style = MaterialTheme.typography.labelSmall) }
+                IconButton(onClick = { onGeneratePlan("") }, enabled = !isGenerating && isOnboarded, modifier = Modifier.size(32.dp)) {
+                    if (isGenerating) CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+                    else Icon(Icons.Default.AutoAwesome, "生成", Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+                }
+            }
         }
-        Spacer(modifier = Modifier.height(6.dp))
-
-        // Custom prompt + generate
-        OutlinedTextField(customPrompt, { customPrompt = it }, placeholder = { Text("自定义需求，如：加强腿部、只用哑铃...") }, modifier = Modifier.fillMaxWidth(), maxLines = 2)
-        Spacer(modifier = Modifier.height(6.dp))
-        Button(onClick = { onGeneratePlan(customPrompt.trim()) }, enabled = !isGenerating && isOnboarded, modifier = Modifier.fillMaxWidth()) {
-            if (isGenerating) { CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp); Text(" 生成中...", modifier = Modifier.padding(start = 8.dp)) }
-            else { Icon(Icons.Default.AutoAwesome, null, Modifier.size(18.dp)); Text(if (plan.isEmpty()) "AI 生成计划" else "重新生成", modifier = Modifier.padding(start = 6.dp)) }
+        if (showPrompt || plan.isEmpty()) {
+            OutlinedTextField(customPrompt, { customPrompt = it }, placeholder = { Text("需求：加强腿部、只用哑铃...") },
+                modifier = Modifier.fillMaxWidth().height(52.dp), maxLines = 1)
+            Spacer(Modifier.height(4.dp))
+            Row(Modifier.fillMaxWidth(), Arrangement.End) {
+                if (plan.isNotEmpty()) TextButton(onClick = { showPrompt = false }) { Text("取消") }
+                Button(onClick = { onGeneratePlan(customPrompt.trim()); showPrompt = false },
+                    enabled = !isGenerating && isOnboarded, modifier = Modifier.height(36.dp)) {
+                    Text(if (plan.isEmpty()) "AI 生成计划" else "重新生成", style = MaterialTheme.typography.labelMedium)
+                }
+            }
         }
-        planError?.let { err -> val ok = err.contains("已使用内置"); Text(err, style = MaterialTheme.typography.bodySmall, color = if (ok) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 4.dp)) }
-
-        Spacer(modifier = Modifier.height(12.dp))
+        planError?.let { err -> val ok = err.contains("已使用内置"); Text(err, style = MaterialTheme.typography.bodySmall, color = if (ok) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 2.dp)) }
 
         if (plan.isEmpty()) {
-            if (!isGenerating && isOnboarded) Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-                Text("点击上方按钮生成计划\n可在输入框中写自定义需求", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (!isGenerating && isOnboarded) Box(Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("🏋️", style = MaterialTheme.typography.headlineLarge)
+                    Spacer(Modifier.height(8.dp))
+                    Text("输入需求，点击生成", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         } else {
-            // Day indicator row
-            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            // ── 日期指示器 ──
+            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.Center) {
                     plan.forEachIndexed { i, dp ->
                         val isCurrent = i == pagerState.currentPage
                         val isToday = dp.day == todayShort
                         Box(
-                            modifier = Modifier
-                                .clickable { scope.launch { pagerState.animateScrollToPage(i) } }
-                                .padding(horizontal = 2.dp)
-                                .size(if (isCurrent) 36.dp else 30.dp)
-                                .clip(RoundedCornerShape(if (isCurrent) 10.dp else 8.dp))
-                                .background(
-                                    when {
-                                        isCurrent && isToday -> MaterialTheme.colorScheme.primary
-                                        isCurrent -> MaterialTheme.colorScheme.primaryContainer
-                                        isToday -> MaterialTheme.colorScheme.tertiaryContainer
-                                        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                                    }
-                                ),
+                            Modifier.clickable { scope.launch { pagerState.animateScrollToPage(i) } }
+                                .padding(horizontal = 3.dp)
+                                .size(28.dp).clip(RoundedCornerShape(8.dp))
+                                .background(if (isCurrent) MaterialTheme.colorScheme.primary else if (isToday) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(dp.day.replace("周", ""), style = MaterialTheme.typography.labelSmall,
-                                fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isCurrent && isToday) MaterialTheme.colorScheme.onPrimary
-                                else MaterialTheme.colorScheme.onSurface)
+                                fontWeight = if (isCurrent || isToday) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isCurrent) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
-                IconButton(onClick = { showWeekView = !showWeekView }) {
-                    Icon(Icons.Default.DateRange, if (showWeekView) "日视图" else "周视图", modifier = Modifier.size(20.dp))
+                IconButton(onClick = { showWeekView = !showWeekView }, modifier = Modifier.size(28.dp)) {
+                    Icon(Icons.Default.DateRange, if (showWeekView) "日" else "周", Modifier.size(16.dp))
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
 
             if (showWeekView) {
-                // Week view: compact cards
                 Column(Modifier.verticalScroll(rememberScrollState())) {
-                    plan.forEachIndexed { i, dp ->
-                        WeekDayCard(dp, dp.day == todayShort, ::isCompleted, { onExerciseDetail(it) })
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
+                    plan.forEachIndexed { i, dp -> WeekDayCard(dp, dp.day == todayShort, ::isCompleted, { onExerciseDetail(it) }); Spacer(Modifier.height(4.dp)) }
                 }
             } else {
-                // Day pager
-                val dayIndex = pagerState.currentPage.coerceIn(0, plan.size - 1)
-                val dp = plan.getOrNull(dayIndex) ?: return@Column
-                Column(Modifier.fillMaxSize()) {
-                    Text("${dp.day} · ${dp.date}", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                    Text(dp.focus, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth().weight(1f)) { page ->
-                        val dayPlan = plan.getOrNull(page) ?: return@HorizontalPager
-                        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-                            dayPlan.exercises.forEachIndexed { i, ex ->
-                                val done = isCompleted(ex.name)
-                                Row(
-                                    Modifier.fillMaxWidth().clickable { onExerciseDetail(ex.name) }.padding(vertical = 6.dp),
-                                    Arrangement.SpaceBetween, Alignment.CenterVertically
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                                        if (done) { Icon(Icons.Default.CheckCircle, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary); Spacer(Modifier.width(4.dp)) }
-                                        Text(ex.name, style = MaterialTheme.typography.bodyLarge,
-                                            color = if (done) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface)
+                // ── 核心：大卡片动作列表 ──
+                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth().weight(1f)) { page ->
+                    val dayPlan = plan.getOrNull(page) ?: return@HorizontalPager
+                    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Spacer(Modifier.height(4.dp))
+                        // 部位标签
+                        Text(dayPlan.focus, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                        Text("${dayPlan.day} ${dayPlan.date}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(Modifier.height(12.dp))
+
+                        // 每个动作 = 一张大卡片
+                        dayPlan.exercises.forEachIndexed { i, ex ->
+                            val done = isCompleted(ex.name)
+                            Card(
+                                Modifier.fillMaxWidth().padding(vertical = 5.dp).clickable { onExerciseDetail(ex.name) },
+                                shape = RoundedCornerShape(14.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (done) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                    else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                                )
+                            ) {
+                                Column(Modifier.padding(16.dp)) {
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                            if (done) { Icon(Icons.Default.CheckCircle, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary); Spacer(Modifier.width(6.dp)) }
+                                            Text(ex.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium,
+                                                color = if (done) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f) else MaterialTheme.colorScheme.onSurface)
+                                        }
+                                        Text("${ex.sets}×${ex.reps}", style = MaterialTheme.typography.titleSmall,
+                                            color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                                     }
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        TextButton(onClick = { completeDialog = ex }, modifier = Modifier.padding(0.dp)) { Text("完成", style = MaterialTheme.typography.labelSmall) }
-                                        Spacer(Modifier.width(2.dp))
-                                        IconButton(onClick = { onDeleteExercise(page, i) }, modifier = Modifier.size(28.dp)) {
-                                            Icon(Icons.Default.Close, "删除", Modifier.size(14.dp), tint = MaterialTheme.colorScheme.error.copy(alpha = 0.4f))
+                                    Spacer(Modifier.height(10.dp))
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                                        ex.notes?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                        Row {
+                                            TextButton(onClick = { completeDialog = ex }, modifier = Modifier.padding(0.dp)) {
+                                                Text(if (done) "重做" else "完成", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                                            }
+                                            Spacer(Modifier.width(4.dp))
+                                            IconButton(onClick = { onDeleteExercise(page, i) }, modifier = Modifier.size(24.dp)) {
+                                                Icon(Icons.Default.Close, "删除", Modifier.size(14.dp), tint = MaterialTheme.colorScheme.error.copy(alpha = 0.3f))
+                                            }
                                         }
                                     }
                                 }
                             }
-                            Spacer(Modifier.height(8.dp))
-                            Row(Modifier.fillMaxWidth().clickable { onAddExercise(page) }.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Add, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
-                                Text(" 添加动作", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
-                            }
                         }
+                        // 添加动作
+                        TextButton(onClick = { onAddExercise(page) }, modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                            Icon(Icons.Default.Add, null, Modifier.size(16.dp))
+                            Text(" 添加动作", style = MaterialTheme.typography.labelMedium)
+                        }
+                        Spacer(Modifier.height(16.dp))
                     }
                 }
             }
