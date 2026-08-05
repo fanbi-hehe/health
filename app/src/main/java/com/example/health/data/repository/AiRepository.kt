@@ -83,7 +83,8 @@ class AiRepository(private val context: Context) {
     suspend fun chatCompletion(
         userText: String,
         imageFile: File?,
-        history: List<ChatMessage>
+        history: List<ChatMessage>,
+        maxTokens: Int = 1024
     ): Result<String> {
         return try {
             val model = prefs.textModel.first()
@@ -126,7 +127,7 @@ class AiRepository(private val context: Context) {
             }
             messages.add(Message(role = "user", content = userParts))
 
-            val request = ChatRequest(model = model, messages = messages, maxTokens = 1024)
+            val request = ChatRequest(model = model, messages = messages, maxTokens = maxTokens)
 
             val url = baseUrl.trimEnd('/') + "/chat/completions"
             val response = api.chatCompletion(url, mapOf("Authorization" to "Bearer $apiKey"), request)

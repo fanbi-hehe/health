@@ -108,19 +108,16 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                     append("合理分配部位，符合每周${trainingDays}天训练的安排。只返回JSON！")
                 }
 
-                val result = aiRepo.chatCompletion(prompt, null, emptyList())
+                val result = aiRepo.chatCompletion(prompt, null, emptyList(), maxTokens = 4096)
+                var parsed = false
                 result.fold(
                     onSuccess = { json ->
-                        // 提取 JSON 数组：去掉 markdown 包裹，取第一个 [ 到最后一个 ]
                         val cleaned = json
-                            .replace(Regex("```\\w*\\n?"), "")
-                            .replace("```", "")
-                            .trim()
+                            .replace(Regex("```\\w*\\n?"), "").replace("```", "").trim()
                         val start = cleaned.indexOf('[')
                         val end = cleaned.lastIndexOf(']')
                         val jsonStr = if (start >= 0 && end > start) cleaned.substring(start, end + 1) else cleaned
                         try {
-                            // 先解析为通用 Map，容忍 reps 是数字或字符串
                             val rawType = object : TypeToken<List<Map<String, Any>>>() {}.type
                             val raw: List<Map<String, Any>> = gson.fromJson(jsonStr, rawType)
                             val plans = raw.map { dayMap ->
@@ -139,22 +136,76 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                                     exercises = exs
                                 )
                             }
-                            // 验证通过，保存标准化 JSON
                             prefs.setTrainingPlanJson(gson.toJson(plans))
                             _planError.value = null
+                            parsed = true
                         } catch (parseEx: Exception) {
                             _planError.value = "AI 返回格式异常: ${parseEx.message?.take(50)}"
                         }
                     },
                     onFailure = { e ->
-                        _planError.value = "生成失败: ${e.message?.take(60) ?: "未知错误"}"
+                        _planError.value = "AI 调用失败: ${e.message?.take(50)}"
                     }
                 )
+                // 兜底：AI 失败则使用内置标准计划
+                if (!parsed) {
+                    val fallback = buildFallbackPlan(trainingDays)
+                    prefs.setTrainingPlanJson(gson.toJson(fallback))
+                }
             } catch (ex: Exception) {
                 _planError.value = "生成失败: ${ex.message?.take(60) ?: "未知错误"}"
             }
             _isGenerating.value = false
         }
+    }
+
+    private fun buildFallbackPlan(trainingDays: Int): List<DayPlan> {
+        val now = LocalDate.now()
+        val fmt = DateTimeFormatter.ofPattern("MM-dd")
+        val days = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
+        val all = mutableListOf<DayPlan>()
+
+        val plan: List<Pair<String, List<Triple<String, Int, String>>>> = when {
+            trainingDays >= 5 -> listOf(
+                "胸+三头" to listOf(Triple("杠铃卧推", 4, "8-12"), Triple("上斜哑铃卧推", 3, "10-12"), Triple("哑铃飞鸟", 3, "12-15"), Triple("绳索下压", 3, "12-15"), Triple("窄距俯卧撑", 3, "力竭")),
+                "背+二头" to listOf(Triple("引体向上", 4, "力竭"), Triple("杠铃划船", 3, "8-12"), Triple("哑铃弯举", 3, "10-12"), Triple("坐姿划船", 3, "10-12"), Triple("锤式弯举", 3, "12-15")),
+                "休息日" to emptyList(),
+                "腿+肩" to listOf(Triple("杠铃深蹲", 4, "8-12"), Triple("哑铃推举", 3, "10-12"), Triple("腿举", 3, "10-12"), Triple("侧平举", 3, "15-20"), Triple("小腿提踵", 3, "15-20")),
+                "胸+背" to listOf(Triple("杠铃卧推", 4, "8-12"), Triple("引体向上", 4, "力竭"), Triple("上斜哑铃卧推", 3, "10-12"), Triple("坐姿划船", 3, "10-12"), Triple("俯身飞鸟", 3, "12-15")),
+                "手臂+核心" to listOf(Triple("杠铃弯举", 3, "10-12"), Triple("窄距卧推", 3, "10-12"), Triple("绳索下压", 3, "12-15"), Triple("平板支撑", 3, "60秒"), Triple("悬垂举腿", 3, "15-20")),
+                "休息日" to emptyList()
+            )
+            trainingDays >= 4 -> listOf(
+                "胸+三头" to listOf(Triple("杠铃卧推", 4, "8-12"), Triple("上斜哑铃卧推", 3, "10-12"), Triple("哑铃飞鸟", 3, "12-15"), Triple("绳索下压", 3, "12-15")),
+                "背+二头" to listOf(Triple("引体向上", 4, "力竭"), Triple("杠铃划船", 3, "8-12"), Triple("哑铃弯举", 3, "10-12"), Triple("坐姿划船", 3, "10-12")),
+                "休息日" to emptyList(),
+                "腿" to listOf(Triple("杠铃深蹲", 4, "8-12"), Triple("腿举", 3, "10-12"), Triple("罗马尼亚硬拉", 3, "10-12"), Triple("小腿提踵", 3, "15-20")),
+                "肩+核心" to listOf(Triple("哑铃推举", 3, "10-12"), Triple("侧平举", 3, "15-20"), Triple("平板支撑", 3, "60秒"), Triple("悬垂举腿", 3, "15-20")),
+                "休息日" to emptyList(),
+                "休息日" to emptyList()
+            )
+            else -> listOf(
+                "胸+三头" to listOf(Triple("杠铃卧推", 4, "8-12"), Triple("上斜哑铃卧推", 3, "10-12"), Triple("哑铃飞鸟", 3, "12-15"), Triple("绳索下压", 3, "12-15")),
+                "休息日" to emptyList(),
+                "背+二头" to listOf(Triple("引体向上", 4, "力竭"), Triple("杠铃划船", 3, "8-12"), Triple("哑铃弯举", 3, "10-12"), Triple("坐姿划船", 3, "10-12")),
+                "休息日" to emptyList(),
+                "腿+肩" to listOf(Triple("杠铃深蹲", 4, "8-12"), Triple("哑铃推举", 3, "10-12"), Triple("腿举", 3, "10-12"), Triple("侧平举", 3, "15-20")),
+                "休息日" to emptyList(),
+                "休息日" to emptyList()
+            )
+        }
+
+        plan.forEachIndexed { i, (focus, exercises) ->
+            val dayName = days.getOrElse(i) { "周日" }
+            val date = now.plusDays(i.toLong() - now.dayOfWeek.value + 1)
+            all.add(DayPlan(
+                day = dayName,
+                date = date.format(fmt),
+                focus = focus,
+                exercises = exercises.map { (n, s, r) -> PlanExercise(n, s, r, null) }
+            ))
+        }
+        return all
     }
 
     fun clearPlanError() { _planError.value = null }

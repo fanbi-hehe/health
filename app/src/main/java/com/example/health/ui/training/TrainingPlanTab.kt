@@ -119,8 +119,11 @@ fun TrainingPlanTab(
                 color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 4.dp))
         }
         planError?.let { err ->
+            val isFallback = err.contains("已使用内置")
             Text(err, style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 4.dp))
+                color = if (isFallback) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 4.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
