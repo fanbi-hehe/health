@@ -83,6 +83,15 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun updateRecord(id: Long, bodyParts: List<String>, exerciseName: String,
+                     sets: Int, reps: Int, weightKg: Double, notes: String?) {
+        viewModelScope.launch {
+            dao.insert(TrainingRecord(id = id, date = todayDate,
+                bodyParts = bodyParts.joinToString(","), exerciseName = exerciseName,
+                sets = sets, reps = reps, weightKg = weightKg, notes = notes))
+        }
+    }
+
     /**
      * 按动作名查找 ExerciseLibrary 详情（供详情页使用）。
      */

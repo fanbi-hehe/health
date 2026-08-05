@@ -159,6 +159,18 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateRecord(id: Long, name: String, weightG: Int, caloriesKcal: Int, mealType: String) {
+        viewModelScope.launch {
+            dao.insert(DietRecord(id = id, foodName = name, weightG = weightG,
+                caloriesKcal = caloriesKcal, mealType = mealType,
+                timestamp = System.currentTimeMillis(), imagePath = null))
+        }
+    }
+
+    fun deleteRecord(record: DietRecord) {
+        viewModelScope.launch { dao.delete(record) }
+    }
+
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
     }

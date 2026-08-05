@@ -110,6 +110,7 @@ fun DietScreen(
 
     // ── 手动录入弹窗 ──
     var showManualDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf<DietRecord?>(null) }
 
     // ── 监听 AI 识别结果，导航到确认页 ──
     LaunchedEffect(Unit) {
@@ -214,7 +215,7 @@ fun DietScreen(
             } else {
                 LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
                     items(todayRecords, key = { it.id }) { record ->
-                        DietRecordCard(record)
+                        DietRecordCard(record, onClick = { showEditDialog = record })
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
@@ -231,6 +232,23 @@ fun DietScreen(
             onSave = { name, weight, calories, mealType ->
                 viewModel.saveManualRecord(name, weight, calories, mealType)
                 showManualDialog = false
+            }
+        )
+    }
+
+    // ── 编辑记录弹窗 ──
+    showEditDialog?.let { record ->
+        EditDietDialog(
+            record = record,
+            allFoods = allFoods,
+            onDismiss = { showEditDialog = null },
+            onSave = { name, weight, calories, mealType ->
+                viewModel.updateRecord(record.id, name, weight, calories, mealType)
+                showEditDialog = null
+            },
+            onDelete = {
+                viewModel.deleteRecord(record)
+                showEditDialog = null
             }
         )
     }
@@ -266,9 +284,9 @@ private fun TodayCalorieSummary(records: List<DietRecord>, modifier: Modifier = 
 // 单条记录卡片
 // ──────────────────────────────────────────────────────────
 @Composable
-private fun DietRecordCard(record: DietRecord) {
+private fun DietRecordCard(record: DietRecord, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         )
@@ -410,6 +428,92 @@ private fun ManualInputDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("取消") }
+        }
+    )
+}
+
+// ──────────────────────────────────────────────────────────
+// 编辑已有记录弹窗（含删除）
+// ──────────────────────────────────────────────────────────
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditDietDialog(
+    record: DietRecord,
+    allFoods: List<FoodLibrary>,
+    onDismiss: () -> Unit,
+    onSave: (name: String, weightG: Int, caloriesKcal: Int, mealType: String) -> Unit,
+    onDelete: () -> Unit
+) {
+    var foodName by remember { mutableStateOf(record.foodName) }
+    var weightG by remember { mutableStateOf(record.weightG.toString()) }
+    var caloriesKcal by remember { mutableStateOf(record.caloriesKcal.toString()) }
+    var mealType by remember { mutableStateOf(record.mealType) }
+    var showSuggestions by remember { mutableStateOf(false) }
+    val mealTypes = listOf("早餐", "午餐", "晚餐", "加餐")
+
+    val suggestions = if (foodName.length >= 1) {
+        allFoods.filter { it.name.contains(foodName, ignoreCase = true) }.take(6)
+    } else emptyList()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("修改记录") },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Box {
+                    OutlinedTextField(foodName, { foodName = it; showSuggestions = it.isNotEmpty() },
+                        label = { Text("食物名称") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    ScrollableDropdown(
+                        expanded = showSuggestions && suggestions.isNotEmpty(),
+                        onDismiss = { showSuggestions = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        items = suggestions.map { food ->
+                            DropdownItem(
+                                key = "edit_${food.id}",
+                                content = {
+                                    Column {
+                                        Text(food.name, fontWeight = FontWeight.Medium)
+                                        Text("${food.caloriesPer100g} kcal/100g",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                },
+                                onClick = { foodName = food.name; caloriesKcal = food.caloriesPer100g.toString() }
+                            )
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(weightG, { weightG = it }, label = { Text("重量 (g)") },
+                    singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(caloriesKcal, { caloriesKcal = it }, label = { Text("热量 (kcal)") },
+                    singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(12.dp))
+                Text("餐别", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    mealTypes.forEach { type ->
+                        FilterChip(selected = mealType == type, onClick = { mealType = type },
+                            label = { Text(type) })
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val name = foodName.trim()
+                val weight = weightG.toIntOrNull() ?: 100
+                val cal = caloriesKcal.toIntOrNull() ?: 0
+                if (name.isNotEmpty() && cal > 0) onSave(name, weight, cal, mealType)
+            }, enabled = foodName.isNotBlank() && caloriesKcal.isNotBlank()) { Text("保存") }
+        },
+        dismissButton = {
+            Row {
+                TextButton(onClick = onDelete) { Text("删除", color = MaterialTheme.colorScheme.error) }
+                TextButton(onClick = onDismiss) { Text("取消") }
+            }
         }
     )
 }
