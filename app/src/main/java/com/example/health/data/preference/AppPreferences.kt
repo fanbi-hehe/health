@@ -31,6 +31,16 @@ class AppPreferences(private val context: Context) {
         val TARGET_WEIGHT_KG = doublePreferencesKey("target_weight_kg")
         val TARGET_DAILY_CALORIES = intPreferencesKey("target_daily_calories")
 
+        // ── 用户档案 ──
+        val USER_HEIGHT = intPreferencesKey("user_height_cm")
+        val USER_CURRENT_WEIGHT = doublePreferencesKey("user_current_weight")
+        val USER_GOAL = stringPreferencesKey("user_goal")
+        val USER_EXPERIENCE = stringPreferencesKey("user_experience")
+        val USER_EQUIPMENT = stringPreferencesKey("user_equipment")
+        val USER_TRAINING_DAYS = intPreferencesKey("user_training_days")
+        val USER_ONBOARDED = booleanPreferencesKey("user_onboarded")
+        val TRAINING_PLAN_JSON = stringPreferencesKey("training_plan_json")
+
         // ── 暴躁语录 ──
         val COACH_QUOTES = stringPreferencesKey("coach_quotes")
 
@@ -88,6 +98,17 @@ class AppPreferences(private val context: Context) {
     val coachNotificationEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[COACH_NOTIFICATION_ENABLED] ?: true
     }
+    // ────────── 用户档案 ──────────
+    val userHeight: Flow<Int> = context.dataStore.data.map { prefs -> prefs[USER_HEIGHT] ?: 170 }
+    val userCurrentWeight: Flow<Double> = context.dataStore.data.map { prefs -> prefs[USER_CURRENT_WEIGHT] ?: 65.0 }
+    val userGoal: Flow<String> = context.dataStore.data.map { prefs -> prefs[USER_GOAL] ?: "增重增肌" }
+    val userExperience: Flow<String> = context.dataStore.data.map { prefs -> prefs[USER_EXPERIENCE] ?: "新手" }
+    val userEquipment: Flow<String> = context.dataStore.data.map { prefs -> prefs[USER_EQUIPMENT] ?: "" }
+    val userTrainingDays: Flow<Int> = context.dataStore.data.map { prefs -> prefs[USER_TRAINING_DAYS] ?: 4 }
+    val userOnboarded: Flow<Boolean> = context.dataStore.data.map { prefs -> prefs[USER_ONBOARDED] ?: false }
+    val trainingPlanJson: Flow<String> = context.dataStore.data.map { prefs -> prefs[TRAINING_PLAN_JSON] ?: "" }
+
+    // ────────── 通知 ──────────
     val coachReminderHour: Flow<Int> = context.dataStore.data.map { prefs ->
         prefs[COACH_REMINDER_HOUR] ?: DEFAULT_REMINDER_HOUR
     }
@@ -124,4 +145,14 @@ class AppPreferences(private val context: Context) {
     suspend fun setFoodsInitialized(initialized: Boolean) { context.dataStore.edit { it[FOODS_INITIALIZED] = initialized } }
     suspend fun setExercisesInitialized(initialized: Boolean) { context.dataStore.edit { it[EXERCISES_INITIALIZED] = initialized } }
     suspend fun setCoachQuotes(json: String) { context.dataStore.edit { it[COACH_QUOTES] = json } }
+
+    suspend fun setUserProfile(height: Int, weight: Double, goal: String, experience: String, equipment: String, days: Int) {
+        context.dataStore.edit {
+            it[USER_HEIGHT] = height; it[USER_CURRENT_WEIGHT] = weight
+            it[USER_GOAL] = goal; it[USER_EXPERIENCE] = experience
+            it[USER_EQUIPMENT] = equipment; it[USER_TRAINING_DAYS] = days
+            it[USER_ONBOARDED] = true
+        }
+    }
+    suspend fun setTrainingPlanJson(json: String) { context.dataStore.edit { it[TRAINING_PLAN_JSON] = json } }
 }

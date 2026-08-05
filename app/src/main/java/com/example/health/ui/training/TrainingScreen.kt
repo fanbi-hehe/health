@@ -72,12 +72,16 @@ fun TrainingScreen(
 ) {
     val todayRecords by viewModel.todayRecords.collectAsState()
     val allExercises by viewModel.allExercises.collectAsState()
+    val planGenerating by viewModel.isGenerating.collectAsState()
+    val planJson by viewModel.planJson.collectAsState()
+    val isOnboarded by viewModel.isOnboarded.collectAsState()
 
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditTrainingDialog by remember { mutableStateOf<TrainingRecord?>(null) }
     var showTimer by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0=记录, 1=动作库
+    var selectedTab by remember { mutableIntStateOf(0) } // 0=记录, 1=动作库, 2=计划
     var exerciseSearchQuery by remember { mutableStateOf("") }
+    var showOnboarding by remember { mutableStateOf(false) }
     // 折叠状态：记录每个"部位_器械组"是否展开，器械组默认折叠
     val expandedEquipGroups = remember { mutableStateMapOf<String, Boolean>() }
 
@@ -112,10 +116,13 @@ fun TrainingScreen(
                 )
                 PrimaryTabRow(selectedTabIndex = selectedTab) {
                     Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
-                        Text("训练记录", modifier = Modifier.padding(12.dp))
+                        Text("记录", modifier = Modifier.padding(12.dp))
                     }
                     Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
                         Text("动作库", modifier = Modifier.padding(12.dp))
+                    }
+                    Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }) {
+                        Text("计划", modifier = Modifier.padding(12.dp))
                     }
                 }
             }
@@ -189,7 +196,7 @@ fun TrainingScreen(
                         item { Spacer(modifier = Modifier.height(80.dp)) }
                     }
                 }
-            } else {
+            } else if (selectedTab == 1) {
                 // ── 动作库浏览页 ──
                 Column(modifier = Modifier.fillMaxSize()) {
                     // 搜索栏
@@ -278,6 +285,15 @@ fun TrainingScreen(
                         }
                     }
                 }
+            } else {
+                // ── 训练计划页 ──
+                TrainingPlanTab(
+                    isGenerating = planGenerating,
+                    planJson = planJson,
+                    onGeneratePlan = { viewModel.generatePlan() },
+                    onStartOnboarding = { showOnboarding = true },
+                    isOnboarded = isOnboarded
+                )
             }
         }
     }
@@ -300,6 +316,7 @@ fun TrainingScreen(
             onSaved = { showEditTrainingDialog = null }
         )
     }
+    if (showOnboarding) OnboardingDialog(viewModel, onDismiss = { showOnboarding = false })
 }
 
 // ──────────────────────────────────────────────────────────
@@ -642,5 +659,93 @@ private fun EditTrainingDialog(
                 TextButton(onClick = onDismiss) { Text("取消") }
             }
         }
+    )
+}
+
+// ──────────────────────────────────────────────────────────
+// 新手引导 / 档案设置弹窗
+// ──────────────────────────────────────────────────────────
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun OnboardingDialog(viewModel: TrainingViewModel, onDismiss: () -> Unit) {
+    var height by remember { mutableStateOf("170") }
+    var weight by remember { mutableStateOf("65") }
+    var goal by remember { mutableStateOf("增重增肌") }
+    var experience by remember { mutableStateOf("新手") }
+    var equipment by remember { mutableStateOf("") }
+    var days by remember { mutableStateOf("4") }
+
+    val goals = listOf("增重增肌", "减脂塑形", "维持体型", "提升力量")
+    val experiences = listOf("新手", "有一定基础", "中级", "高级")
+    val equipOptions = listOf("哑铃", "杠铃", "固定器械", "绳索", "自重", "壶铃", "弹力带")
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("设置训练档案") },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                OutlinedTextField(height, { height = it }, label = { Text("身高 (cm)") },
+                    singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(weight, { weight = it }, label = { Text("体重 (kg)") },
+                    singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(12.dp))
+                Text("训练目标", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                    goals.forEach { g ->
+                        FilterChip(selected = goal == g, onClick = { goal = g },
+                            label = { Text(g, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("训练经验", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                    experiences.forEach { e ->
+                        FilterChip(selected = experience == e, onClick = { experience = e },
+                            label = { Text(e, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("可用器材", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                    equipOptions.take(4).forEach { eq ->
+                        val selected = eq in equipment.split(",")
+                        FilterChip(selected = selected, onClick = {
+                            val list = equipment.split(",").filter { it.isNotBlank() }.toMutableList()
+                            if (selected) list.remove(eq) else list.add(eq)
+                            equipment = list.joinToString(",")
+                        }, label = { Text(eq, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                    equipOptions.drop(4).forEach { eq ->
+                        val selected = eq in equipment.split(",")
+                        FilterChip(selected = selected, onClick = {
+                            val list = equipment.split(",").filter { it.isNotBlank() }.toMutableList()
+                            if (selected) list.remove(eq) else list.add(eq)
+                            equipment = list.joinToString(",")
+                        }, label = { Text(eq, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(days, { days = it }, label = { Text("每周训练天数") },
+                    singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth())
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                viewModel.saveUserProfile(
+                    height.toIntOrNull() ?: 170,
+                    weight.toDoubleOrNull() ?: 65.0,
+                    goal, experience, equipment,
+                    days.toIntOrNull() ?: 4
+                )
+                onDismiss()
+            }) { Text("保存") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
     )
 }
