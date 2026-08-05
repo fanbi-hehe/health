@@ -169,6 +169,7 @@ fun TrainingScreen(
                     planJson = planJson,
                     planError = planError,
                     todayRecords = todayRecords,
+                    allExercises = allExercises,
                     onGeneratePlan = { prompt -> viewModel.generatePlan(prompt) },
                     onStartOnboarding = { showOnboarding = true },
                     isOnboarded = isOnboarded,
@@ -176,7 +177,8 @@ fun TrainingScreen(
                         viewModel.completePlanExercise(name, sets, reps, w)
                     },
                     onAddExercise = { day -> viewModel.addPlanExercise(day) },
-                    onDeleteExercise = { day, ex -> viewModel.removePlanExercise(day, ex) }
+                    onDeleteExercise = { day, ex -> viewModel.removePlanExercise(day, ex) },
+                    onExerciseDetail = { name -> onNavigateToExerciseDetail(name) }
                 )
             } else if (selectedTab == 1) {
                 // ── 训练记录页 ──
