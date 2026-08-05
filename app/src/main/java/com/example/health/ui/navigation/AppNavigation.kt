@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -18,6 +19,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.health.ui.chat.ChatScreen
 import com.example.health.ui.dashboard.DashboardScreen
 import com.example.health.ui.diet.DietScreen
+import com.example.health.ui.diet.DietViewModel
+import com.example.health.ui.diet.FoodConfirmScreen
 import com.example.health.ui.settings.SettingsScreen
 import com.example.health.ui.training.TrainingScreen
 
@@ -27,6 +30,8 @@ import com.example.health.ui.training.TrainingScreen
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    // Activity 级别的共享 ViewModel，DietScreen 和 FoodConfirmScreen 共用
+    val dietViewModel: DietViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -41,7 +46,6 @@ fun AppNavigation() {
                         selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
                         onClick = {
                             navController.navigate(item.route) {
-                                // 避免在回退栈中堆积大量实例
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
@@ -59,11 +63,32 @@ fun AppNavigation() {
             startDestination = BottomNavItem.Diet.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(BottomNavItem.Diet.route) { DietScreen() }
+            composable(BottomNavItem.Diet.route) {
+                DietScreen(
+                    viewModel = dietViewModel,
+                    onNavigateToConfirm = {
+                        navController.navigate("food_confirm")
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate("settings")
+                    }
+                )
+            }
             composable(BottomNavItem.Training.route) { TrainingScreen() }
             composable(BottomNavItem.Chat.route) { ChatScreen() }
             composable(BottomNavItem.Dashboard.route) { DashboardScreen() }
-            composable("settings") { SettingsScreen() }
+            composable("settings") {
+                SettingsScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable("food_confirm") {
+                FoodConfirmScreen(
+                    viewModel = dietViewModel,
+                    onBack = { navController.popBackStack() },
+                    onSaved = { navController.popBackStack() }
+                )
+            }
         }
     }
 }
