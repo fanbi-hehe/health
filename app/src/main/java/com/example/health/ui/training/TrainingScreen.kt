@@ -27,8 +27,8 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import com.example.health.ui.components.DropdownItem
+import com.example.health.ui.components.ScrollableDropdown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
@@ -419,26 +419,27 @@ private fun AddTrainingDialog(
                         exerciseName = it; showExerciseSuggestions = it.isNotEmpty()
                     }, label = { Text("动作名称") }, singleLine = true,
                         modifier = Modifier.fillMaxWidth())
-                    DropdownMenu(
+                    ScrollableDropdown(
                         expanded = showExerciseSuggestions && exerciseSuggestions.isNotEmpty(),
-                        onDismissRequest = { showExerciseSuggestions = false },
-                        modifier = Modifier.fillMaxWidth(0.9f)
-                    ) {
-                        exerciseSuggestions.forEach { exercise ->
-                            DropdownMenuItem(text = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(exercise.name, fontWeight = FontWeight.Medium)
-                                    if (exercise.bodyPart.isNotEmpty()) {
-                                        Text(" · ${exercise.bodyPart}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        onDismiss = { showExerciseSuggestions = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        items = exerciseSuggestions.map { exercise ->
+                            DropdownItem(
+                                key = "ex_${exercise.name}",
+                                content = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(exercise.name, fontWeight = FontWeight.Medium)
+                                        if (exercise.bodyPart.isNotEmpty()) {
+                                            Text(" · ${exercise.bodyPart}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
                                     }
-                                }
-                            }, onClick = {
-                                exerciseName = exercise.name; showExerciseSuggestions = false
-                            })
+                                },
+                                onClick = { exerciseName = exercise.name }
+                            )
                         }
-                    }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))

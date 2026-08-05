@@ -31,8 +31,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import com.example.health.ui.components.DropdownItem
+import com.example.health.ui.components.ScrollableDropdown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
@@ -332,32 +332,28 @@ private fun ManualInputDialog(
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    DropdownMenu(
+                    ScrollableDropdown(
                         expanded = showSuggestions && suggestions.isNotEmpty(),
-                        onDismissRequest = { showSuggestions = false },
-                        modifier = Modifier.fillMaxWidth(0.9f)
-                    ) {
-                        suggestions.forEach { food ->
-                            DropdownMenuItem(
-                                text = {
+                        onDismiss = { showSuggestions = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        items = suggestions.map { food ->
+                            DropdownItem(
+                                key = "food_${food.id}",
+                                content = {
                                     Column {
                                         Text(food.name, fontWeight = FontWeight.Medium)
-                                        Text(
-                                            "${food.caloriesPer100g} kcal/100g",
+                                        Text("${food.caloriesPer100g} kcal/100g",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 },
                                 onClick = {
                                     foodName = food.name
-                                    // 自动填入热量密度 × 默认100g
                                     caloriesKcal = food.caloriesPer100g.toString()
-                                    showSuggestions = false
                                 }
                             )
                         }
-                    }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
