@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,15 +25,16 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,8 +53,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -84,12 +82,9 @@ fun ChatScreen(
     var attachedImageUri by remember { mutableStateOf<android.net.Uri?>(null) }
     val listState = rememberLazyListState()
 
-    // ── 自动滚动到底部 ──
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) listState.animateScrollToItem(messages.size - 1)
     }
-
-    // ── 错误提示 ──
     LaunchedEffect(error) {
         error?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -97,40 +92,34 @@ fun ChatScreen(
         }
     }
 
-    // ── 相机 ──
     var cameraUri by remember { mutableStateOf<android.net.Uri?>(null) }
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success -> if (success && cameraUri != null) attachedImageUri = cameraUri }
 
-    // ── 相册 ──
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri -> if (uri != null) attachedImageUri = uri }
 
-    // ── 权限 ──
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            val uri = FileProvider.getUriForFile(context,
+            cameraUri = FileProvider.getUriForFile(context,
                 "${context.packageName}.fileprovider",
                 File(context.cacheDir, "chat_${System.currentTimeMillis()}.jpg"))
-            cameraUri = uri
-            cameraLauncher.launch(uri)
+            cameraLauncher.launch(cameraUri!!)
         } else {
             Toast.makeText(context, "需要相机权限", Toast.LENGTH_SHORT).show()
         }
     }
 
     fun takePhoto() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED) {
-            val uri = FileProvider.getUriForFile(context,
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            cameraUri = FileProvider.getUriForFile(context,
                 "${context.packageName}.fileprovider",
                 File(context.cacheDir, "chat_${System.currentTimeMillis()}.jpg"))
-            cameraUri = uri
-            cameraLauncher.launch(uri)
+            cameraLauncher.launch(cameraUri!!)
         } else {
             permissionLauncher.launch(Manifest.permission.CAMERA)
         }
@@ -157,40 +146,38 @@ fun ChatScreen(
                         Icon(Icons.Default.Settings, contentDescription = "设置")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .imePadding()
+        Box(
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
-            // ── 消息列表 ──
+            // 消息列表
             LazyColumn(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (messages.isEmpty()) {
                     item {
-                        Box(modifier = Modifier.fillMaxWidth().padding(32.dp),
-                            contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text("开始对话吧！\n可以问我饮食建议、训练计划或上传食物照片",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
-                items(messages, key = { it.id }) { msg ->
-                    MessageBubble(msg)
-                }
+                items(messages, key = { it.id }) { msg -> MessageBubble(msg) }
                 if (isSending) {
                     item {
-                        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             CircularProgressIndicator(modifier = Modifier.size(16.dp))
                             Text(" AI 思考中...", modifier = Modifier.padding(start = 8.dp),
                                 style = MaterialTheme.typography.bodySmall,
@@ -198,51 +185,52 @@ fun ChatScreen(
                         }
                     }
                 }
+                item { Spacer(modifier = Modifier.height(100.dp)) }
             }
 
-            // ── 已选图片预览 ──
-            attachedImageUri?.let { uri ->
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AsyncImage(
-                        model = uri,
-                        contentDescription = null,
-                        modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(onClick = { attachedImageUri = null }) {
-                        Icon(Icons.Default.Close, "移除图片", tint = MaterialTheme.colorScheme.error)
-                    }
-                }
-            }
-
-            // ── 输入栏 ──
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
-                verticalAlignment = Alignment.Bottom
+            // 输入栏（固定底部，键盘推动）
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .imePadding()
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
-                // 相册选择
-                IconButton(onClick = { galleryLauncher.launch("image/*") }) {
-                    Icon(Icons.Default.AddPhotoAlternate, "相册")
+                attachedImageUri?.let { uri ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(model = uri, contentDescription = null,
+                            modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(onClick = { attachedImageUri = null }) {
+                            Icon(Icons.Default.Close, "移除图片", tint = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                    HorizontalDivider()
                 }
-                // 拍照
-                IconButton(onClick = { takePhoto() }) {
-                    Icon(Icons.Default.CameraAlt, "拍照")
-                }
-                OutlinedTextField(
-                    value = inputText,
-                    onValueChange = { inputText = it },
-                    placeholder = { Text("输入消息...") },
-                    modifier = Modifier.weight(1f),
-                    maxLines = 4
-                )
-                IconButton(onClick = { send() }, enabled = !isSending) {
-                    Icon(Icons.AutoMirrored.Filled.Send, "发送",
-                        tint = if (isSending) MaterialTheme.colorScheme.onSurfaceVariant
-                        else MaterialTheme.colorScheme.primary)
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    IconButton(onClick = { galleryLauncher.launch("image/*") }) {
+                        Icon(Icons.Default.AddPhotoAlternate, "相册")
+                    }
+                    IconButton(onClick = { takePhoto() }) {
+                        Icon(Icons.Default.CameraAlt, "拍照")
+                    }
+                    OutlinedTextField(
+                        value = inputText, onValueChange = { inputText = it },
+                        placeholder = { Text("输入消息...") },
+                        modifier = Modifier.weight(1f), maxLines = 4
+                    )
+                    IconButton(onClick = { send() }, enabled = !isSending) {
+                        Icon(Icons.AutoMirrored.Filled.Send, "发送",
+                            tint = if (isSending) MaterialTheme.colorScheme.onSurfaceVariant
+                            else MaterialTheme.colorScheme.primary)
+                    }
                 }
             }
         }
@@ -263,7 +251,6 @@ private fun MessageBubble(message: ChatMessage) {
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
     ) {
         if (!isUser) {
-            // AI 头像
             Box(
                 modifier = Modifier.size(32.dp).clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary),
@@ -279,20 +266,15 @@ private fun MessageBubble(message: ChatMessage) {
             horizontalAlignment = if (isUser) Alignment.End else Alignment.Start,
             modifier = Modifier.widthIn(max = 280.dp)
         ) {
-            // 图片
             message.imagePath?.let { path ->
                 val file = File(path)
                 if (file.exists()) {
-                    AsyncImage(
-                        model = file,
-                        contentDescription = null,
+                    AsyncImage(model = file, contentDescription = null,
                         modifier = Modifier.size(200.dp).clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
-                    )
+                        contentScale = ContentScale.Crop)
                     Spacer(modifier = Modifier.height(4.dp))
                 }
             }
-            // 文字
             if (message.content.isNotBlank()) {
                 Card(
                     shape = RoundedCornerShape(16.dp),
@@ -301,12 +283,9 @@ private fun MessageBubble(message: ChatMessage) {
                         else MaterialTheme.colorScheme.surfaceVariant
                     )
                 ) {
-                    Text(
-                        text = message.content,
-                        modifier = Modifier.padding(12.dp),
+                    Text(text = message.content, modifier = Modifier.padding(12.dp),
                         color = if (isUser) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                        else MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             Text(timeStr, style = MaterialTheme.typography.labelSmall,
