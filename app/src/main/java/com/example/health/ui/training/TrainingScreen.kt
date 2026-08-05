@@ -77,8 +77,8 @@ fun TrainingScreen(
     var showTimer by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0=记录, 1=动作库
     var exerciseSearchQuery by remember { mutableStateOf("") }
-    // 折叠状态：记录每个部位是否展开（搜索时全部展开）
-    val expandedParts = remember { mutableStateMapOf<String, Boolean>() }
+    // 折叠状态：记录每个"部位_器械组"是否展开，器械组默认折叠
+    val expandedEquipGroups = remember { mutableStateMapOf<String, Boolean>() }
 
     // 动作库过滤
     val filteredExercises = if (exerciseSearchQuery.isBlank()) {
@@ -221,57 +221,56 @@ fun TrainingScreen(
                             contentPadding = PaddingValues(bottom = 80.dp)
                         ) {
                             groupedExercises.forEach { (bodyPart, equipmentGroups) ->
-                                val isSearching = exerciseSearchQuery.isNotBlank()
-                                val isExpanded = isSearching || (expandedParts[bodyPart] ?: false)
                                 val totalCount = equipmentGroups.values.sumOf { it.size }
+                                val isSearching = exerciseSearchQuery.isNotBlank()
 
-                                // 部位标题（可点击折叠）
+                                // 部位标题（始终展开，不可折叠）
                                 item(key = "header_$bodyPart") {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                if (!isSearching) {
-                                                    expandedParts[bodyPart] = !isExpanded
-                                                }
-                                            }
-                                            .padding(vertical = 12.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = if (isExpanded)
-                                                Icons.Default.KeyboardArrowUp
-                                            else Icons.Default.KeyboardArrowDown,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Text(
-                                            bodyPart,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.padding(start = 4.dp)
-                                        )
-                                        Text(
-                                            " ($totalCount)",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
+                                    Text(
+                                        "$bodyPart ($totalCount)",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(top = 14.dp, bottom = 8.dp)
+                                    )
                                 }
 
-                                // 展开后显示器械分组和动作
-                                if (isExpanded) {
-                                    equipmentGroups.forEach { (equipGroup, exercises) ->
-                                        item(key = "sub_${bodyPart}_$equipGroup") {
+                                equipmentGroups.forEach { (equipGroup, exercises) ->
+                                    val equipKey = "${bodyPart}_$equipGroup"
+                                    val isExpanded = isSearching || (expandedEquipGroups[equipKey] ?: false)
+
+                                    // 器械组标题（可点击折叠）
+                                    item(key = "sub_$equipKey") {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    if (!isSearching) {
+                                                        expandedEquipGroups[equipKey] = !isExpanded
+                                                    }
+                                                }
+                                                .padding(start = 4.dp, top = 8.dp, bottom = 8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = if (isExpanded)
+                                                    Icons.Default.KeyboardArrowUp
+                                                else Icons.Default.KeyboardArrowDown,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
                                             Text(
-                                                "  $equipGroup (${exercises.size})",
-                                                style = MaterialTheme.typography.labelMedium,
+                                                "$equipGroup (${exercises.size})",
+                                                style = MaterialTheme.typography.labelLarge,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+                                                modifier = Modifier.padding(start = 2.dp)
                                             )
                                         }
+                                    }
+
+                                    // 展开后显示动作列表
+                                    if (isExpanded) {
                                         items(exercises, key = { it.id }) { exercise ->
                                             ExerciseLibraryCard(
                                                 exercise = exercise,
