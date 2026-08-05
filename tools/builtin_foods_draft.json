@@ -1,0 +1,1732 @@
+[
+  {
+    "name": "三明治",
+    "caloriesPer100g": 275,
+    "isCustom": false
+  },
+  {
+    "name": "丝瓜",
+    "caloriesPer100g": 19,
+    "isCustom": false
+  },
+  {
+    "name": "乌龙茶",
+    "caloriesPer100g": 36,
+    "isCustom": false
+  },
+  {
+    "name": "乌龙面",
+    "caloriesPer100g": 126,
+    "isCustom": false
+  },
+  {
+    "name": "九层塔",
+    "caloriesPer100g": 28,
+    "isCustom": false
+  },
+  {
+    "name": "乳酪蛋糕",
+    "caloriesPer100g": 296,
+    "isCustom": false
+  },
+  {
+    "name": "乳酸饮料",
+    "caloriesPer100g": 45,
+    "isCustom": false
+  },
+  {
+    "name": "亚麻籽",
+    "caloriesPer100g": 557,
+    "isCustom": false
+  },
+  {
+    "name": "人造奶油",
+    "caloriesPer100g": 674,
+    "isCustom": false
+  },
+  {
+    "name": "低脂牛奶",
+    "caloriesPer100g": 43,
+    "isCustom": false
+  },
+  {
+    "name": "佛手瓜",
+    "caloriesPer100g": 23,
+    "isCustom": false
+  },
+  {
+    "name": "保久乳",
+    "caloriesPer100g": 62,
+    "isCustom": false
+  },
+  {
+    "name": "全脂牛奶",
+    "caloriesPer100g": 63,
+    "isCustom": false
+  },
+  {
+    "name": "全麦吐司",
+    "caloriesPer100g": 292,
+    "isCustom": false
+  },
+  {
+    "name": "八角",
+    "caloriesPer100g": 360,
+    "isCustom": false
+  },
+  {
+    "name": "冬瓜",
+    "caloriesPer100g": 11,
+    "isCustom": false
+  },
+  {
+    "name": "冬粉",
+    "caloriesPer100g": 351,
+    "isCustom": false
+  },
+  {
+    "name": "冰淇淋",
+    "caloriesPer100g": 182,
+    "isCustom": false
+  },
+  {
+    "name": "冰糖",
+    "caloriesPer100g": 387,
+    "isCustom": false
+  },
+  {
+    "name": "冻豆腐",
+    "caloriesPer100g": 128,
+    "isCustom": false
+  },
+  {
+    "name": "凤梨酥",
+    "caloriesPer100g": 484,
+    "isCustom": false
+  },
+  {
+    "name": "包子",
+    "caloriesPer100g": 279,
+    "isCustom": false
+  },
+  {
+    "name": "南瓜",
+    "caloriesPer100g": 74,
+    "isCustom": false
+  },
+  {
+    "name": "南瓜子",
+    "caloriesPer100g": 561,
+    "isCustom": false
+  },
+  {
+    "name": "卤蛋",
+    "caloriesPer100g": 171,
+    "isCustom": false
+  },
+  {
+    "name": "卷心菜",
+    "caloriesPer100g": 23,
+    "isCustom": false
+  },
+  {
+    "name": "叉烧包",
+    "caloriesPer100g": 266,
+    "isCustom": false
+  },
+  {
+    "name": "可乐",
+    "caloriesPer100g": 51,
+    "isCustom": false
+  },
+  {
+    "name": "可颂",
+    "caloriesPer100g": 452,
+    "isCustom": false
+  },
+  {
+    "name": "吴郭鱼",
+    "caloriesPer100g": 108,
+    "isCustom": false
+  },
+  {
+    "name": "味噌",
+    "caloriesPer100g": 215,
+    "isCustom": false
+  },
+  {
+    "name": "味精",
+    "caloriesPer100g": 251,
+    "isCustom": false
+  },
+  {
+    "name": "咖啡",
+    "caloriesPer100g": 39,
+    "isCustom": false
+  },
+  {
+    "name": "咖喱",
+    "caloriesPer100g": 515,
+    "isCustom": false
+  },
+  {
+    "name": "咸蛋",
+    "caloriesPer100g": 185,
+    "isCustom": false
+  },
+  {
+    "name": "哈密瓜",
+    "caloriesPer100g": 28,
+    "isCustom": false
+  },
+  {
+    "name": "啤酒",
+    "caloriesPer100g": 49,
+    "isCustom": false
+  },
+  {
+    "name": "圣女果",
+    "caloriesPer100g": 31,
+    "isCustom": false
+  },
+  {
+    "name": "培根",
+    "caloriesPer100g": 372,
+    "isCustom": false
+  },
+  {
+    "name": "墨鱼",
+    "caloriesPer100g": 57,
+    "isCustom": false
+  },
+  {
+    "name": "夏威夷果",
+    "caloriesPer100g": 700,
+    "isCustom": false
+  },
+  {
+    "name": "大头菜",
+    "caloriesPer100g": 20,
+    "isCustom": false
+  },
+  {
+    "name": "大白菜",
+    "caloriesPer100g": 17,
+    "isCustom": false
+  },
+  {
+    "name": "大豆油",
+    "caloriesPer100g": 884,
+    "isCustom": false
+  },
+  {
+    "name": "天妇罗",
+    "caloriesPer100g": 176,
+    "isCustom": false
+  },
+  {
+    "name": "奶油",
+    "caloriesPer100g": 340,
+    "isCustom": false
+  },
+  {
+    "name": "奶粉",
+    "caloriesPer100g": 504,
+    "isCustom": false
+  },
+  {
+    "name": "奶茶",
+    "caloriesPer100g": 42,
+    "isCustom": false
+  },
+  {
+    "name": "奶酪",
+    "caloriesPer100g": 309,
+    "isCustom": false
+  },
+  {
+    "name": "姜",
+    "caloriesPer100g": 21,
+    "isCustom": false
+  },
+  {
+    "name": "小白菜",
+    "caloriesPer100g": 12,
+    "isCustom": false
+  },
+  {
+    "name": "小笼包",
+    "caloriesPer100g": 242,
+    "isCustom": false
+  },
+  {
+    "name": "小米",
+    "caloriesPer100g": 370,
+    "isCustom": false
+  },
+  {
+    "name": "山竹",
+    "caloriesPer100g": 69,
+    "isCustom": false
+  },
+  {
+    "name": "山药",
+    "caloriesPer100g": 87,
+    "isCustom": false
+  },
+  {
+    "name": "巧克力",
+    "caloriesPer100g": 546,
+    "isCustom": false
+  },
+  {
+    "name": "布丁",
+    "caloriesPer100g": 138,
+    "isCustom": false
+  },
+  {
+    "name": "年糕",
+    "caloriesPer100g": 242,
+    "isCustom": false
+  },
+  {
+    "name": "开心果",
+    "caloriesPer100g": 601,
+    "isCustom": false
+  },
+  {
+    "name": "彩椒",
+    "caloriesPer100g": 35,
+    "isCustom": false
+  },
+  {
+    "name": "意面",
+    "caloriesPer100g": 290,
+    "isCustom": false
+  },
+  {
+    "name": "扇贝",
+    "caloriesPer100g": 146,
+    "isCustom": false
+  },
+  {
+    "name": "披萨",
+    "caloriesPer100g": 270,
+    "isCustom": false
+  },
+  {
+    "name": "拉面",
+    "caloriesPer100g": 292,
+    "isCustom": false
+  },
+  {
+    "name": "拿铁",
+    "caloriesPer100g": 43,
+    "isCustom": false
+  },
+  {
+    "name": "排骨",
+    "caloriesPer100g": 287,
+    "isCustom": false
+  },
+  {
+    "name": "方便面",
+    "caloriesPer100g": 475,
+    "isCustom": false
+  },
+  {
+    "name": "月饼",
+    "caloriesPer100g": 419,
+    "isCustom": false
+  },
+  {
+    "name": "木瓜",
+    "caloriesPer100g": 38,
+    "isCustom": false
+  },
+  {
+    "name": "木耳",
+    "caloriesPer100g": 333,
+    "isCustom": false
+  },
+  {
+    "name": "李子",
+    "caloriesPer100g": 39,
+    "isCustom": false
+  },
+  {
+    "name": "杏仁",
+    "caloriesPer100g": 588,
+    "isCustom": false
+  },
+  {
+    "name": "杏鲍菇",
+    "caloriesPer100g": 41,
+    "isCustom": false
+  },
+  {
+    "name": "杨桃",
+    "caloriesPer100g": 32,
+    "isCustom": false
+  },
+  {
+    "name": "松子",
+    "caloriesPer100g": 680,
+    "isCustom": false
+  },
+  {
+    "name": "松饼",
+    "caloriesPer100g": 257,
+    "isCustom": false
+  },
+  {
+    "name": "枇杷",
+    "caloriesPer100g": 38,
+    "isCustom": false
+  },
+  {
+    "name": "果冻",
+    "caloriesPer100g": 91,
+    "isCustom": false
+  },
+  {
+    "name": "果酱",
+    "caloriesPer100g": 227,
+    "isCustom": false
+  },
+  {
+    "name": "枣",
+    "caloriesPer100g": 46,
+    "isCustom": false
+  },
+  {
+    "name": "枫糖",
+    "caloriesPer100g": 258,
+    "isCustom": false
+  },
+  {
+    "name": "柚子",
+    "caloriesPer100g": 33,
+    "isCustom": false
+  },
+  {
+    "name": "柠檬",
+    "caloriesPer100g": 33,
+    "isCustom": false
+  },
+  {
+    "name": "柳橙汁",
+    "caloriesPer100g": 50,
+    "isCustom": false
+  },
+  {
+    "name": "柿子",
+    "caloriesPer100g": 57,
+    "isCustom": false
+  },
+  {
+    "name": "核桃",
+    "caloriesPer100g": 667,
+    "isCustom": false
+  },
+  {
+    "name": "桃子",
+    "caloriesPer100g": 51,
+    "isCustom": false
+  },
+  {
+    "name": "桑椹",
+    "caloriesPer100g": 32,
+    "isCustom": false
+  },
+  {
+    "name": "梅",
+    "caloriesPer100g": 35,
+    "isCustom": false
+  },
+  {
+    "name": "梨",
+    "caloriesPer100g": 53,
+    "isCustom": false
+  },
+  {
+    "name": "椰子油",
+    "caloriesPer100g": 883,
+    "isCustom": false
+  },
+  {
+    "name": "榛子",
+    "caloriesPer100g": 672,
+    "isCustom": false
+  },
+  {
+    "name": "榴莲",
+    "caloriesPer100g": 136,
+    "isCustom": false
+  },
+  {
+    "name": "樱桃",
+    "caloriesPer100g": 75,
+    "isCustom": false
+  },
+  {
+    "name": "橄榄油",
+    "caloriesPer100g": 884,
+    "isCustom": false
+  },
+  {
+    "name": "橘子",
+    "caloriesPer100g": 44,
+    "isCustom": false
+  },
+  {
+    "name": "橙子",
+    "caloriesPer100g": 46,
+    "isCustom": false
+  },
+  {
+    "name": "毛豆",
+    "caloriesPer100g": 125,
+    "isCustom": false
+  },
+  {
+    "name": "水煮蛋",
+    "caloriesPer100g": 147,
+    "isCustom": false
+  },
+  {
+    "name": "水蜜桃",
+    "caloriesPer100g": 39,
+    "isCustom": false
+  },
+  {
+    "name": "水饺",
+    "caloriesPer100g": 220,
+    "isCustom": false
+  },
+  {
+    "name": "汉堡",
+    "caloriesPer100g": 322,
+    "isCustom": false
+  },
+  {
+    "name": "汤圆",
+    "caloriesPer100g": 352,
+    "isCustom": false
+  },
+  {
+    "name": "汽水",
+    "caloriesPer100g": 37,
+    "isCustom": false
+  },
+  {
+    "name": "沙拉酱",
+    "caloriesPer100g": 337,
+    "isCustom": false
+  },
+  {
+    "name": "沙琪玛",
+    "caloriesPer100g": 487,
+    "isCustom": false
+  },
+  {
+    "name": "油条",
+    "caloriesPer100g": 551,
+    "isCustom": false
+  },
+  {
+    "name": "油菜",
+    "caloriesPer100g": 12,
+    "isCustom": false
+  },
+  {
+    "name": "油豆腐",
+    "caloriesPer100g": 160,
+    "isCustom": false
+  },
+  {
+    "name": "油面",
+    "caloriesPer100g": 163,
+    "isCustom": false
+  },
+  {
+    "name": "洋葱",
+    "caloriesPer100g": 42,
+    "isCustom": false
+  },
+  {
+    "name": "海参",
+    "caloriesPer100g": 36,
+    "isCustom": false
+  },
+  {
+    "name": "海带",
+    "caloriesPer100g": 20,
+    "isCustom": false
+  },
+  {
+    "name": "海蜇",
+    "caloriesPer100g": 19,
+    "isCustom": false
+  },
+  {
+    "name": "火腿",
+    "caloriesPer100g": 121,
+    "isCustom": false
+  },
+  {
+    "name": "火鸡肉",
+    "caloriesPer100g": 141,
+    "isCustom": false
+  },
+  {
+    "name": "火龙果",
+    "caloriesPer100g": 51,
+    "isCustom": false
+  },
+  {
+    "name": "炒蛋",
+    "caloriesPer100g": 215,
+    "isCustom": false
+  },
+  {
+    "name": "炒饭",
+    "caloriesPer100g": 189,
+    "isCustom": false
+  },
+  {
+    "name": "炼乳",
+    "caloriesPer100g": 136,
+    "isCustom": false
+  },
+  {
+    "name": "烧卖",
+    "caloriesPer100g": 188,
+    "isCustom": false
+  },
+  {
+    "name": "烧饼",
+    "caloriesPer100g": 323,
+    "isCustom": false
+  },
+  {
+    "name": "热狗",
+    "caloriesPer100g": 257,
+    "isCustom": false
+  },
+  {
+    "name": "燕饺",
+    "caloriesPer100g": 315,
+    "isCustom": false
+  },
+  {
+    "name": "燕麦",
+    "caloriesPer100g": 406,
+    "isCustom": false
+  },
+  {
+    "name": "牛排",
+    "caloriesPer100g": 325,
+    "isCustom": false
+  },
+  {
+    "name": "牛油",
+    "caloriesPer100g": 764,
+    "isCustom": false
+  },
+  {
+    "name": "牛油果",
+    "caloriesPer100g": 73,
+    "isCustom": false
+  },
+  {
+    "name": "牛肉",
+    "caloriesPer100g": 250,
+    "isCustom": false
+  },
+  {
+    "name": "牛腩",
+    "caloriesPer100g": 225,
+    "isCustom": false
+  },
+  {
+    "name": "牛腱",
+    "caloriesPer100g": 139,
+    "isCustom": false
+  },
+  {
+    "name": "牛舌",
+    "caloriesPer100g": 185,
+    "isCustom": false
+  },
+  {
+    "name": "牛舌饼",
+    "caloriesPer100g": 411,
+    "isCustom": false
+  },
+  {
+    "name": "牛里脊",
+    "caloriesPer100g": 184,
+    "isCustom": false
+  },
+  {
+    "name": "牡蛎",
+    "caloriesPer100g": 54,
+    "isCustom": false
+  },
+  {
+    "name": "猕猴桃",
+    "caloriesPer100g": 56,
+    "isCustom": false
+  },
+  {
+    "name": "猪五花",
+    "caloriesPer100g": 360,
+    "isCustom": false
+  },
+  {
+    "name": "猪后腿肉",
+    "caloriesPer100g": 123,
+    "isCustom": false
+  },
+  {
+    "name": "猪大肠",
+    "caloriesPer100g": 198,
+    "isCustom": false
+  },
+  {
+    "name": "猪心",
+    "caloriesPer100g": 128,
+    "isCustom": false
+  },
+  {
+    "name": "猪油",
+    "caloriesPer100g": 890,
+    "isCustom": false
+  },
+  {
+    "name": "猪皮",
+    "caloriesPer100g": 491,
+    "isCustom": false
+  },
+  {
+    "name": "猪肉",
+    "caloriesPer100g": 214,
+    "isCustom": false
+  },
+  {
+    "name": "猪肚",
+    "caloriesPer100g": 137,
+    "isCustom": false
+  },
+  {
+    "name": "猪肝",
+    "caloriesPer100g": 126,
+    "isCustom": false
+  },
+  {
+    "name": "猪脚",
+    "caloriesPer100g": 252,
+    "isCustom": false
+  },
+  {
+    "name": "猪血",
+    "caloriesPer100g": 29,
+    "isCustom": false
+  },
+  {
+    "name": "猪血糕",
+    "caloriesPer100g": 194,
+    "isCustom": false
+  },
+  {
+    "name": "猪蹄膀",
+    "caloriesPer100g": 331,
+    "isCustom": false
+  },
+  {
+    "name": "猪里脊",
+    "caloriesPer100g": 212,
+    "isCustom": false
+  },
+  {
+    "name": "玉米",
+    "caloriesPer100g": 107,
+    "isCustom": false
+  },
+  {
+    "name": "珍珠奶茶",
+    "caloriesPer100g": 94,
+    "isCustom": false
+  },
+  {
+    "name": "瓠瓜",
+    "caloriesPer100g": 18,
+    "isCustom": false
+  },
+  {
+    "name": "甜甜圈",
+    "caloriesPer100g": 401,
+    "isCustom": false
+  },
+  {
+    "name": "番石榴",
+    "caloriesPer100g": 38,
+    "isCustom": false
+  },
+  {
+    "name": "番茄",
+    "caloriesPer100g": 19,
+    "isCustom": false
+  },
+  {
+    "name": "番茄酱",
+    "caloriesPer100g": 114,
+    "isCustom": false
+  },
+  {
+    "name": "白吐司",
+    "caloriesPer100g": 289,
+    "isCustom": false
+  },
+  {
+    "name": "白带鱼",
+    "caloriesPer100g": 102,
+    "isCustom": false
+  },
+  {
+    "name": "白糖",
+    "caloriesPer100g": 385,
+    "isCustom": false
+  },
+  {
+    "name": "白萝卜",
+    "caloriesPer100g": 18,
+    "isCustom": false
+  },
+  {
+    "name": "百页豆腐",
+    "caloriesPer100g": 216,
+    "isCustom": false
+  },
+  {
+    "name": "百香果",
+    "caloriesPer100g": 66,
+    "isCustom": false
+  },
+  {
+    "name": "皮蛋",
+    "caloriesPer100g": 127,
+    "isCustom": false
+  },
+  {
+    "name": "盐",
+    "caloriesPer100g": 2,
+    "isCustom": false
+  },
+  {
+    "name": "石斑鱼",
+    "caloriesPer100g": 90,
+    "isCustom": false
+  },
+  {
+    "name": "石榴",
+    "caloriesPer100g": 67,
+    "isCustom": false
+  },
+  {
+    "name": "秋刀鱼",
+    "caloriesPer100g": 314,
+    "isCustom": false
+  },
+  {
+    "name": "空心菜",
+    "caloriesPer100g": 21,
+    "isCustom": false
+  },
+  {
+    "name": "章鱼",
+    "caloriesPer100g": 61,
+    "isCustom": false
+  },
+  {
+    "name": "竹笋",
+    "caloriesPer100g": 17,
+    "isCustom": false
+  },
+  {
+    "name": "米浆",
+    "caloriesPer100g": 51,
+    "isCustom": false
+  },
+  {
+    "name": "米粉",
+    "caloriesPer100g": 366,
+    "isCustom": false
+  },
+  {
+    "name": "米糕",
+    "caloriesPer100g": 212,
+    "isCustom": false
+  },
+  {
+    "name": "米饭",
+    "caloriesPer100g": 183,
+    "isCustom": false
+  },
+  {
+    "name": "粄条",
+    "caloriesPer100g": 129,
+    "isCustom": false
+  },
+  {
+    "name": "粥",
+    "caloriesPer100g": 81,
+    "isCustom": false
+  },
+  {
+    "name": "粽子",
+    "caloriesPer100g": 235,
+    "isCustom": false
+  },
+  {
+    "name": "糙米",
+    "caloriesPer100g": 362,
+    "isCustom": false
+  },
+  {
+    "name": "糯米",
+    "caloriesPer100g": 358,
+    "isCustom": false
+  },
+  {
+    "name": "紫菜",
+    "caloriesPer100g": 294,
+    "isCustom": false
+  },
+  {
+    "name": "红枣",
+    "caloriesPer100g": 227,
+    "isCustom": false
+  },
+  {
+    "name": "红糖",
+    "caloriesPer100g": 280,
+    "isCustom": false
+  },
+  {
+    "name": "红茶",
+    "caloriesPer100g": 34,
+    "isCustom": false
+  },
+  {
+    "name": "红薯",
+    "caloriesPer100g": 119,
+    "isCustom": false
+  },
+  {
+    "name": "红豆",
+    "caloriesPer100g": 328,
+    "isCustom": false
+  },
+  {
+    "name": "绞肉",
+    "caloriesPer100g": 212,
+    "isCustom": false
+  },
+  {
+    "name": "绿茶",
+    "caloriesPer100g": 22,
+    "isCustom": false
+  },
+  {
+    "name": "绿豆",
+    "caloriesPer100g": 344,
+    "isCustom": false
+  },
+  {
+    "name": "绿豆芽",
+    "caloriesPer100g": 24,
+    "isCustom": false
+  },
+  {
+    "name": "羊奶",
+    "caloriesPer100g": 65,
+    "isCustom": false
+  },
+  {
+    "name": "羊排",
+    "caloriesPer100g": 260,
+    "isCustom": false
+  },
+  {
+    "name": "羊肉",
+    "caloriesPer100g": 198,
+    "isCustom": false
+  },
+  {
+    "name": "羊腿",
+    "caloriesPer100g": 123,
+    "isCustom": false
+  },
+  {
+    "name": "羊里脊",
+    "caloriesPer100g": 143,
+    "isCustom": false
+  },
+  {
+    "name": "美式咖啡",
+    "caloriesPer100g": 2,
+    "isCustom": false
+  },
+  {
+    "name": "肉圆",
+    "caloriesPer100g": 136,
+    "isCustom": false
+  },
+  {
+    "name": "肉松",
+    "caloriesPer100g": 513,
+    "isCustom": false
+  },
+  {
+    "name": "肉羹",
+    "caloriesPer100g": 247,
+    "isCustom": false
+  },
+  {
+    "name": "胡椒",
+    "caloriesPer100g": 342,
+    "isCustom": false
+  },
+  {
+    "name": "胡萝卜",
+    "caloriesPer100g": 39,
+    "isCustom": false
+  },
+  {
+    "name": "脱脂牛奶",
+    "caloriesPer100g": 42,
+    "isCustom": false
+  },
+  {
+    "name": "腊肉",
+    "caloriesPer100g": 409,
+    "isCustom": false
+  },
+  {
+    "name": "腰果",
+    "caloriesPer100g": 566,
+    "isCustom": false
+  },
+  {
+    "name": "节瓜",
+    "caloriesPer100g": 13,
+    "isCustom": false
+  },
+  {
+    "name": "芋头",
+    "caloriesPer100g": 121,
+    "isCustom": false
+  },
+  {
+    "name": "芒果",
+    "caloriesPer100g": 56,
+    "isCustom": false
+  },
+  {
+    "name": "芝麻",
+    "caloriesPer100g": 341,
+    "isCustom": false
+  },
+  {
+    "name": "芝麻油",
+    "caloriesPer100g": 884,
+    "isCustom": false
+  },
+  {
+    "name": "芝麻酱",
+    "caloriesPer100g": 643,
+    "isCustom": false
+  },
+  {
+    "name": "芥菜",
+    "caloriesPer100g": 19,
+    "isCustom": false
+  },
+  {
+    "name": "芥蓝",
+    "caloriesPer100g": 20,
+    "isCustom": false
+  },
+  {
+    "name": "芦笋",
+    "caloriesPer100g": 20,
+    "isCustom": false
+  },
+  {
+    "name": "花枝丸",
+    "caloriesPer100g": 166,
+    "isCustom": false
+  },
+  {
+    "name": "花椒",
+    "caloriesPer100g": 369,
+    "isCustom": false
+  },
+  {
+    "name": "花椰菜",
+    "caloriesPer100g": 21,
+    "isCustom": false
+  },
+  {
+    "name": "花生",
+    "caloriesPer100g": 344,
+    "isCustom": false
+  },
+  {
+    "name": "花生油",
+    "caloriesPer100g": 883,
+    "isCustom": false
+  },
+  {
+    "name": "花生酱",
+    "caloriesPer100g": 657,
+    "isCustom": false
+  },
+  {
+    "name": "芹菜",
+    "caloriesPer100g": 15,
+    "isCustom": false
+  },
+  {
+    "name": "苋菜",
+    "caloriesPer100g": 17,
+    "isCustom": false
+  },
+  {
+    "name": "苏打饼干",
+    "caloriesPer100g": 512,
+    "isCustom": false
+  },
+  {
+    "name": "苦瓜",
+    "caloriesPer100g": 20,
+    "isCustom": false
+  },
+  {
+    "name": "苹果",
+    "caloriesPer100g": 51,
+    "isCustom": false
+  },
+  {
+    "name": "苹果汁",
+    "caloriesPer100g": 47,
+    "isCustom": false
+  },
+  {
+    "name": "茄子",
+    "caloriesPer100g": 23,
+    "isCustom": false
+  },
+  {
+    "name": "茶叶蛋",
+    "caloriesPer100g": 141,
+    "isCustom": false
+  },
+  {
+    "name": "茼蒿",
+    "caloriesPer100g": 16,
+    "isCustom": false
+  },
+  {
+    "name": "草莓",
+    "caloriesPer100g": 39,
+    "isCustom": false
+  },
+  {
+    "name": "草虾",
+    "caloriesPer100g": 100,
+    "isCustom": false
+  },
+  {
+    "name": "草鱼",
+    "caloriesPer100g": 91,
+    "isCustom": false
+  },
+  {
+    "name": "荔枝",
+    "caloriesPer100g": 65,
+    "isCustom": false
+  },
+  {
+    "name": "荞麦面",
+    "caloriesPer100g": 355,
+    "isCustom": false
+  },
+  {
+    "name": "荷包蛋",
+    "caloriesPer100g": 162,
+    "isCustom": false
+  },
+  {
+    "name": "莲藕",
+    "caloriesPer100g": 50,
+    "isCustom": false
+  },
+  {
+    "name": "莲雾",
+    "caloriesPer100g": 35,
+    "isCustom": false
+  },
+  {
+    "name": "莴苣",
+    "caloriesPer100g": 16,
+    "isCustom": false
+  },
+  {
+    "name": "菠菜",
+    "caloriesPer100g": 17,
+    "isCustom": false
+  },
+  {
+    "name": "菠萝",
+    "caloriesPer100g": 53,
+    "isCustom": false
+  },
+  {
+    "name": "萝卜糕",
+    "caloriesPer100g": 111,
+    "isCustom": false
+  },
+  {
+    "name": "葡萄",
+    "caloriesPer100g": 64,
+    "isCustom": false
+  },
+  {
+    "name": "葡萄柚",
+    "caloriesPer100g": 33,
+    "isCustom": false
+  },
+  {
+    "name": "葡萄酒",
+    "caloriesPer100g": 90,
+    "isCustom": false
+  },
+  {
+    "name": "葱",
+    "caloriesPer100g": 28,
+    "isCustom": false
+  },
+  {
+    "name": "葱油饼",
+    "caloriesPer100g": 248,
+    "isCustom": false
+  },
+  {
+    "name": "葵花籽",
+    "caloriesPer100g": 586,
+    "isCustom": false
+  },
+  {
+    "name": "葵花籽油",
+    "caloriesPer100g": 884,
+    "isCustom": false
+  },
+  {
+    "name": "蒜",
+    "caloriesPer100g": 122,
+    "isCustom": false
+  },
+  {
+    "name": "蒸蛋",
+    "caloriesPer100g": 64,
+    "isCustom": false
+  },
+  {
+    "name": "薯条",
+    "caloriesPer100g": 182,
+    "isCustom": false
+  },
+  {
+    "name": "薯片",
+    "caloriesPer100g": 553,
+    "isCustom": false
+  },
+  {
+    "name": "蘑菇",
+    "caloriesPer100g": 39,
+    "isCustom": false
+  },
+  {
+    "name": "虱目鱼",
+    "caloriesPer100g": 179,
+    "isCustom": false
+  },
+  {
+    "name": "虾",
+    "caloriesPer100g": 103,
+    "isCustom": false
+  },
+  {
+    "name": "虾丸",
+    "caloriesPer100g": 123,
+    "isCustom": false
+  },
+  {
+    "name": "蚵仔煎",
+    "caloriesPer100g": 192,
+    "isCustom": false
+  },
+  {
+    "name": "蛋卷",
+    "caloriesPer100g": 549,
+    "isCustom": false
+  },
+  {
+    "name": "蛋挞",
+    "caloriesPer100g": 376,
+    "isCustom": false
+  },
+  {
+    "name": "蛋糕",
+    "caloriesPer100g": 344,
+    "isCustom": false
+  },
+  {
+    "name": "蛋饺",
+    "caloriesPer100g": 183,
+    "isCustom": false
+  },
+  {
+    "name": "蛋饼",
+    "caloriesPer100g": 231,
+    "isCustom": false
+  },
+  {
+    "name": "蛤蜊",
+    "caloriesPer100g": 37,
+    "isCustom": false
+  },
+  {
+    "name": "蜂蜜",
+    "caloriesPer100g": 315,
+    "isCustom": false
+  },
+  {
+    "name": "蟹",
+    "caloriesPer100g": 52,
+    "isCustom": false
+  },
+  {
+    "name": "裙带菜",
+    "caloriesPer100g": 225,
+    "isCustom": false
+  },
+  {
+    "name": "西兰花",
+    "caloriesPer100g": 25,
+    "isCustom": false
+  },
+  {
+    "name": "西瓜",
+    "caloriesPer100g": 33,
+    "isCustom": false
+  },
+  {
+    "name": "西瓜汁",
+    "caloriesPer100g": 30,
+    "isCustom": false
+  },
+  {
+    "name": "调味乳",
+    "caloriesPer100g": 54,
+    "isCustom": false
+  },
+  {
+    "name": "豆干",
+    "caloriesPer100g": 197,
+    "isCustom": false
+  },
+  {
+    "name": "豆浆",
+    "caloriesPer100g": 56,
+    "isCustom": false
+  },
+  {
+    "name": "豆皮",
+    "caloriesPer100g": 209,
+    "isCustom": false
+  },
+  {
+    "name": "豆腐",
+    "caloriesPer100g": 88,
+    "isCustom": false
+  },
+  {
+    "name": "豆腐乳",
+    "caloriesPer100g": 107,
+    "isCustom": false
+  },
+  {
+    "name": "豆花",
+    "caloriesPer100g": 60,
+    "isCustom": false
+  },
+  {
+    "name": "豌豆",
+    "caloriesPer100g": 96,
+    "isCustom": false
+  },
+  {
+    "name": "贡丸",
+    "caloriesPer100g": 244,
+    "isCustom": false
+  },
+  {
+    "name": "辣椒酱",
+    "caloriesPer100g": 83,
+    "isCustom": false
+  },
+  {
+    "name": "运动饮料",
+    "caloriesPer100g": 28,
+    "isCustom": false
+  },
+  {
+    "name": "通心面",
+    "caloriesPer100g": 359,
+    "isCustom": false
+  },
+  {
+    "name": "酱油",
+    "caloriesPer100g": 90,
+    "isCustom": false
+  },
+  {
+    "name": "酸奶",
+    "caloriesPer100g": 97,
+    "isCustom": false
+  },
+  {
+    "name": "醋",
+    "caloriesPer100g": 17,
+    "isCustom": false
+  },
+  {
+    "name": "释迦",
+    "caloriesPer100g": 104,
+    "isCustom": false
+  },
+  {
+    "name": "金桔",
+    "caloriesPer100g": 32,
+    "isCustom": false
+  },
+  {
+    "name": "金针菇",
+    "caloriesPer100g": 37,
+    "isCustom": false
+  },
+  {
+    "name": "银耳",
+    "caloriesPer100g": 313,
+    "isCustom": false
+  },
+  {
+    "name": "锅贴",
+    "caloriesPer100g": 238,
+    "isCustom": false
+  },
+  {
+    "name": "青椒",
+    "caloriesPer100g": 35,
+    "isCustom": false
+  },
+  {
+    "name": "青江菜",
+    "caloriesPer100g": 13,
+    "isCustom": false
+  },
+  {
+    "name": "面包",
+    "caloriesPer100g": 365,
+    "isCustom": false
+  },
+  {
+    "name": "面条",
+    "caloriesPer100g": 361,
+    "isCustom": false
+  },
+  {
+    "name": "面筋",
+    "caloriesPer100g": 643,
+    "isCustom": false
+  },
+  {
+    "name": "面粉",
+    "caloriesPer100g": 361,
+    "isCustom": false
+  },
+  {
+    "name": "面线",
+    "caloriesPer100g": 350,
+    "isCustom": false
+  },
+  {
+    "name": "韭菜",
+    "caloriesPer100g": 23,
+    "isCustom": false
+  },
+  {
+    "name": "韭菜盒",
+    "caloriesPer100g": 217,
+    "isCustom": false
+  },
+  {
+    "name": "韭黄",
+    "caloriesPer100g": 16,
+    "isCustom": false
+  },
+  {
+    "name": "饭团",
+    "caloriesPer100g": 335,
+    "isCustom": false
+  },
+  {
+    "name": "饼干",
+    "caloriesPer100g": 517,
+    "isCustom": false
+  },
+  {
+    "name": "馄饨",
+    "caloriesPer100g": 271,
+    "isCustom": false
+  },
+  {
+    "name": "馅饼",
+    "caloriesPer100g": 224,
+    "isCustom": false
+  },
+  {
+    "name": "馒头",
+    "caloriesPer100g": 279,
+    "isCustom": false
+  },
+  {
+    "name": "香瓜",
+    "caloriesPer100g": 30,
+    "isCustom": false
+  },
+  {
+    "name": "香肠",
+    "caloriesPer100g": 354,
+    "isCustom": false
+  },
+  {
+    "name": "香菇",
+    "caloriesPer100g": 321,
+    "isCustom": false
+  },
+  {
+    "name": "香菜",
+    "caloriesPer100g": 26,
+    "isCustom": false
+  },
+  {
+    "name": "香蕉",
+    "caloriesPer100g": 85,
+    "isCustom": false
+  },
+  {
+    "name": "马铃薯",
+    "caloriesPer100g": 68,
+    "isCustom": false
+  },
+  {
+    "name": "高汤",
+    "caloriesPer100g": 2,
+    "isCustom": false
+  },
+  {
+    "name": "鱼丸",
+    "caloriesPer100g": 160,
+    "isCustom": false
+  },
+  {
+    "name": "鱼饺",
+    "caloriesPer100g": 277,
+    "isCustom": false
+  },
+  {
+    "name": "鱿鱼",
+    "caloriesPer100g": 100,
+    "isCustom": false
+  },
+  {
+    "name": "鲈鱼",
+    "caloriesPer100g": 98,
+    "isCustom": false
+  },
+  {
+    "name": "鲍鱼",
+    "caloriesPer100g": 24,
+    "isCustom": false
+  },
+  {
+    "name": "鲑鱼",
+    "caloriesPer100g": 221,
+    "isCustom": false
+  },
+  {
+    "name": "鲔鱼",
+    "caloriesPer100g": 103,
+    "isCustom": false
+  },
+  {
+    "name": "鲤鱼",
+    "caloriesPer100g": 91,
+    "isCustom": false
+  },
+  {
+    "name": "鲭鱼",
+    "caloriesPer100g": 144,
+    "isCustom": false
+  },
+  {
+    "name": "鲷鱼",
+    "caloriesPer100g": 110,
+    "isCustom": false
+  },
+  {
+    "name": "鳗鱼",
+    "caloriesPer100g": 254,
+    "isCustom": false
+  },
+  {
+    "name": "鸡块",
+    "caloriesPer100g": 228,
+    "isCustom": false
+  },
+  {
+    "name": "鸡排",
+    "caloriesPer100g": 183,
+    "isCustom": false
+  },
+  {
+    "name": "鸡爪",
+    "caloriesPer100g": 216,
+    "isCustom": false
+  },
+  {
+    "name": "鸡翅",
+    "caloriesPer100g": 210,
+    "isCustom": false
+  },
+  {
+    "name": "鸡肉",
+    "caloriesPer100g": 216,
+    "isCustom": false
+  },
+  {
+    "name": "鸡肝",
+    "caloriesPer100g": 111,
+    "isCustom": false
+  },
+  {
+    "name": "鸡胗",
+    "caloriesPer100g": 89,
+    "isCustom": false
+  },
+  {
+    "name": "鸡胸肉",
+    "caloriesPer100g": 119,
+    "isCustom": false
+  },
+  {
+    "name": "鸡腿",
+    "caloriesPer100g": 157,
+    "isCustom": false
+  },
+  {
+    "name": "鸡蛋",
+    "caloriesPer100g": 134,
+    "isCustom": false
+  },
+  {
+    "name": "鸡蛋白",
+    "caloriesPer100g": 50,
+    "isCustom": false
+  },
+  {
+    "name": "鸡蛋黄",
+    "caloriesPer100g": 308,
+    "isCustom": false
+  },
+  {
+    "name": "鸭肉",
+    "caloriesPer100g": 111,
+    "isCustom": false
+  },
+  {
+    "name": "鸭胸",
+    "caloriesPer100g": 227,
+    "isCustom": false
+  },
+  {
+    "name": "鸭腿",
+    "caloriesPer100g": 282,
+    "isCustom": false
+  },
+  {
+    "name": "鸭蛋",
+    "caloriesPer100g": 187,
+    "isCustom": false
+  },
+  {
+    "name": "鹅肉",
+    "caloriesPer100g": 187,
+    "isCustom": false
+  },
+  {
+    "name": "鹅蛋",
+    "caloriesPer100g": 179,
+    "isCustom": false
+  },
+  {
+    "name": "鹌鹑蛋",
+    "caloriesPer100g": 172,
+    "isCustom": false
+  },
+  {
+    "name": "黄油",
+    "caloriesPer100g": 716,
+    "isCustom": false
+  },
+  {
+    "name": "黄瓜",
+    "caloriesPer100g": 13,
+    "isCustom": false
+  },
+  {
+    "name": "黄豆",
+    "caloriesPer100g": 389,
+    "isCustom": false
+  },
+  {
+    "name": "黄豆芽",
+    "caloriesPer100g": 34,
+    "isCustom": false
+  },
+  {
+    "name": "黑豆",
+    "caloriesPer100g": 385,
+    "isCustom": false
+  },
+  {
+    "name": "龙眼",
+    "caloriesPer100g": 73,
+    "isCustom": false
+  }
+]

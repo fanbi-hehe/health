@@ -1,0 +1,2417 @@
+[
+  {
+    "name": "米饭",
+    "caloriesPer100g": 183,
+    "sourceCategory": "穀物類",
+    "sourceName": "白飯",
+    "sourceCode": "A04902"
+  },
+  {
+    "name": "粥",
+    "caloriesPer100g": 81,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "廣東粥",
+    "sourceCode": "R00101"
+  },
+  {
+    "name": "糙米",
+    "caloriesPer100g": 362,
+    "sourceCategory": "穀物類",
+    "sourceName": "糙粳米平均值",
+    "sourceCode": "A044"
+  },
+  {
+    "name": "糯米",
+    "caloriesPer100g": 358,
+    "sourceCategory": "穀物類",
+    "sourceName": "白粳糯米平均值",
+    "sourceCode": "A036"
+  },
+  {
+    "name": "小米",
+    "caloriesPer100g": 370,
+    "sourceCategory": "穀物類",
+    "sourceName": "小米",
+    "sourceCode": "A00401"
+  },
+  {
+    "name": "燕麦片",
+    "caloriesPer100g": 393,
+    "sourceCategory": "穀物類",
+    "sourceName": "燕麥片",
+    "sourceCode": "A05303"
+  },
+  {
+    "name": "玉米",
+    "caloriesPer100g": 107,
+    "sourceCategory": "穀物類",
+    "sourceName": "甜玉米",
+    "sourceCode": "A02401"
+  },
+  {
+    "name": "面粉",
+    "caloriesPer100g": 361,
+    "sourceCategory": "穀物類",
+    "sourceName": "中筋麵粉",
+    "sourceCode": "A01101"
+  },
+  {
+    "name": "面条(干)",
+    "caloriesPer100g": 361,
+    "sourceCategory": "穀物類",
+    "sourceName": "油麵條",
+    "sourceCode": "A01602"
+  },
+  {
+    "name": "油面(熟)",
+    "caloriesPer100g": 163,
+    "sourceCategory": "穀物類",
+    "sourceName": "衛生油麵",
+    "sourceCode": "A01801"
+  },
+  {
+    "name": "意面",
+    "caloriesPer100g": 290,
+    "sourceCategory": "穀物類",
+    "sourceName": "意麵",
+    "sourceCode": "A01703"
+  },
+  {
+    "name": "拉面",
+    "caloriesPer100g": 292,
+    "sourceCategory": "穀物類",
+    "sourceName": "拉麵",
+    "sourceCode": "A01702"
+  },
+  {
+    "name": "乌龙面",
+    "caloriesPer100g": 126,
+    "sourceCategory": "穀物類",
+    "sourceName": "冷凍烏龍麵",
+    "sourceCode": "A01803"
+  },
+  {
+    "name": "荞麦面(干)",
+    "caloriesPer100g": 355,
+    "sourceCategory": "穀物類",
+    "sourceName": "蕎麥麵(乾)",
+    "sourceCode": "A05502"
+  },
+  {
+    "name": "通心面(干)",
+    "caloriesPer100g": 359,
+    "sourceCategory": "穀物類",
+    "sourceName": "通心麵",
+    "sourceCode": "A01604"
+  },
+  {
+    "name": "米粉(干)",
+    "caloriesPer100g": 366,
+    "sourceCategory": "穀物類",
+    "sourceName": "米粉平均值",
+    "sourceCode": "A047"
+  },
+  {
+    "name": "冬粉(干)",
+    "caloriesPer100g": 351,
+    "sourceCategory": "豆類",
+    "sourceName": "冬粉",
+    "sourceCode": "H01502"
+  },
+  {
+    "name": "粄条",
+    "caloriesPer100g": 129,
+    "sourceCategory": "穀物類",
+    "sourceName": "米粄條",
+    "sourceCode": "A04801"
+  },
+  {
+    "name": "面线(干)",
+    "caloriesPer100g": 350,
+    "sourceCategory": "穀物類",
+    "sourceName": "麵線",
+    "sourceCode": "A02103"
+  },
+  {
+    "name": "方便面",
+    "caloriesPer100g": 475,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "泡麵(牛肉口味)",
+    "sourceCode": "R00901"
+  },
+  {
+    "name": "馒头",
+    "caloriesPer100g": 279,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍白饅頭",
+    "sourceCode": "R05501"
+  },
+  {
+    "name": "包子",
+    "caloriesPer100g": 279,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍叉燒包子",
+    "sourceCode": "R02701"
+  },
+  {
+    "name": "小笼包",
+    "caloriesPer100g": 242,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "小籠包",
+    "sourceCode": "R02801"
+  },
+  {
+    "name": "水饺",
+    "caloriesPer100g": 220,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍牛肉水餃",
+    "sourceCode": "R01501"
+  },
+  {
+    "name": "馄饨",
+    "caloriesPer100g": 236,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍菜肉餛飩",
+    "sourceCode": "R05202"
+  },
+  {
+    "name": "锅贴",
+    "caloriesPer100g": 238,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "豬肉鍋貼",
+    "sourceCode": "R05401"
+  },
+  {
+    "name": "烧饼",
+    "caloriesPer100g": 323,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "燒餅",
+    "sourceCode": "R04701"
+  },
+  {
+    "name": "油条",
+    "caloriesPer100g": 551,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "油條",
+    "sourceCode": "R03601"
+  },
+  {
+    "name": "葱油饼",
+    "caloriesPer100g": 248,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍蔥油餅",
+    "sourceCode": "R04602"
+  },
+  {
+    "name": "蛋饼",
+    "caloriesPer100g": 231,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍蛋餅皮",
+    "sourceCode": "R04603"
+  },
+  {
+    "name": "韭菜盒",
+    "caloriesPer100g": 217,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "韭菜盒子",
+    "sourceCode": "R03901"
+  },
+  {
+    "name": "馅饼",
+    "caloriesPer100g": 224,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "牛肉餡餅",
+    "sourceCode": "R04902"
+  },
+  {
+    "name": "萝卜糕",
+    "caloriesPer100g": 111,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "冷藏廣式蘿蔔糕",
+    "sourceCode": "Q00401"
+  },
+  {
+    "name": "肉圆",
+    "caloriesPer100g": 136,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "肉圓",
+    "sourceCode": "R03301"
+  },
+  {
+    "name": "粽子",
+    "caloriesPer100g": 235,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "肉粽",
+    "sourceCode": "R00401"
+  },
+  {
+    "name": "汤圆",
+    "caloriesPer100g": 352,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍芝麻湯圓",
+    "sourceCode": "R04301"
+  },
+  {
+    "name": "年糕",
+    "caloriesPer100g": 242,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "冷藏甜年糕",
+    "sourceCode": "Q00201"
+  },
+  {
+    "name": "饭团",
+    "caloriesPer100g": 335,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "糯米飯糰",
+    "sourceCode": "R00302"
+  },
+  {
+    "name": "炒饭",
+    "caloriesPer100g": 189,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍火腿炒飯",
+    "sourceCode": "R00201"
+  },
+  {
+    "name": "米糕",
+    "caloriesPer100g": 246,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "筒仔米糕",
+    "sourceCode": "R00701"
+  },
+  {
+    "name": "白吐司",
+    "caloriesPer100g": 289,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "土司",
+    "sourceCode": "Q03101"
+  },
+  {
+    "name": "全麦吐司",
+    "caloriesPer100g": 292,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "土司(含全穀粉)",
+    "sourceCode": "Q03102"
+  },
+  {
+    "name": "面包",
+    "caloriesPer100g": 365,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "餐包",
+    "sourceCode": "Q03701"
+  },
+  {
+    "name": "可颂",
+    "caloriesPer100g": 452,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "可頌",
+    "sourceCode": "Q02101"
+  },
+  {
+    "name": "三明治",
+    "caloriesPer100g": 275,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "火腿蛋三明治",
+    "sourceCode": "R01101"
+  },
+  {
+    "name": "汉堡",
+    "caloriesPer100g": 322,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "漢堡包",
+    "sourceCode": "Q03601"
+  },
+  {
+    "name": "披萨",
+    "caloriesPer100g": 270,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "披薩(夏威夷)",
+    "sourceCode": "R03501"
+  },
+  {
+    "name": "饼干",
+    "caloriesPer100g": 517,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "夾心餅乾(草莓)",
+    "sourceCode": "Q04901"
+  },
+  {
+    "name": "苏打饼干",
+    "caloriesPer100g": 512,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "蘇打餅乾(蔬菜)",
+    "sourceCode": "Q05701"
+  },
+  {
+    "name": "蛋糕",
+    "caloriesPer100g": 344,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "海綿蛋糕(圓形)",
+    "sourceCode": "Q02601"
+  },
+  {
+    "name": "乳酪蛋糕",
+    "caloriesPer100g": 296,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "乳酪蛋糕",
+    "sourceCode": "Q02501"
+  },
+  {
+    "name": "松饼",
+    "caloriesPer100g": 257,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "鬆餅",
+    "sourceCode": "Q03001"
+  },
+  {
+    "name": "甜甜圈",
+    "caloriesPer100g": 401,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "糖粒甜甜圈(油炸)",
+    "sourceCode": "Q03402"
+  },
+  {
+    "name": "蛋挞",
+    "caloriesPer100g": 376,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "蛋塔",
+    "sourceCode": "Q02401"
+  },
+  {
+    "name": "月饼",
+    "caloriesPer100g": 419,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "月餅(棗泥)",
+    "sourceCode": "Q00801"
+  },
+  {
+    "name": "凤梨酥",
+    "caloriesPer100g": 484,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "鳳梨酥",
+    "sourceCode": "Q01701"
+  },
+  {
+    "name": "牛舌饼",
+    "caloriesPer100g": 411,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "牛舌餅",
+    "sourceCode": "Q01401"
+  },
+  {
+    "name": "蛋卷",
+    "caloriesPer100g": 549,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "蛋捲(芝麻)",
+    "sourceCode": "Q05201"
+  },
+  {
+    "name": "沙琪玛",
+    "caloriesPer100g": 487,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "沙其馬",
+    "sourceCode": "Q05001"
+  },
+  {
+    "name": "冰淇淋",
+    "caloriesPer100g": 182,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "香草冰淇淋",
+    "sourceCode": "Q04002"
+  },
+  {
+    "name": "薯片",
+    "caloriesPer100g": 553,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "洋芋片",
+    "sourceCode": "Q05101"
+  },
+  {
+    "name": "巧克力",
+    "caloriesPer100g": 546,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "牛奶巧克力",
+    "sourceCode": "Q05901"
+  },
+  {
+    "name": "果冻",
+    "caloriesPer100g": 91,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "果凍",
+    "sourceCode": "Q04401"
+  },
+  {
+    "name": "布丁",
+    "caloriesPer100g": 138,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "烤布丁",
+    "sourceCode": "Q03902"
+  },
+  {
+    "name": "黄豆",
+    "caloriesPer100g": 389,
+    "sourceCategory": "豆類",
+    "sourceName": "黃豆",
+    "sourceCode": "H02201"
+  },
+  {
+    "name": "黑豆",
+    "caloriesPer100g": 385,
+    "sourceCategory": "豆類",
+    "sourceName": "青仁黑豆",
+    "sourceCode": "H00801"
+  },
+  {
+    "name": "红豆",
+    "caloriesPer100g": 328,
+    "sourceCategory": "豆類",
+    "sourceName": "紅豆",
+    "sourceCode": "H00501"
+  },
+  {
+    "name": "绿豆",
+    "caloriesPer100g": 344,
+    "sourceCategory": "豆類",
+    "sourceName": "綠豆",
+    "sourceCode": "H01202"
+  },
+  {
+    "name": "毛豆",
+    "caloriesPer100g": 125,
+    "sourceCategory": "豆類",
+    "sourceName": "毛豆平均值",
+    "sourceCode": "H020"
+  },
+  {
+    "name": "豌豆",
+    "caloriesPer100g": 123,
+    "sourceCategory": "豆類",
+    "sourceName": "豌豆仁",
+    "sourceCode": "H02501"
+  },
+  {
+    "name": "豆腐",
+    "caloriesPer100g": 88,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "傳統豆腐",
+    "sourceCode": "R07202"
+  },
+  {
+    "name": "豆干",
+    "caloriesPer100g": 197,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "黑豆干",
+    "sourceCode": "R06804"
+  },
+  {
+    "name": "豆皮",
+    "caloriesPer100g": 209,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "豆腐皮",
+    "sourceCode": "R06901"
+  },
+  {
+    "name": "豆浆",
+    "caloriesPer100g": 56,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "豆漿",
+    "sourceCode": "O02901"
+  },
+  {
+    "name": "豆花",
+    "caloriesPer100g": 60,
+    "sourceCategory": "糕餅點心類",
+    "sourceName": "豆花(花生)",
+    "sourceCode": "Q04201"
+  },
+  {
+    "name": "豆腐乳",
+    "caloriesPer100g": 107,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "麻油辣腐乳",
+    "sourceCode": "R07301"
+  },
+  {
+    "name": "油豆腐",
+    "caloriesPer100g": 160,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "小三角油豆腐",
+    "sourceCode": "R07204"
+  },
+  {
+    "name": "冻豆腐",
+    "caloriesPer100g": 128,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍豆腐",
+    "sourceCode": "R07203"
+  },
+  {
+    "name": "百页豆腐",
+    "caloriesPer100g": 216,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "百頁豆腐",
+    "sourceCode": "R07201"
+  },
+  {
+    "name": "面筋",
+    "caloriesPer100g": 643,
+    "sourceCategory": "穀物類",
+    "sourceName": "麵筋",
+    "sourceCode": "A01901"
+  },
+  {
+    "name": "黄豆芽",
+    "caloriesPer100g": 34,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "黃豆芽",
+    "sourceCode": "E14401"
+  },
+  {
+    "name": "绿豆芽",
+    "caloriesPer100g": 24,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "綠豆芽",
+    "sourceCode": "E14701"
+  },
+  {
+    "name": "鸡蛋",
+    "caloriesPer100g": 134,
+    "sourceCategory": "蛋類",
+    "sourceName": "雞蛋平均值",
+    "sourceCode": "K001"
+  },
+  {
+    "name": "鸡蛋黄",
+    "caloriesPer100g": 308,
+    "sourceCategory": "蛋類",
+    "sourceName": "雞蛋黃平均值",
+    "sourceCode": "K007"
+  },
+  {
+    "name": "鸡蛋白",
+    "caloriesPer100g": 50,
+    "sourceCategory": "蛋類",
+    "sourceName": "雞蛋白平均值",
+    "sourceCode": "K005"
+  },
+  {
+    "name": "皮蛋",
+    "caloriesPer100g": 127,
+    "sourceCategory": "蛋類",
+    "sourceName": "雞皮蛋平均值",
+    "sourceCode": "K014"
+  },
+  {
+    "name": "咸蛋",
+    "caloriesPer100g": 185,
+    "sourceCategory": "蛋類",
+    "sourceName": "鴨鹹蛋平均值",
+    "sourceCode": "K032"
+  },
+  {
+    "name": "茶叶蛋",
+    "caloriesPer100g": 141,
+    "sourceCategory": "蛋類",
+    "sourceName": "茶葉蛋平均值",
+    "sourceCode": "K016"
+  },
+  {
+    "name": "卤蛋",
+    "caloriesPer100g": 171,
+    "sourceCategory": "蛋類",
+    "sourceName": "滷蛋平均值",
+    "sourceCode": "K022"
+  },
+  {
+    "name": "荷包蛋",
+    "caloriesPer100g": 162,
+    "sourceCategory": "蛋類",
+    "sourceName": "荷包蛋(不加油)",
+    "sourceCode": "K01901"
+  },
+  {
+    "name": "炒蛋",
+    "caloriesPer100g": 215,
+    "sourceCategory": "蛋類",
+    "sourceName": "炒蛋(加油3大匙)",
+    "sourceCode": "K01501"
+  },
+  {
+    "name": "蒸蛋",
+    "caloriesPer100g": 64,
+    "sourceCategory": "蛋類",
+    "sourceName": "蒸蛋平均值",
+    "sourceCode": "K025"
+  },
+  {
+    "name": "水煮蛋",
+    "caloriesPer100g": 147,
+    "sourceCategory": "蛋類",
+    "sourceName": "雞水波蛋",
+    "sourceCode": "K01001"
+  },
+  {
+    "name": "鸭蛋",
+    "caloriesPer100g": 187,
+    "sourceCategory": "蛋類",
+    "sourceName": "鴨蛋",
+    "sourceCode": "K02701"
+  },
+  {
+    "name": "鹅蛋",
+    "caloriesPer100g": 179,
+    "sourceCategory": "蛋類",
+    "sourceName": "鵝蛋",
+    "sourceCode": "K04101"
+  },
+  {
+    "name": "鹌鹑蛋",
+    "caloriesPer100g": 172,
+    "sourceCategory": "蛋類",
+    "sourceName": "鵪鶉蛋",
+    "sourceCode": "K03401"
+  },
+  {
+    "name": "猪肉",
+    "caloriesPer100g": 214,
+    "sourceCategory": "肉類",
+    "sourceName": "豬大排",
+    "sourceCode": "I03301"
+  },
+  {
+    "name": "猪里脊",
+    "caloriesPer100g": 212,
+    "sourceCategory": "肉類",
+    "sourceName": "豬大里肌",
+    "sourceCode": "I03201"
+  },
+  {
+    "name": "猪五花",
+    "caloriesPer100g": 360,
+    "sourceCategory": "肉類",
+    "sourceName": "豬去皮腹脇肉",
+    "sourceCode": "I03701"
+  },
+  {
+    "name": "猪后腿肉",
+    "caloriesPer100g": 123,
+    "sourceCategory": "肉類",
+    "sourceName": "豬後腿肉",
+    "sourceCode": "I03101"
+  },
+  {
+    "name": "猪蹄膀",
+    "caloriesPer100g": 331,
+    "sourceCategory": "肉類",
+    "sourceName": "豬蹄膀",
+    "sourceCode": "I06301"
+  },
+  {
+    "name": "猪脚",
+    "caloriesPer100g": 252,
+    "sourceCategory": "肉類",
+    "sourceName": "豬腳平均值",
+    "sourceCode": "I062"
+  },
+  {
+    "name": "猪肝",
+    "caloriesPer100g": 126,
+    "sourceCategory": "肉類",
+    "sourceName": "豬肝",
+    "sourceCode": "I05101"
+  },
+  {
+    "name": "猪心",
+    "caloriesPer100g": 128,
+    "sourceCategory": "肉類",
+    "sourceName": "豬心",
+    "sourceCode": "I04401"
+  },
+  {
+    "name": "猪肚",
+    "caloriesPer100g": 137,
+    "sourceCategory": "肉類",
+    "sourceName": "熟豬肚",
+    "sourceCode": "I05401"
+  },
+  {
+    "name": "猪大肠",
+    "caloriesPer100g": 198,
+    "sourceCategory": "肉類",
+    "sourceName": "豬大腸",
+    "sourceCode": "I05901"
+  },
+  {
+    "name": "猪血",
+    "caloriesPer100g": 29,
+    "sourceCategory": "肉類",
+    "sourceName": "豬血",
+    "sourceCode": "I04901"
+  },
+  {
+    "name": "猪皮",
+    "caloriesPer100g": 491,
+    "sourceCategory": "肉類",
+    "sourceName": "豬皮",
+    "sourceCode": "I04601"
+  },
+  {
+    "name": "绞肉",
+    "caloriesPer100g": 212,
+    "sourceCategory": "肉類",
+    "sourceName": "豬絞肉平均值",
+    "sourceCode": "I043"
+  },
+  {
+    "name": "排骨",
+    "caloriesPer100g": 287,
+    "sourceCategory": "肉類",
+    "sourceName": "豬小排",
+    "sourceCode": "I03401"
+  },
+  {
+    "name": "肉松",
+    "caloriesPer100g": 513,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "豬肉酥",
+    "sourceCode": "R08302"
+  },
+  {
+    "name": "香肠",
+    "caloriesPer100g": 354,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "香腸",
+    "sourceCode": "R08801"
+  },
+  {
+    "name": "火腿",
+    "caloriesPer100g": 147,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "切片火腿(豬肉)",
+    "sourceCode": "R07702"
+  },
+  {
+    "name": "培根",
+    "caloriesPer100g": 372,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "培根",
+    "sourceCode": "R09001"
+  },
+  {
+    "name": "腊肉",
+    "caloriesPer100g": 409,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "臘肉(腿肉)",
+    "sourceCode": "R09502"
+  },
+  {
+    "name": "热狗",
+    "caloriesPer100g": 257,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "熱狗",
+    "sourceCode": "R09201"
+  },
+  {
+    "name": "牛肉",
+    "caloriesPer100g": 250,
+    "sourceCategory": "肉類",
+    "sourceName": "牛肉火鍋片平均值",
+    "sourceCode": "I013"
+  },
+  {
+    "name": "牛腩",
+    "caloriesPer100g": 225,
+    "sourceCategory": "肉類",
+    "sourceName": "牛肋條",
+    "sourceCode": "I00201"
+  },
+  {
+    "name": "牛腱",
+    "caloriesPer100g": 139,
+    "sourceCategory": "肉類",
+    "sourceName": "牛後腿腱子心",
+    "sourceCode": "I01201"
+  },
+  {
+    "name": "牛里脊",
+    "caloriesPer100g": 184,
+    "sourceCategory": "肉類",
+    "sourceName": "腓力牛排",
+    "sourceCode": "I00901"
+  },
+  {
+    "name": "牛排",
+    "caloriesPer100g": 325,
+    "sourceCategory": "肉類",
+    "sourceName": "牛小排平均值",
+    "sourceCode": "I001"
+  },
+  {
+    "name": "羊肉",
+    "caloriesPer100g": 198,
+    "sourceCategory": "肉類",
+    "sourceName": "綿羊肉切片",
+    "sourceCode": "I02001"
+  },
+  {
+    "name": "羊里脊",
+    "caloriesPer100g": 143,
+    "sourceCategory": "肉類",
+    "sourceName": "小羊腰脊肉",
+    "sourceCode": "I02301"
+  },
+  {
+    "name": "羊腿",
+    "caloriesPer100g": 123,
+    "sourceCategory": "肉類",
+    "sourceName": "山羊前腿肉片",
+    "sourceCode": "I01801"
+  },
+  {
+    "name": "羊排",
+    "caloriesPer100g": 260,
+    "sourceCategory": "肉類",
+    "sourceName": "法式羊排",
+    "sourceCode": "I02101"
+  },
+  {
+    "name": "鸡肉",
+    "caloriesPer100g": 216,
+    "sourceCategory": "肉類",
+    "sourceName": "全雞平均值",
+    "sourceCode": "I067"
+  },
+  {
+    "name": "鸡胸肉",
+    "caloriesPer100g": 119,
+    "sourceCategory": "肉類",
+    "sourceName": "去皮清肉平均值",
+    "sourceCode": "I070"
+  },
+  {
+    "name": "鸡腿",
+    "caloriesPer100g": 157,
+    "sourceCategory": "肉類",
+    "sourceName": "清腿平均值",
+    "sourceCode": "I074"
+  },
+  {
+    "name": "鸡翅",
+    "caloriesPer100g": 210,
+    "sourceCategory": "肉類",
+    "sourceName": "三節翅平均值",
+    "sourceCode": "I078"
+  },
+  {
+    "name": "鸡爪",
+    "caloriesPer100g": 216,
+    "sourceCategory": "肉類",
+    "sourceName": "雞腳(肉雞)",
+    "sourceCode": "I08801"
+  },
+  {
+    "name": "鸡肝",
+    "caloriesPer100g": 111,
+    "sourceCategory": "肉類",
+    "sourceName": "雞肝(肉雞)",
+    "sourceCode": "I08301"
+  },
+  {
+    "name": "鸡胗",
+    "caloriesPer100g": 89,
+    "sourceCategory": "肉類",
+    "sourceName": "雞胗(肉雞)",
+    "sourceCode": "I08401"
+  },
+  {
+    "name": "鸭肉",
+    "caloriesPer100g": 111,
+    "sourceCategory": "肉類",
+    "sourceName": "土番鴨",
+    "sourceCode": "I09102"
+  },
+  {
+    "name": "鸭胸",
+    "caloriesPer100g": 227,
+    "sourceCategory": "肉類",
+    "sourceName": "櫻桃鴨胸肉片",
+    "sourceCode": "I09201"
+  },
+  {
+    "name": "鸭腿",
+    "caloriesPer100g": 282,
+    "sourceCategory": "肉類",
+    "sourceName": "鴨腿",
+    "sourceCode": "I09301"
+  },
+  {
+    "name": "鹅肉",
+    "caloriesPer100g": 187,
+    "sourceCategory": "肉類",
+    "sourceName": "鵝肉",
+    "sourceCode": "I09801"
+  },
+  {
+    "name": "火鸡肉",
+    "caloriesPer100g": 141,
+    "sourceCategory": "肉類",
+    "sourceName": "火雞肉",
+    "sourceCode": "I10701"
+  },
+  {
+    "name": "鲑鱼",
+    "caloriesPer100g": 221,
+    "sourceCategory": "魚貝類",
+    "sourceName": "大西洋鮭魚平均值(去皮)",
+    "sourceCode": "J027"
+  },
+  {
+    "name": "鲔鱼",
+    "caloriesPer100g": 103,
+    "sourceCategory": "魚貝類",
+    "sourceName": "大目鮪",
+    "sourceCode": "J14201"
+  },
+  {
+    "name": "鲭鱼",
+    "caloriesPer100g": 144,
+    "sourceCategory": "魚貝類",
+    "sourceName": "花腹鯖",
+    "sourceCode": "J14401"
+  },
+  {
+    "name": "鲷鱼",
+    "caloriesPer100g": 110,
+    "sourceCategory": "魚貝類",
+    "sourceName": "真鯛平均值(去皮)",
+    "sourceCode": "J102"
+  },
+  {
+    "name": "鲈鱼",
+    "caloriesPer100g": 98,
+    "sourceCategory": "魚貝類",
+    "sourceName": "日本花鱸平均值",
+    "sourceCode": "J047"
+  },
+  {
+    "name": "鳗鱼",
+    "caloriesPer100g": 254,
+    "sourceCategory": "魚貝類",
+    "sourceName": "日本鰻鱺魚片(生)",
+    "sourceCode": "J00501"
+  },
+  {
+    "name": "虱目鱼",
+    "caloriesPer100g": 179,
+    "sourceCategory": "魚貝類",
+    "sourceName": "虱目魚平均值(去皮)",
+    "sourceCode": "J013"
+  },
+  {
+    "name": "吴郭鱼",
+    "caloriesPer100g": 108,
+    "sourceCategory": "魚貝類",
+    "sourceName": "紅色吳郭魚",
+    "sourceCode": "J12301"
+  },
+  {
+    "name": "秋刀鱼",
+    "caloriesPer100g": 314,
+    "sourceCategory": "魚貝類",
+    "sourceName": "秋刀魚",
+    "sourceCode": "J16801"
+  },
+  {
+    "name": "白带鱼",
+    "caloriesPer100g": 102,
+    "sourceCategory": "魚貝類",
+    "sourceName": "白帶魚",
+    "sourceCode": "J14101"
+  },
+  {
+    "name": "鲤鱼",
+    "caloriesPer100g": 91,
+    "sourceCategory": "魚貝類",
+    "sourceName": "鯉",
+    "sourceCode": "J01801"
+  },
+  {
+    "name": "草鱼",
+    "caloriesPer100g": 91,
+    "sourceCategory": "魚貝類",
+    "sourceName": "草魚(含皮)",
+    "sourceCode": "J01701"
+  },
+  {
+    "name": "石斑鱼",
+    "caloriesPer100g": 90,
+    "sourceCategory": "魚貝類",
+    "sourceName": "斑帶石斑魚",
+    "sourceCode": "J05401"
+  },
+  {
+    "name": "鱿鱼",
+    "caloriesPer100g": 100,
+    "sourceCategory": "魚貝類",
+    "sourceName": "尖鎖管",
+    "sourceCode": "J24001"
+  },
+  {
+    "name": "墨鱼",
+    "caloriesPer100g": 57,
+    "sourceCategory": "魚貝類",
+    "sourceName": "真烏賊平均值",
+    "sourceCode": "J235"
+  },
+  {
+    "name": "章鱼",
+    "caloriesPer100g": 61,
+    "sourceCategory": "魚貝類",
+    "sourceName": "章魚",
+    "sourceCode": "J23601"
+  },
+  {
+    "name": "虾",
+    "caloriesPer100g": 103,
+    "sourceCategory": "魚貝類",
+    "sourceName": "白對蝦平均值",
+    "sourceCode": "J197"
+  },
+  {
+    "name": "草虾",
+    "caloriesPer100g": 100,
+    "sourceCategory": "魚貝類",
+    "sourceName": "草對蝦",
+    "sourceCode": "J19901"
+  },
+  {
+    "name": "蟹",
+    "caloriesPer100g": 52,
+    "sourceCategory": "魚貝類",
+    "sourceName": "蟹腳肉",
+    "sourceCode": "J21901"
+  },
+  {
+    "name": "蛤蜊",
+    "caloriesPer100g": 37,
+    "sourceCategory": "魚貝類",
+    "sourceName": "文蛤",
+    "sourceCode": "J23101"
+  },
+  {
+    "name": "牡蛎",
+    "caloriesPer100g": 54,
+    "sourceCategory": "魚貝類",
+    "sourceName": "真牡蠣平均值",
+    "sourceCode": "J223"
+  },
+  {
+    "name": "扇贝",
+    "caloriesPer100g": 70,
+    "sourceCategory": "魚貝類",
+    "sourceName": "蝦夷海扇蛤",
+    "sourceCode": "J22501"
+  },
+  {
+    "name": "鲍鱼",
+    "caloriesPer100g": 69,
+    "sourceCategory": "魚貝類",
+    "sourceName": "鮑魚",
+    "sourceCode": "J24701"
+  },
+  {
+    "name": "海参",
+    "caloriesPer100g": 36,
+    "sourceCategory": "魚貝類",
+    "sourceName": "仿刺參",
+    "sourceCode": "J25701"
+  },
+  {
+    "name": "海蜇",
+    "caloriesPer100g": 19,
+    "sourceCategory": "魚貝類",
+    "sourceName": "海蜇皮",
+    "sourceCode": "J26101"
+  },
+  {
+    "name": "大白菜",
+    "caloriesPer100g": 17,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "結球白菜平均值",
+    "sourceCode": "E058"
+  },
+  {
+    "name": "小白菜",
+    "caloriesPer100g": 12,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "小白菜平均值",
+    "sourceCode": "E052"
+  },
+  {
+    "name": "油菜",
+    "caloriesPer100g": 12,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "油菜",
+    "sourceCode": "E05401"
+  },
+  {
+    "name": "芥菜",
+    "caloriesPer100g": 19,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "芥菜平均值",
+    "sourceCode": "E070"
+  },
+  {
+    "name": "菠菜",
+    "caloriesPer100g": 18,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "菠菜",
+    "sourceCode": "E08801"
+  },
+  {
+    "name": "空心菜",
+    "caloriesPer100g": 21,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "蕹菜平均值",
+    "sourceCode": "E100"
+  },
+  {
+    "name": "苋菜",
+    "caloriesPer100g": 17,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "白莧菜",
+    "sourceCode": "E08401"
+  },
+  {
+    "name": "茼蒿",
+    "caloriesPer100g": 16,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "茼蒿",
+    "sourceCode": "E08001"
+  },
+  {
+    "name": "芹菜",
+    "caloriesPer100g": 15,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "芹菜平均值",
+    "sourceCode": "E065"
+  },
+  {
+    "name": "韭菜",
+    "caloriesPer100g": 23,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "韮菜",
+    "sourceCode": "E04101"
+  },
+  {
+    "name": "韭黄",
+    "caloriesPer100g": 16,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "韮菜黃",
+    "sourceCode": "E04102"
+  },
+  {
+    "name": "青江菜",
+    "caloriesPer100g": 13,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "青江菜平均值",
+    "sourceCode": "E055"
+  },
+  {
+    "name": "莴苣",
+    "caloriesPer100g": 16,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "本島萵苣平均值",
+    "sourceCode": "E095"
+  },
+  {
+    "name": "卷心菜",
+    "caloriesPer100g": 23,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "甘藍平均值",
+    "sourceCode": "E045"
+  },
+  {
+    "name": "花椰菜",
+    "caloriesPer100g": 23,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "花椰菜",
+    "sourceCode": "E10301"
+  },
+  {
+    "name": "西兰花",
+    "caloriesPer100g": 28,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "青花菜",
+    "sourceCode": "E10501"
+  },
+  {
+    "name": "芥蓝",
+    "caloriesPer100g": 20,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "芥藍菜",
+    "sourceCode": "E07201"
+  },
+  {
+    "name": "芦笋",
+    "caloriesPer100g": 20,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "澳洲綠蘆筍(粗短型)",
+    "sourceCode": "E02602"
+  },
+  {
+    "name": "竹笋",
+    "caloriesPer100g": 25,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "綠竹筍",
+    "sourceCode": "E02201"
+  },
+  {
+    "name": "白萝卜",
+    "caloriesPer100g": 18,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "白蘿蔔平均值",
+    "sourceCode": "E006"
+  },
+  {
+    "name": "胡萝卜",
+    "caloriesPer100g": 39,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "胡蘿蔔平均值",
+    "sourceCode": "E002"
+  },
+  {
+    "name": "大头菜",
+    "caloriesPer100g": 20,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "球莖甘藍",
+    "sourceCode": "E01501"
+  },
+  {
+    "name": "茄子",
+    "caloriesPer100g": 23,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "茄子平均值",
+    "sourceCode": "E128"
+  },
+  {
+    "name": "番茄",
+    "caloriesPer100g": 19,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "大番茄平均值(紅色系)",
+    "sourceCode": "E129"
+  },
+  {
+    "name": "圣女果",
+    "caloriesPer100g": 31,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "黃金聖女小番茄",
+    "sourceCode": "E13402"
+  },
+  {
+    "name": "青椒",
+    "caloriesPer100g": 35,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "小甜椒(青皮)",
+    "sourceCode": "E13502"
+  },
+  {
+    "name": "彩椒",
+    "caloriesPer100g": 35,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "甜椒(橙皮)",
+    "sourceCode": "E13603"
+  },
+  {
+    "name": "黄瓜",
+    "caloriesPer100g": 13,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "花胡瓜",
+    "sourceCode": "E11601"
+  },
+  {
+    "name": "丝瓜",
+    "caloriesPer100g": 19,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "絲瓜",
+    "sourceCode": "E12301"
+  },
+  {
+    "name": "苦瓜",
+    "caloriesPer100g": 20,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "苦瓜平均值",
+    "sourceCode": "E118"
+  },
+  {
+    "name": "南瓜",
+    "caloriesPer100g": 74,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "南瓜平均值",
+    "sourceCode": "E114"
+  },
+  {
+    "name": "冬瓜",
+    "caloriesPer100g": 11,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "冬瓜平均值",
+    "sourceCode": "E112"
+  },
+  {
+    "name": "瓠瓜",
+    "caloriesPer100g": 18,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "蒲瓜平均值",
+    "sourceCode": "E126"
+  },
+  {
+    "name": "节瓜",
+    "caloriesPer100g": 13,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "綠櫛瓜",
+    "sourceCode": "E12702"
+  },
+  {
+    "name": "佛手瓜",
+    "caloriesPer100g": 23,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "隼人瓜",
+    "sourceCode": "E12101"
+  },
+  {
+    "name": "马铃薯",
+    "caloriesPer100g": 68,
+    "sourceCategory": "澱粉類",
+    "sourceName": "黃皮馬鈴薯平均值",
+    "sourceCode": "B015"
+  },
+  {
+    "name": "红薯",
+    "caloriesPer100g": 119,
+    "sourceCategory": "澱粉類",
+    "sourceName": "冰心地瓜",
+    "sourceCode": "B00401"
+  },
+  {
+    "name": "山药",
+    "caloriesPer100g": 87,
+    "sourceCategory": "澱粉類",
+    "sourceName": "山藥平均值",
+    "sourceCode": "B002"
+  },
+  {
+    "name": "芋头",
+    "caloriesPer100g": 121,
+    "sourceCategory": "澱粉類",
+    "sourceName": "芋頭平均值",
+    "sourceCode": "B010"
+  },
+  {
+    "name": "莲藕",
+    "caloriesPer100g": 50,
+    "sourceCategory": "澱粉類",
+    "sourceName": "熟蓮藕",
+    "sourceCode": "B02001"
+  },
+  {
+    "name": "洋葱",
+    "caloriesPer100g": 42,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "白洋葱",
+    "sourceCode": "E03601"
+  },
+  {
+    "name": "葱",
+    "caloriesPer100g": 28,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "青葱平均值",
+    "sourceCode": "E035"
+  },
+  {
+    "name": "蒜",
+    "caloriesPer100g": 122,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "大蒜",
+    "sourceCode": "E03101"
+  },
+  {
+    "name": "姜",
+    "caloriesPer100g": 21,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "嫩薑",
+    "sourceCode": "E02901"
+  },
+  {
+    "name": "香菜",
+    "caloriesPer100g": 26,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "芫荽",
+    "sourceCode": "E07401"
+  },
+  {
+    "name": "九层塔",
+    "caloriesPer100g": 28,
+    "sourceCategory": "蔬菜類",
+    "sourceName": "九層塔",
+    "sourceCode": "E04201"
+  },
+  {
+    "name": "香菇",
+    "caloriesPer100g": 39,
+    "sourceCategory": "菇類",
+    "sourceName": "香菇平均值",
+    "sourceCode": "G015"
+  },
+  {
+    "name": "金针菇",
+    "caloriesPer100g": 37,
+    "sourceCategory": "菇類",
+    "sourceName": "金針菇",
+    "sourceCode": "G02701"
+  },
+  {
+    "name": "杏鲍菇",
+    "caloriesPer100g": 41,
+    "sourceCategory": "菇類",
+    "sourceName": "杏鮑菇平均值",
+    "sourceCode": "G024"
+  },
+  {
+    "name": "蘑菇",
+    "caloriesPer100g": 39,
+    "sourceCategory": "菇類",
+    "sourceName": "冷凍洋菇",
+    "sourceCode": "G03501"
+  },
+  {
+    "name": "木耳",
+    "caloriesPer100g": 38,
+    "sourceCategory": "菇類",
+    "sourceName": "木耳",
+    "sourceCode": "G00101"
+  },
+  {
+    "name": "银耳",
+    "caloriesPer100g": 22,
+    "sourceCategory": "菇類",
+    "sourceName": "銀耳",
+    "sourceCode": "G00401"
+  },
+  {
+    "name": "海带",
+    "caloriesPer100g": 20,
+    "sourceCategory": "藻類",
+    "sourceName": "海帶平均值",
+    "sourceCode": "F009"
+  },
+  {
+    "name": "紫菜",
+    "caloriesPer100g": 294,
+    "sourceCategory": "藻類",
+    "sourceName": "熟紫菜",
+    "sourceCode": "F00301"
+  },
+  {
+    "name": "裙带菜(干)",
+    "caloriesPer100g": 225,
+    "sourceCategory": "藻類",
+    "sourceName": "乾裙帶菜",
+    "sourceCode": "F01201"
+  },
+  {
+    "name": "苹果",
+    "caloriesPer100g": 51,
+    "sourceCategory": "水果類",
+    "sourceName": "蘋果平均值(混色)",
+    "sourceCode": "D082"
+  },
+  {
+    "name": "梨",
+    "caloriesPer100g": 53,
+    "sourceCategory": "水果類",
+    "sourceName": "西洋梨平均值",
+    "sourceCode": "D072"
+  },
+  {
+    "name": "葡萄",
+    "caloriesPer100g": 64,
+    "sourceCategory": "水果類",
+    "sourceName": "巨峰葡萄",
+    "sourceCode": "D02901"
+  },
+  {
+    "name": "草莓",
+    "caloriesPer100g": 39,
+    "sourceCategory": "水果類",
+    "sourceName": "草莓",
+    "sourceCode": "D02401"
+  },
+  {
+    "name": "桑椹",
+    "caloriesPer100g": 32,
+    "sourceCategory": "水果類",
+    "sourceName": "桑葚",
+    "sourceCode": "D02201"
+  },
+  {
+    "name": "樱桃",
+    "caloriesPer100g": 75,
+    "sourceCategory": "水果類",
+    "sourceName": "櫻桃",
+    "sourceCode": "D08501"
+  },
+  {
+    "name": "李子",
+    "caloriesPer100g": 39,
+    "sourceCategory": "水果類",
+    "sourceName": "李子平均值(紅皮紅肉)",
+    "sourceCode": "D058"
+  },
+  {
+    "name": "桃子",
+    "caloriesPer100g": 51,
+    "sourceCategory": "水果類",
+    "sourceName": "玫瑰桃",
+    "sourceCode": "D06902"
+  },
+  {
+    "name": "水蜜桃",
+    "caloriesPer100g": 39,
+    "sourceCategory": "水果類",
+    "sourceName": "水蜜桃平均值",
+    "sourceCode": "D068"
+  },
+  {
+    "name": "梅",
+    "caloriesPer100g": 35,
+    "sourceCategory": "水果類",
+    "sourceName": "胭脂梅",
+    "sourceCode": "D07101"
+  },
+  {
+    "name": "枣",
+    "caloriesPer100g": 46,
+    "sourceCategory": "水果類",
+    "sourceName": "珍珠蜜棗",
+    "sourceCode": "D07601"
+  },
+  {
+    "name": "红枣",
+    "caloriesPer100g": 227,
+    "sourceCategory": "水果類",
+    "sourceName": "紅棗",
+    "sourceCode": "D07801"
+  },
+  {
+    "name": "龙眼",
+    "caloriesPer100g": 73,
+    "sourceCategory": "水果類",
+    "sourceName": "龍眼",
+    "sourceCode": "D05501"
+  },
+  {
+    "name": "荔枝",
+    "caloriesPer100g": 65,
+    "sourceCategory": "水果類",
+    "sourceName": "荔枝平均值",
+    "sourceCode": "D053"
+  },
+  {
+    "name": "柚子",
+    "caloriesPer100g": 33,
+    "sourceCategory": "水果類",
+    "sourceName": "文旦",
+    "sourceCode": "D09001"
+  },
+  {
+    "name": "橘子",
+    "caloriesPer100g": 44,
+    "sourceCategory": "水果類",
+    "sourceName": "海梨桶柑",
+    "sourceCode": "D08703"
+  },
+  {
+    "name": "橙子",
+    "caloriesPer100g": 46,
+    "sourceCategory": "水果類",
+    "sourceName": "甜橙平均值(普遍系)",
+    "sourceCode": "D093"
+  },
+  {
+    "name": "柠檬",
+    "caloriesPer100g": 33,
+    "sourceCategory": "水果類",
+    "sourceName": "檸檬",
+    "sourceCode": "D09801"
+  },
+  {
+    "name": "金桔",
+    "caloriesPer100g": 32,
+    "sourceCategory": "水果類",
+    "sourceName": "圓果金柑",
+    "sourceCode": "D08802"
+  },
+  {
+    "name": "葡萄柚",
+    "caloriesPer100g": 33,
+    "sourceCategory": "水果類",
+    "sourceName": "青皮葡萄柚",
+    "sourceCode": "D09401"
+  },
+  {
+    "name": "枇杷",
+    "caloriesPer100g": 38,
+    "sourceCategory": "水果類",
+    "sourceName": "枇杷",
+    "sourceCode": "D06201"
+  },
+  {
+    "name": "柿子",
+    "caloriesPer100g": 57,
+    "sourceCategory": "水果類",
+    "sourceName": "甜柿平均值",
+    "sourceCode": "D064"
+  },
+  {
+    "name": "石榴",
+    "caloriesPer100g": 67,
+    "sourceCategory": "水果類",
+    "sourceName": "安石榴",
+    "sourceCode": "D00401"
+  },
+  {
+    "name": "猕猴桃",
+    "caloriesPer100g": 56,
+    "sourceCategory": "水果類",
+    "sourceName": "奇異果",
+    "sourceCode": "D00801"
+  },
+  {
+    "name": "火龙果",
+    "caloriesPer100g": 51,
+    "sourceCategory": "水果類",
+    "sourceName": "紅龍果(白肉)",
+    "sourceCode": "D01001"
+  },
+  {
+    "name": "香蕉",
+    "caloriesPer100g": 85,
+    "sourceCategory": "水果類",
+    "sourceName": "北蕉平均值",
+    "sourceCode": "D012"
+  },
+  {
+    "name": "菠萝",
+    "caloriesPer100g": 53,
+    "sourceCategory": "水果類",
+    "sourceName": "鳳梨平均值(雜交種)",
+    "sourceCode": "D019"
+  },
+  {
+    "name": "芒果",
+    "caloriesPer100g": 56,
+    "sourceCategory": "水果類",
+    "sourceName": "芒果平均值(新興種)",
+    "sourceCode": "D052"
+  },
+  {
+    "name": "木瓜",
+    "caloriesPer100g": 38,
+    "sourceCategory": "水果類",
+    "sourceName": "木瓜平均值",
+    "sourceCode": "D002"
+  },
+  {
+    "name": "西瓜",
+    "caloriesPer100g": 33,
+    "sourceCategory": "水果類",
+    "sourceName": "西瓜平均值(紅肉小瓜)",
+    "sourceCode": "D040"
+  },
+  {
+    "name": "香瓜",
+    "caloriesPer100g": 30,
+    "sourceCategory": "水果類",
+    "sourceName": "甜瓜平均值(光皮洋香瓜)",
+    "sourceCode": "D044"
+  },
+  {
+    "name": "哈密瓜",
+    "caloriesPer100g": 28,
+    "sourceCategory": "水果類",
+    "sourceName": "新疆哈蜜瓜",
+    "sourceCode": "D04701"
+  },
+  {
+    "name": "番石榴",
+    "caloriesPer100g": 38,
+    "sourceCategory": "水果類",
+    "sourceName": "芭樂平均值(白肉)",
+    "sourceCode": "D025"
+  },
+  {
+    "name": "释迦",
+    "caloriesPer100g": 104,
+    "sourceCategory": "水果類",
+    "sourceName": "釋迦",
+    "sourceCode": "D02001"
+  },
+  {
+    "name": "榴莲",
+    "caloriesPer100g": 136,
+    "sourceCategory": "水果類",
+    "sourceName": "榴槤",
+    "sourceCode": "D01701"
+  },
+  {
+    "name": "山竹",
+    "caloriesPer100g": 69,
+    "sourceCategory": "水果類",
+    "sourceName": "山竹",
+    "sourceCode": "D00101"
+  },
+  {
+    "name": "牛油果",
+    "caloriesPer100g": 73,
+    "sourceCategory": "水果類",
+    "sourceName": "酪梨平均值(綠皮)",
+    "sourceCode": "D015"
+  },
+  {
+    "name": "莲雾",
+    "caloriesPer100g": 35,
+    "sourceCategory": "水果類",
+    "sourceName": "蓮霧平均值(粉紅色種)",
+    "sourceCode": "D038"
+  },
+  {
+    "name": "杨桃",
+    "caloriesPer100g": 32,
+    "sourceCategory": "水果類",
+    "sourceName": "楊桃平均值",
+    "sourceCode": "D027"
+  },
+  {
+    "name": "百香果",
+    "caloriesPer100g": 66,
+    "sourceCategory": "水果類",
+    "sourceName": "百香果",
+    "sourceCode": "D00501"
+  },
+  {
+    "name": "全脂牛奶",
+    "caloriesPer100g": 63,
+    "sourceCategory": "乳品類",
+    "sourceName": "全脂鮮乳平均值",
+    "sourceCode": "L002"
+  },
+  {
+    "name": "低脂牛奶",
+    "caloriesPer100g": 43,
+    "sourceCategory": "乳品類",
+    "sourceName": "低脂鮮乳",
+    "sourceCode": "L00401"
+  },
+  {
+    "name": "脱脂牛奶",
+    "caloriesPer100g": 42,
+    "sourceCategory": "乳品類",
+    "sourceName": "脫脂強化鮮乳(鈣強化)",
+    "sourceCode": "L00901"
+  },
+  {
+    "name": "保久乳",
+    "caloriesPer100g": 62,
+    "sourceCategory": "乳品類",
+    "sourceName": "全脂保久乳",
+    "sourceCode": "L01301"
+  },
+  {
+    "name": "调味乳",
+    "caloriesPer100g": 54,
+    "sourceCategory": "乳品類",
+    "sourceName": "中脂調味乳(果汁)",
+    "sourceCode": "L01003"
+  },
+  {
+    "name": "酸奶",
+    "caloriesPer100g": 97,
+    "sourceCategory": "乳品類",
+    "sourceName": "全脂凝態發酵乳",
+    "sourceCode": "L03201"
+  },
+  {
+    "name": "奶酪",
+    "caloriesPer100g": 309,
+    "sourceCategory": "乳品類",
+    "sourceName": "切片乾酪",
+    "sourceCode": "L02501"
+  },
+  {
+    "name": "淡奶油",
+    "caloriesPer100g": 340,
+    "sourceCategory": "油脂類",
+    "sourceName": "奶油(液態)",
+    "sourceCode": "M03301"
+  },
+  {
+    "name": "黄油",
+    "caloriesPer100g": 716,
+    "sourceCategory": "油脂類",
+    "sourceName": "奶油平均值(固態)",
+    "sourceCode": "M032"
+  },
+  {
+    "name": "炼乳",
+    "caloriesPer100g": 318,
+    "sourceCategory": "乳品類",
+    "sourceName": "加糖部份脫脂煉乳",
+    "sourceCode": "L03801"
+  },
+  {
+    "name": "奶粉",
+    "caloriesPer100g": 504,
+    "sourceCategory": "乳品類",
+    "sourceName": "全脂奶粉",
+    "sourceCode": "L01701"
+  },
+  {
+    "name": "羊奶",
+    "caloriesPer100g": 65,
+    "sourceCategory": "乳品類",
+    "sourceName": "高脂鮮羊乳",
+    "sourceCode": "L03901"
+  },
+  {
+    "name": "大豆油",
+    "caloriesPer100g": 884,
+    "sourceCategory": "油脂類",
+    "sourceName": "大豆油",
+    "sourceCode": "M00501"
+  },
+  {
+    "name": "花生油",
+    "caloriesPer100g": 883,
+    "sourceCategory": "油脂類",
+    "sourceName": "花生油",
+    "sourceCode": "M01301"
+  },
+  {
+    "name": "橄榄油",
+    "caloriesPer100g": 884,
+    "sourceCategory": "油脂類",
+    "sourceName": "橄欖油",
+    "sourceCode": "M02801"
+  },
+  {
+    "name": "葵花籽油",
+    "caloriesPer100g": 884,
+    "sourceCategory": "油脂類",
+    "sourceName": "葵花籽油",
+    "sourceCode": "M02401"
+  },
+  {
+    "name": "芝麻油",
+    "caloriesPer100g": 884,
+    "sourceCategory": "油脂類",
+    "sourceName": "白芝麻油",
+    "sourceCode": "M01001"
+  },
+  {
+    "name": "椰子油",
+    "caloriesPer100g": 883,
+    "sourceCategory": "油脂類",
+    "sourceName": "椰子油",
+    "sourceCode": "M02301"
+  },
+  {
+    "name": "猪油",
+    "caloriesPer100g": 890,
+    "sourceCategory": "油脂類",
+    "sourceName": "豬油",
+    "sourceCode": "M00201"
+  },
+  {
+    "name": "牛油",
+    "caloriesPer100g": 764,
+    "sourceCategory": "油脂類",
+    "sourceName": "牛油平均值",
+    "sourceCode": "M001"
+  },
+  {
+    "name": "人造奶油",
+    "caloriesPer100g": 674,
+    "sourceCategory": "油脂類",
+    "sourceName": "中脂人造奶油",
+    "sourceCode": "M03402"
+  },
+  {
+    "name": "花生",
+    "caloriesPer100g": 344,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "冷凍帶殼花生(熟)",
+    "sourceCode": "C03002"
+  },
+  {
+    "name": "核桃",
+    "caloriesPer100g": 667,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "生核桃",
+    "sourceCode": "C01101"
+  },
+  {
+    "name": "杏仁",
+    "caloriesPer100g": 588,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "原味杏仁果",
+    "sourceCode": "C00301"
+  },
+  {
+    "name": "腰果",
+    "caloriesPer100g": 566,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "原味腰果",
+    "sourceCode": "C01901"
+  },
+  {
+    "name": "开心果",
+    "caloriesPer100g": 601,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "開心果",
+    "sourceCode": "C01701"
+  },
+  {
+    "name": "夏威夷果",
+    "caloriesPer100g": 700,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "原味夏威夷豆",
+    "sourceCode": "C00901"
+  },
+  {
+    "name": "榛子",
+    "caloriesPer100g": 672,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "原味榛果",
+    "sourceCode": "C02101"
+  },
+  {
+    "name": "松子",
+    "caloriesPer100g": 680,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "原味松子仁",
+    "sourceCode": "C00701"
+  },
+  {
+    "name": "南瓜子",
+    "caloriesPer100g": 561,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "調味南瓜子(去殼)",
+    "sourceCode": "C03601"
+  },
+  {
+    "name": "葵花籽",
+    "caloriesPer100g": 586,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "原味葵瓜子(去殼)",
+    "sourceCode": "C03701"
+  },
+  {
+    "name": "芝麻",
+    "caloriesPer100g": 626,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "白芝麻(熟)",
+    "sourceCode": "C02701"
+  },
+  {
+    "name": "亚麻籽",
+    "caloriesPer100g": 524,
+    "sourceCategory": "堅果及種子類",
+    "sourceName": "亞麻仁籽",
+    "sourceCode": "C02301"
+  },
+  {
+    "name": "可乐",
+    "caloriesPer100g": 51,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "可樂",
+    "sourceCode": "O05601"
+  },
+  {
+    "name": "汽水",
+    "caloriesPer100g": 37,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "沙士",
+    "sourceCode": "O05701"
+  },
+  {
+    "name": "柳橙汁",
+    "caloriesPer100g": 50,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "柳橙汁(非原汁)",
+    "sourceCode": "O01501"
+  },
+  {
+    "name": "苹果汁",
+    "caloriesPer100g": 47,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "蘋果汁(非原汁)",
+    "sourceCode": "O02301"
+  },
+  {
+    "name": "西瓜汁",
+    "caloriesPer100g": 30,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "西瓜汁(非原汁)",
+    "sourceCode": "O01301"
+  },
+  {
+    "name": "奶茶",
+    "caloriesPer100g": 42,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "奶茶(三合一)",
+    "sourceCode": "O04902"
+  },
+  {
+    "name": "珍珠奶茶",
+    "caloriesPer100g": 94,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "珍珠奶茶(去冰,全糖)",
+    "sourceCode": "O05103"
+  },
+  {
+    "name": "红茶",
+    "caloriesPer100g": 34,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "紅茶(大麥)",
+    "sourceCode": "O04301"
+  },
+  {
+    "name": "绿茶",
+    "caloriesPer100g": 22,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "綠茶",
+    "sourceCode": "O04801"
+  },
+  {
+    "name": "乌龙茶",
+    "caloriesPer100g": 36,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "烏龍茶(去冰,全糖)",
+    "sourceCode": "O04603"
+  },
+  {
+    "name": "咖啡",
+    "caloriesPer100g": 39,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "咖啡(三合一)",
+    "sourceCode": "O03902"
+  },
+  {
+    "name": "美式咖啡",
+    "caloriesPer100g": 2,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "美式咖啡(無糖)",
+    "sourceCode": "O03801"
+  },
+  {
+    "name": "拿铁",
+    "caloriesPer100g": 43,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "拿鐵咖啡(無糖)",
+    "sourceCode": "O03901"
+  },
+  {
+    "name": "运动饮料",
+    "caloriesPer100g": 28,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "運動飲料",
+    "sourceCode": "O06501"
+  },
+  {
+    "name": "乳酸饮料",
+    "caloriesPer100g": 45,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "乳酸飲料",
+    "sourceCode": "O03501"
+  },
+  {
+    "name": "啤酒",
+    "caloriesPer100g": 49,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "啤酒",
+    "sourceCode": "O06002"
+  },
+  {
+    "name": "葡萄酒",
+    "caloriesPer100g": 90,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "白葡萄酒",
+    "sourceCode": "O06201"
+  },
+  {
+    "name": "米浆",
+    "caloriesPer100g": 51,
+    "sourceCategory": "嗜好性飲料類",
+    "sourceName": "糯米漿",
+    "sourceCode": "O00105"
+  },
+  {
+    "name": "白糖",
+    "caloriesPer100g": 385,
+    "sourceCategory": "糖類",
+    "sourceName": "方糖",
+    "sourceCode": "N00101"
+  },
+  {
+    "name": "红糖",
+    "caloriesPer100g": 385,
+    "sourceCategory": "糖類",
+    "sourceName": "紅砂糖",
+    "sourceCode": "N00301"
+  },
+  {
+    "name": "冰糖",
+    "caloriesPer100g": 387,
+    "sourceCategory": "糖類",
+    "sourceName": "冰糖",
+    "sourceCode": "N00201"
+  },
+  {
+    "name": "蜂蜜",
+    "caloriesPer100g": 315,
+    "sourceCategory": "糖類",
+    "sourceName": "蜂蜜(冬蜜)",
+    "sourceCode": "N00701"
+  },
+  {
+    "name": "枫糖",
+    "caloriesPer100g": 258,
+    "sourceCategory": "糖類",
+    "sourceName": "楓糖",
+    "sourceCode": "N00601"
+  },
+  {
+    "name": "果酱",
+    "caloriesPer100g": 227,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "桑葚果醬",
+    "sourceCode": "P09603"
+  },
+  {
+    "name": "花生酱",
+    "caloriesPer100g": 657,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "花生醬",
+    "sourceCode": "P09801"
+  },
+  {
+    "name": "芝麻酱",
+    "caloriesPer100g": 643,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "麻醬",
+    "sourceCode": "P05901"
+  },
+  {
+    "name": "沙拉酱",
+    "caloriesPer100g": 337,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "凱撒沙拉醬",
+    "sourceCode": "P06405"
+  },
+  {
+    "name": "番茄酱",
+    "caloriesPer100g": 114,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "蕃茄醬",
+    "sourceCode": "P08101"
+  },
+  {
+    "name": "辣椒酱",
+    "caloriesPer100g": 83,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "辣椒醬",
+    "sourceCode": "P07801"
+  },
+  {
+    "name": "酱油",
+    "caloriesPer100g": 90,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "醬油",
+    "sourceCode": "P04702"
+  },
+  {
+    "name": "醋",
+    "caloriesPer100g": 17,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "糯米醋",
+    "sourceCode": "P04202"
+  },
+  {
+    "name": "味精",
+    "caloriesPer100g": 251,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "味精",
+    "sourceCode": "P02501"
+  },
+  {
+    "name": "盐",
+    "caloriesPer100g": 2,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "岩鹽",
+    "sourceCode": "P03401"
+  },
+  {
+    "name": "胡椒",
+    "caloriesPer100g": 342,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "白胡椒粉",
+    "sourceCode": "P01301"
+  },
+  {
+    "name": "花椒",
+    "caloriesPer100g": 369,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "花椒粉",
+    "sourceCode": "P01001"
+  },
+  {
+    "name": "八角",
+    "caloriesPer100g": 360,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "八角",
+    "sourceCode": "P00101"
+  },
+  {
+    "name": "咖喱",
+    "caloriesPer100g": 515,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "咖哩塊",
+    "sourceCode": "P00901"
+  },
+  {
+    "name": "味噌",
+    "caloriesPer100g": 215,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "味噌",
+    "sourceCode": "P08801"
+  },
+  {
+    "name": "高汤",
+    "caloriesPer100g": 2,
+    "sourceCategory": "調味料及香辛料類",
+    "sourceName": "低脂高湯",
+    "sourceCode": "P03902"
+  },
+  {
+    "name": "鱼丸",
+    "caloriesPer100g": 160,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍旗魚丸",
+    "sourceCode": "R10403"
+  },
+  {
+    "name": "花枝丸",
+    "caloriesPer100g": 166,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍花枝丸",
+    "sourceCode": "R09801"
+  },
+  {
+    "name": "虾丸",
+    "caloriesPer100g": 123,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍蝦丸",
+    "sourceCode": "R10901"
+  },
+  {
+    "name": "贡丸",
+    "caloriesPer100g": 244,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍貢丸",
+    "sourceCode": "R08001"
+  },
+  {
+    "name": "燕饺",
+    "caloriesPer100g": 315,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍燕餃",
+    "sourceCode": "R11707"
+  },
+  {
+    "name": "鱼饺",
+    "caloriesPer100g": 277,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍魚餃",
+    "sourceCode": "R11705"
+  },
+  {
+    "name": "蛋饺",
+    "caloriesPer100g": 183,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍蛋餃",
+    "sourceCode": "R11703"
+  },
+  {
+    "name": "烧卖",
+    "caloriesPer100g": 188,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍燒賣",
+    "sourceCode": "R05001"
+  },
+  {
+    "name": "叉烧包",
+    "caloriesPer100g": 266,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍叉燒包",
+    "sourceCode": "R01201"
+  },
+  {
+    "name": "鸡排",
+    "caloriesPer100g": 183,
+    "sourceCategory": "肉類",
+    "sourceName": "雞排平均值",
+    "sourceCode": "I076"
+  },
+  {
+    "name": "鸡块",
+    "caloriesPer100g": 228,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍雞塊",
+    "sourceCode": "R09401"
+  },
+  {
+    "name": "薯条",
+    "caloriesPer100g": 182,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "冷凍甘薯條",
+    "sourceCode": "R06301"
+  },
+  {
+    "name": "天妇罗",
+    "caloriesPer100g": 176,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "天婦羅",
+    "sourceCode": "R09701"
+  },
+  {
+    "name": "蚵仔煎",
+    "caloriesPer100g": 192,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "蚵仔煎",
+    "sourceCode": "R04101"
+  },
+  {
+    "name": "肉羹",
+    "caloriesPer100g": 247,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "肉羹",
+    "sourceCode": "R08501"
+  },
+  {
+    "name": "猪血糕",
+    "caloriesPer100g": 194,
+    "sourceCategory": "加工調理食品類",
+    "sourceName": "豬血糕",
+    "sourceCode": "R03201"
+  }
+]
