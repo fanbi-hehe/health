@@ -3,6 +3,7 @@ package com.example.health.ui.training
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +45,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import coil.ImageLoader
+import coil.compose.SubcomposeAsyncImage
+import coil.decode.GifDecoder
 import coil.request.ImageRequest
 import com.example.health.data.local.entity.ExerciseLibrary
 import com.google.gson.Gson
@@ -53,8 +63,8 @@ fun ExerciseDetailScreen(
 ) {
     val context = LocalContext.current
     val gson = remember { Gson() }
+    var showFullscreen by remember { mutableStateOf(false) }
 
-    // 解析辅助肌群和分步说明
     val secondaryMuscles: List<String> = remember(exercise.secondaryMuscles) {
         try {
             val listType = object : TypeToken<List<String>>() {}.type
@@ -66,6 +76,14 @@ fun ExerciseDetailScreen(
             val listType = object : TypeToken<List<String>>() {}.type
             gson.fromJson(exercise.instructionSteps, listType) ?: emptyList()
         } catch (_: Exception) { emptyList() }
+    }
+
+    // 全屏查看弹窗
+    if (showFullscreen) {
+        FullscreenMediaDialog(
+            exercise = exercise,
+            onDismiss = { showFullscreen = false }
+        )
     }
 
     Scaffold(
@@ -90,16 +108,33 @@ fun ExerciseDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // ── 图片 / GIF ──
-            if (exercise.gifUrl.isNotEmpty()) {
-                GifViewer(assetPath = exercise.gifUrl)
-                Spacer(modifier = Modifier.height(8.dp))
-            } else if (exercise.image.isNotEmpty()) {
-                StaticAssetImage(assetPath = exercise.image)
+            // ── 媒体展示（可点击放大） ──
+            val hasGif = exercise.gifUrl.isNotEmpty()
+            val hasImage = exercise.image.isNotEmpty()
+
+            if (hasGif || hasImage) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    if (hasGif) {
+                        AnimatedGifViewer(assetPath = exercise.gifUrl)
+                    } else {
+                        StaticAssetImage(assetPath = exercise.image)
+                    }
+                    // 放大按钮
+                    IconButton(
+                        onClick = { showFullscreen = true },
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                    ) {
+                        Icon(
+                            Icons.Default.ZoomIn,
+                            contentDescription = "放大查看",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // ── 基本信息标签 ──
+            // ── 信息标签 ──
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -135,15 +170,11 @@ fun ExerciseDetailScreen(
                 Text("分步教学", style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(8.dp))
-
                 steps.forEachIndexed { index, step ->
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                         verticalAlignment = Alignment.Top
                     ) {
-                        // 步骤编号圆点
                         Box(
                             modifier = Modifier
                                 .size(28.dp)
@@ -151,19 +182,13 @@ fun ExerciseDetailScreen(
                                 .background(MaterialTheme.colorScheme.primary),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "${index + 1}",
-                                style = MaterialTheme.typography.labelSmall,
+                            Text("${index + 1}", style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
+                                fontWeight = FontWeight.Bold)
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = step,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f)
-                        )
+                        Text(step, style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f))
                     }
                 }
             }
@@ -171,7 +196,44 @@ fun ExerciseDetailScreen(
     }
 }
 
-// ── 静态图片（assets） ──
+// ──────────────────────────────────────────────────────────
+// 全屏查看弹窗
+// ──────────────────────────────────────────────────────────
+@Composable
+private fun FullscreenMediaDialog(exercise: ExerciseLibrary, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.95f))
+                .clickable(onClick = onDismiss)
+        ) {
+            if (exercise.gifUrl.isNotEmpty()) {
+                AnimatedGifViewer(assetPath = exercise.gifUrl)
+            } else if (exercise.image.isNotEmpty()) {
+                StaticAssetImage(assetPath = exercise.image)
+            }
+
+            // 关闭按钮
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
+            ) {
+                Icon(Icons.Default.Close, contentDescription = "关闭",
+                    tint = MaterialTheme.colorScheme.onBackground)
+            }
+        }
+    }
+}
+
+// ──────────────────────────────────────────────────────────
+// 静态图片
+// ──────────────────────────────────────────────────────────
 @Composable
 private fun StaticAssetImage(assetPath: String) {
     val context = LocalContext.current
@@ -184,20 +246,19 @@ private fun StaticAssetImage(assetPath: String) {
         Image(
             bitmap = bitmap.asImageBitmap(),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp)),
-            contentScale = ContentScale.Fit
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.FillWidth
         )
     }
 }
 
-// ── GIF 动图阅读器（Coil + GifDecoder） ──
+// ──────────────────────────────────────────────────────────
+// GIF 动图（自定义 ImageLoader + GifDecoder）
+// ──────────────────────────────────────────────────────────
 @Composable
-private fun GifViewer(assetPath: String) {
+private fun AnimatedGifViewer(assetPath: String) {
     val context = LocalContext.current
 
-    // 将 asset 文件复制到缓存目录（Coil 需要文件/URI 路径）
     val cacheFile = remember(assetPath) {
         try {
             val input = context.assets.open(assetPath)
@@ -211,21 +272,30 @@ private fun GifViewer(assetPath: String) {
         } catch (_: Exception) { null }
     }
 
+    val gifImageLoader = remember {
+        ImageLoader.Builder(context)
+            .components {
+                add(GifDecoder.Factory())
+            }
+            .build()
+    }
+
     if (cacheFile != null && cacheFile.exists()) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             model = ImageRequest.Builder(context)
                 .data(cacheFile)
                 .build(),
             contentDescription = "动作演示",
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp)),
-            contentScale = ContentScale.Fit
+            imageLoader = gifImageLoader,
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.FillWidth
         )
     }
 }
 
-// ── 信息小标签 ──
+// ──────────────────────────────────────────────────────────
+// 信息小标签
+// ──────────────────────────────────────────────────────────
 @Composable
 private fun InfoChip(label: String, value: String) {
     Card(

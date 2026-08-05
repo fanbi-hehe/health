@@ -81,9 +81,13 @@ fun TrainingScreen(
     } else {
         allExercises.filter { it.name.contains(exerciseSearchQuery, ignoreCase = true) }
     }
-    // 按部位分组
+    // 按部位 → 器械类型 两级分组
     val groupedExercises = remember(filteredExercises) {
-        filteredExercises.groupBy { it.bodyPart.ifBlank { "其他" } }
+        filteredExercises
+            .groupBy { it.bodyPart.ifBlank { "其他" } }
+            .mapValues { (_, exercises) ->
+                exercises.groupBy { equipmentGroup(it.equipment) }
+            }
     }
 
     Scaffold(
@@ -211,19 +215,31 @@ fun TrainingScreen(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             contentPadding = PaddingValues(bottom = 80.dp)
                         ) {
-                            groupedExercises.forEach { (bodyPart, exercises) ->
+                            groupedExercises.forEach { (bodyPart, equipmentGroups) ->
+                                // 部位标题
                                 item {
-                                    Text(bodyPart, style = MaterialTheme.typography.titleSmall,
+                                    Text(bodyPart, style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.SemiBold,
-                                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(top = 16.dp, bottom = 6.dp))
                                 }
-                                items(exercises, key = { it.id }) { exercise ->
-                                    ExerciseLibraryCard(
-                                        exercise = exercise,
-                                        onClick = { onNavigateToExerciseDetail(exercise.name) }
-                                    )
-                                    Spacer(modifier = Modifier.height(6.dp))
+                                equipmentGroups.forEach { (equipGroup, exercises) ->
+                                    // 器械子标题
+                                    item {
+                                        Text(
+                                            "  $equipGroup (${exercises.size})",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.padding(bottom = 4.dp)
+                                        )
+                                    }
+                                    items(exercises, key = { it.id }) { exercise ->
+                                        ExerciseLibraryCard(
+                                            exercise = exercise,
+                                            onClick = { onNavigateToExerciseDetail(exercise.name) }
+                                        )
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                    }
                                 }
                             }
                         }
@@ -316,7 +332,20 @@ private fun ExerciseLibraryCard(exercise: ExerciseLibrary, onClick: () -> Unit) 
 }
 
 // ──────────────────────────────────────────────────────────
-// 录入训练弹窗（同前）
+// 器械分类
+// ──────────────────────────────────────────────────────────
+private fun equipmentGroup(equipment: String): String = when {
+    equipment == "自重" -> "自重"
+    equipment in listOf("哑铃") -> "哑铃"
+    equipment in listOf("杠铃", "EZ杠铃", "六角杠") -> "杠铃"
+    equipment in listOf("绳索") -> "绳索"
+    equipment in listOf("固定器械", "史密斯机", "腿举机") -> "固定器械"
+    equipment.isNotEmpty() -> "其他器械"
+    else -> "其他"
+}
+
+// ──────────────────────────────────────────────────────────
+// 录入训练弹窗
 // ──────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
