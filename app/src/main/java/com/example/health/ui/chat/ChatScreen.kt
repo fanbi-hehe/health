@@ -150,12 +150,12 @@ fun ChatScreen(
             )
         }
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
-            // 消息列表
+            // 消息列表（weight(1f) 自动填满剩余空间，键盘弹起时自动压缩）
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.weight(1f).fillMaxWidth(),
                 state = listState,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -174,10 +174,8 @@ fun ChatScreen(
                 items(messages, key = { it.id }) { msg -> MessageBubble(msg) }
                 if (isSending) {
                     item {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(modifier = Modifier.size(16.dp))
                             Text(" AI 思考中...", modifier = Modifier.padding(start = 8.dp),
                                 style = MaterialTheme.typography.bodySmall,
@@ -185,20 +183,18 @@ fun ChatScreen(
                         }
                     }
                 }
-                item { Spacer(modifier = Modifier.height(100.dp)) }
+                item { Spacer(modifier = Modifier.height(8.dp)) }
             }
 
-            // 输入栏（固定底部，键盘推动）
+            // 输入区域（图片预览 + 输入栏）—— imePadding 只作用于此，消息列表不动
             Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .imePadding()
-                    .background(MaterialTheme.colorScheme.surface)
+                modifier = Modifier.fillMaxWidth().imePadding()
             ) {
                 attachedImageUri?.let { uri ->
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                        modifier = Modifier.fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AsyncImage(model = uri, contentDescription = null,
@@ -211,31 +207,34 @@ fun ChatScreen(
                     }
                     HorizontalDivider()
                 }
+
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(8.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    IconButton(onClick = { galleryLauncher.launch("image/*") }) {
-                        Icon(Icons.Default.AddPhotoAlternate, "相册")
-                    }
-                    IconButton(onClick = { takePhoto() }) {
-                        Icon(Icons.Default.CameraAlt, "拍照")
-                    }
-                    OutlinedTextField(
-                        value = inputText, onValueChange = { inputText = it },
-                        placeholder = { Text("输入消息...") },
-                        modifier = Modifier.weight(1f), maxLines = 4
-                    )
-                    IconButton(onClick = { send() }, enabled = !isSending) {
-                        Icon(Icons.AutoMirrored.Filled.Send, "发送",
-                            tint = if (isSending) MaterialTheme.colorScheme.onSurfaceVariant
-                            else MaterialTheme.colorScheme.primary)
-                    }
+                IconButton(onClick = { galleryLauncher.launch("image/*") }) {
+                    Icon(Icons.Default.AddPhotoAlternate, "相册")
                 }
-            }
-        }
-    }
-}
+                IconButton(onClick = { takePhoto() }) {
+                    Icon(Icons.Default.CameraAlt, "拍照")
+                }
+                OutlinedTextField(
+                    value = inputText, onValueChange = { inputText = it },
+                    placeholder = { Text("输入消息...") },
+                    modifier = Modifier.weight(1f), maxLines = 4
+                )
+                IconButton(onClick = { send() }, enabled = !isSending) {
+                    Icon(Icons.AutoMirrored.Filled.Send, "发送",
+                        tint = if (isSending) MaterialTheme.colorScheme.onSurfaceVariant
+                        else MaterialTheme.colorScheme.primary)
+                }
+            } // close input Row
+        } // close input Column (imePadding)
+        } // close outer Column
+    } // close Scaffold
+} // close ChatScreen
 
 // ──────────────────────────────────────────────────────────
 // 消息气泡

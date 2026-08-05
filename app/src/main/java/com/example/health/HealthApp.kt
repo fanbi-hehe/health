@@ -2,13 +2,18 @@ package com.example.health
 
 import android.app.Application
 import com.example.health.data.local.AppDatabase
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.ExerciseRepository
 import com.example.health.data.repository.FoodRepository
+import com.example.health.worker.PhotoCleanupWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class HealthApp : Application() {
 
@@ -38,5 +43,14 @@ class HealthApp : Application() {
             foodRepository.initializeBuiltinFoodsIfNeeded()
             exerciseRepository.initializeBuiltinExercisesIfNeeded()
         }
+
+        // 定期清理 30 天前的旧照片（每天一次）
+        val cleanupRequest = PeriodicWorkRequestBuilder<PhotoCleanupWorker>(1, TimeUnit.DAYS)
+            .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "photo_cleanup",
+            ExistingPeriodicWorkPolicy.KEEP,
+            cleanupRequest
+        )
     }
 }

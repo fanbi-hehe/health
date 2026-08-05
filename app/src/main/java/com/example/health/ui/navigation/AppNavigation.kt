@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.health.ui.chat.ChatScreen
 import com.example.health.ui.dashboard.DashboardScreen
+import com.example.health.ui.dashboard.DashboardViewModel
 import com.example.health.ui.diet.DietScreen
 import com.example.health.ui.diet.DietViewModel
 import com.example.health.ui.diet.FoodConfirmScreen
@@ -104,7 +105,13 @@ fun AppNavigation() {
             composable(BottomNavItem.Chat.route) {
                 ChatScreen(onNavigateToSettings = { navController.navigate("settings") })
             }
-            composable(BottomNavItem.Dashboard.route) { DashboardScreen() }
+            composable(BottomNavItem.Dashboard.route) {
+                val dashboardViewModel: DashboardViewModel = viewModel()
+                DashboardScreen(
+                    viewModel = dashboardViewModel,
+                    onNavigateToSettings = { navController.navigate("settings") }
+                )
+            }
             composable("settings") {
                 SettingsScreen(
                     onNavigateBack = { navController.popBackStack() }
