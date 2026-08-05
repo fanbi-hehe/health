@@ -57,6 +57,8 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
         .stateIn(viewModelScope, SharingStarted.Eagerly, "")
     private val _isGenerating = MutableStateFlow(false)
     val isGenerating: StateFlow<Boolean> = _isGenerating.asStateFlow()
+    private val _planError = MutableStateFlow<String?>(null)
+    val planError: StateFlow<String?> = _planError.asStateFlow()
 
     // ── 用户档案 ──
     val isOnboarded: StateFlow<Boolean> = prefs.userOnboarded
@@ -110,14 +112,28 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                 result.fold(
                     onSuccess = { json ->
                         val cleaned = json.replace("```json", "").replace("```", "").trim()
-                        prefs.setTrainingPlanJson(cleaned)
+                        // 验证是否为合法 JSON 数组
+                        try {
+                            val type = object : TypeToken<List<DayPlan>>() {}.type
+                            gson.fromJson<List<DayPlan>>(cleaned, type)
+                            prefs.setTrainingPlanJson(cleaned)
+                            _planError.value = null
+                        } catch (parseEx: Exception) {
+                            _planError.value = "AI 返回格式异常，请重试"
+                        }
                     },
-                    onFailure = { e -> /* keep old plan */ }
+                    onFailure = { e ->
+                        _planError.value = "生成失败: ${e.message?.take(60) ?: "未知错误"}"
+                    }
                 )
-            } catch (_: Exception) {}
+            } catch (ex: Exception) {
+                _planError.value = "生成失败: ${ex.message?.take(60) ?: "未知错误"}"
+            }
             _isGenerating.value = false
         }
     }
+
+    fun clearPlanError() { _planError.value = null }
 
     fun clearHistoryExercises() {
         _historyExercises.value = emptyList()

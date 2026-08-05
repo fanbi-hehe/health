@@ -75,6 +75,7 @@ fun TrainingScreen(
     val planGenerating by viewModel.isGenerating.collectAsState()
     val planJson by viewModel.planJson.collectAsState()
     val isOnboarded by viewModel.isOnboarded.collectAsState()
+    val planError by viewModel.planError.collectAsState()
 
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditTrainingDialog by remember { mutableStateOf<TrainingRecord?>(null) }
@@ -290,9 +291,11 @@ fun TrainingScreen(
                 TrainingPlanTab(
                     isGenerating = planGenerating,
                     planJson = planJson,
+                    planError = planError,
                     onGeneratePlan = { viewModel.generatePlan() },
                     onStartOnboarding = { showOnboarding = true },
-                    isOnboarded = isOnboarded
+                    isOnboarded = isOnboarded,
+                    onClearError = { viewModel.clearPlanError() }
                 )
             }
         }

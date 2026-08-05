@@ -72,9 +72,11 @@ data class PlanExercise(
 fun TrainingPlanTab(
     isGenerating: Boolean,
     planJson: String,
+    planError: String?,
     onGeneratePlan: () -> Unit,
     onStartOnboarding: () -> Unit,
-    isOnboarded: Boolean
+    isOnboarded: Boolean,
+    onClearError: () -> Unit = {}
 ) {
     val gson = remember { Gson() }
     val plan = remember(planJson) {
@@ -114,6 +116,10 @@ fun TrainingPlanTab(
 
         if (!isOnboarded) {
             Text("请先设置训练档案", style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 4.dp))
+        }
+        planError?.let { err ->
+            Text(err, style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 4.dp))
         }
 

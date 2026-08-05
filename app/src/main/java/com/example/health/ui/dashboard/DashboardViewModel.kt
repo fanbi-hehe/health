@@ -43,6 +43,18 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val targetDailyCalories: StateFlow<Int> = prefs.targetDailyCalories
         .stateIn(viewModelScope, SharingStarted.Eagerly, AppPreferences.DEFAULT_TARGET_CALORIES)
 
+    // ── 用户档案 ──
+    val userHeight: StateFlow<Int> = prefs.userHeight.stateIn(viewModelScope, SharingStarted.Eagerly, 170)
+    val userWeight: StateFlow<Double> = prefs.userCurrentWeight.stateIn(viewModelScope, SharingStarted.Eagerly, 65.0)
+    val userGoal: StateFlow<String> = prefs.userGoal.stateIn(viewModelScope, SharingStarted.Eagerly, "增重增肌")
+    val userExperience: StateFlow<String> = prefs.userExperience.stateIn(viewModelScope, SharingStarted.Eagerly, "新手")
+    val userEquipment: StateFlow<String> = prefs.userEquipment.stateIn(viewModelScope, SharingStarted.Eagerly, "")
+    val userTrainingDays: StateFlow<Int> = prefs.userTrainingDays.stateIn(viewModelScope, SharingStarted.Eagerly, 4)
+
+    fun saveUserProfile(h: Int, w: Double, g: String, e: String, eq: String, d: Int) {
+        viewModelScope.launch { prefs.setUserProfile(h, w, g, e, eq, d) }
+    }
+
     // ── 备份状态 ──
     private val _backupStatus = MutableStateFlow<String?>(null)
     val backupStatus: StateFlow<String?> = _backupStatus.asStateFlow()

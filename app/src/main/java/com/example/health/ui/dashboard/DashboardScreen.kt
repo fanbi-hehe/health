@@ -1,5 +1,6 @@
 package com.example.health.ui.dashboard
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -120,6 +121,53 @@ fun DashboardScreen(
                             color = MaterialTheme.colorScheme.primary)
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ── 训练档案 ──
+            val height by viewModel.userHeight.collectAsState()
+            val uWeight by viewModel.userWeight.collectAsState()
+            val uGoal by viewModel.userGoal.collectAsState()
+            val uExp by viewModel.userExperience.collectAsState()
+            val uEquip by viewModel.userEquipment.collectAsState()
+            val uDays by viewModel.userTrainingDays.collectAsState()
+            var showProfileEdit by remember { mutableStateOf(false) }
+
+            Card(modifier = Modifier.fillMaxWidth().clickable { showProfileEdit = true },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text("训练档案", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                        Text("编辑", style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary)
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("${uGoal} · ${uExp} · ${uDays}天/周 · ${height}cm ${uWeight}kg",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (uEquip.isNotBlank()) {
+                        Text("器材: $uEquip", style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+
+            if (showProfileEdit) {
+                ProfileEditDialog(
+                    initialHeight = height.toString(),
+                    initialWeight = uWeight.toString(),
+                    initialGoal = uGoal,
+                    initialExperience = uExp,
+                    initialEquipment = uEquip,
+                    initialDays = uDays.toString(),
+                    onDismiss = { showProfileEdit = false },
+                    onSave = { h, w, g, e, eq, d ->
+                        viewModel.saveUserProfile(h, w, g, e, eq, d)
+                        showProfileEdit = false
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -326,5 +374,87 @@ private fun WeightLineChart(weights: List<BodyWeight>, modifier: Modifier = Modi
         chart = rememberCartesianChart(rememberLineCartesianLayer()),
         modelProducer = modelProducer,
         modifier = modifier
+    )
+}
+
+// ──────────────────────────────────────────────────────────
+// 训练档案编辑弹窗
+// ──────────────────────────────────────────────────────────
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileEditDialog(
+    initialHeight: String, initialWeight: String, initialGoal: String,
+    initialExperience: String, initialEquipment: String, initialDays: String,
+    onDismiss: () -> Unit,
+    onSave: (h: Int, w: Double, g: String, e: String, eq: String, d: Int) -> Unit
+) {
+    var h by remember { mutableStateOf(initialHeight) }
+    var w by remember { mutableStateOf(initialWeight) }
+    var g by remember { mutableStateOf(initialGoal) }
+    var e by remember { mutableStateOf(initialExperience) }
+    var eq by remember { mutableStateOf(initialEquipment) }
+    var d by remember { mutableStateOf(initialDays) }
+
+    val goals = listOf("增重增肌", "减脂塑形", "维持体型", "提升力量")
+    val exps = listOf("新手", "有一定基础", "中级", "高级")
+    val equipOpts = listOf("哑铃", "杠铃", "固定器械", "绳索", "自重", "壶铃", "弹力带")
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("训练档案") },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                OutlinedTextField(h, { h = it }, label = { Text("身高 (cm)") }, singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(w, { w = it }, label = { Text("体重 (kg)") }, singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("目标", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    goals.forEach { goal ->
+                        FilterChip(selected = g == goal, onClick = { g = goal },
+                            label = { Text(goal, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("经验", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    exps.forEach { exp ->
+                        FilterChip(selected = e == exp, onClick = { e = exp },
+                            label = { Text(exp, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("器材", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    equipOpts.take(4).forEach { opt ->
+                        val sel = opt in eq.split(",")
+                        FilterChip(selected = sel, onClick = {
+                            val list = eq.split(",").filter { it.isNotBlank() }.toMutableList()
+                            if (sel) list.remove(opt) else list.add(opt); eq = list.joinToString(",")
+                        }, label = { Text(opt, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    equipOpts.drop(4).forEach { opt ->
+                        val sel = opt in eq.split(",")
+                        FilterChip(selected = sel, onClick = {
+                            val list = eq.split(",").filter { it.isNotBlank() }.toMutableList()
+                            if (sel) list.remove(opt) else list.add(opt); eq = list.joinToString(",")
+                        }, label = { Text(opt, style = MaterialTheme.typography.labelSmall) })
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(d, { d = it }, label = { Text("每周训练天数") }, singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onSave(h.toIntOrNull() ?: 170, w.toDoubleOrNull() ?: 65.0, g, e, eq, d.toIntOrNull() ?: 4)
+            }) { Text("保存") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
     )
 }
