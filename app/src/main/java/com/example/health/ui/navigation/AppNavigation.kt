@@ -101,7 +101,9 @@ fun AppNavigation() {
                     LaunchedEffect(Unit) { navController.popBackStack() }
                 }
             }
-            composable(BottomNavItem.Chat.route) { ChatScreen() }
+            composable(BottomNavItem.Chat.route) {
+                ChatScreen(onNavigateToSettings = { navController.navigate("settings") })
+            }
             composable(BottomNavItem.Dashboard.route) { DashboardScreen() }
             composable("settings") {
                 SettingsScreen(

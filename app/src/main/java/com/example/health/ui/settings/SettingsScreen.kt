@@ -44,33 +44,38 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.health.data.preference.AppPreferences
 
-/**
- * 设置页 —— 模型服务配置、目标设定、食物库、数据管理、通知。
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel()
 ) {
-    val apiBaseUrl by viewModel.apiBaseUrl.collectAsState()
-    val apiKey by viewModel.apiKey.collectAsState()
-    val textModel by viewModel.textModel.collectAsState()
+    // ── 视觉模型 ──
+    val visionUrl by viewModel.visionApiBaseUrl.collectAsState()
+    val visionKey by viewModel.visionApiKey.collectAsState()
     val visionModel by viewModel.visionModel.collectAsState()
+    // ── 文本模型 ──
+    val textUrl by viewModel.textApiBaseUrl.collectAsState()
+    val textKey by viewModel.textApiKey.collectAsState()
+    val textModel by viewModel.textModel.collectAsState()
+    // ── 目标 ──
     val targetWeight by viewModel.targetWeightKg.collectAsState()
     val targetCalories by viewModel.targetDailyCalories.collectAsState()
+    // ── 通知 ──
     val coachEnabled by viewModel.coachNotificationEnabled.collectAsState()
     val coachHour by viewModel.coachReminderHour.collectAsState()
     val coachMinute by viewModel.coachReminderMinute.collectAsState()
 
-    // ── 对话框状态 ──
-    var showApiUrlDialog by remember { mutableStateOf(false) }
-    var showApiKeyDialog by remember { mutableStateOf(false) }
-    var showTextModelDialog by remember { mutableStateOf(false) }
-    var showVisionModelDialog by remember { mutableStateOf(false) }
-    var showTargetWeightDialog by remember { mutableStateOf(false) }
-    var showTargetCaloriesDialog by remember { mutableStateOf(false) }
-    var showReminderTimeDialog by remember { mutableStateOf(false) }
+    // ── 对话框 ──
+    var showVisionUrl by remember { mutableStateOf(false) }
+    var showVisionKey by remember { mutableStateOf(false) }
+    var showVisionModel by remember { mutableStateOf(false) }
+    var showTextUrl by remember { mutableStateOf(false) }
+    var showTextKey by remember { mutableStateOf(false) }
+    var showTextModel by remember { mutableStateOf(false) }
+    var showTargetWeight by remember { mutableStateOf(false) }
+    var showTargetCalories by remember { mutableStateOf(false) }
+    var showReminderTime by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -78,394 +83,154 @@ fun SettingsScreen(
                 title = { Text("设置") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回"
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
+                .verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-            // ── 模型服务配置 ──
-            SettingsGroup(title = "模型服务配置") {
-                SettingsRow(
-                    label = "API Base URL",
-                    hint = apiBaseUrl,
-                    onClick = { showApiUrlDialog = true }
-                )
-                SettingsRow(
-                    label = "API Key",
-                    hint = if (apiKey.isNotEmpty()) "●●●●●●●● (已设置)" else "点击配置",
-                    onClick = { showApiKeyDialog = true }
-                )
-                SettingsRow(
-                    label = "文本模型",
-                    hint = textModel,
-                    onClick = { showTextModelDialog = true }
-                )
-                SettingsRow(
-                    label = "视觉模型",
-                    hint = visionModel,
-                    onClick = { showVisionModelDialog = true }
-                )
+            // ── 视觉模型配置 ──
+            SettingsGroup("视觉模型（食物识别）") {
+                SettingsRow("API Base URL", visionUrl) { showVisionUrl = true }
+                SettingsRow("API Key", if (visionKey.isNotEmpty()) "●●●● (已设置)" else "点击配置") { showVisionKey = true }
+                SettingsRow("模型名称", visionModel) { showVisionModel = true }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ── 文本模型配置 ──
+            SettingsGroup("文本模型（AI 对话）") {
+                SettingsRow("API Base URL", textUrl) { showTextUrl = true }
+                SettingsRow("API Key", if (textKey.isNotEmpty()) "●●●● (已设置)" else "点击配置") { showTextKey = true }
+                SettingsRow("模型名称", textModel) { showTextModel = true }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // ── 目标设定 ──
-            SettingsGroup(title = "目标设定") {
-                SettingsRow(
-                    label = "目标体重",
-                    hint = "${targetWeight} kg",
-                    onClick = { showTargetWeightDialog = true }
-                )
-                SettingsRow(
-                    label = "每日目标热量",
-                    hint = "$targetCalories kcal",
-                    onClick = { showTargetCaloriesDialog = true }
-                )
+            SettingsGroup("目标设定") {
+                SettingsRow("目标体重", "${targetWeight} kg") { showTargetWeight = true }
+                SettingsRow("每日目标热量", "$targetCalories kcal") { showTargetCalories = true }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // ── 自定义食物库 ──
-            SettingsGroup(title = "自定义食物库") {
-                SettingsRow(label = "食物管理", hint = "添加/编辑/删除")
+            SettingsGroup("自定义食物库") {
+                SettingsRow("食物管理", "添加/编辑/删除")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // ── 数据管理 ──
-            SettingsGroup(title = "数据管理") {
-                SettingsRow(label = "导出所有数据（JSON）", hint = "备份")
-                SettingsRow(label = "导入数据（JSON）", hint = "从备份恢复")
-                SettingsRow(label = "清理旧照片", hint = "释放存储空间")
+            SettingsGroup("数据管理") {
+                SettingsRow("导出所有数据（JSON）", "备份")
+                SettingsRow("导入数据（JSON）", "从备份恢复")
+                SettingsRow("清理旧照片", "释放存储空间")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── 通知与个性化 ──
-            SettingsGroup(title = "通知与个性化") {
-                SettingsSwitchRow(
-                    label = "暴躁教练提醒",
-                    checked = coachEnabled,
-                    onToggle = { viewModel.setCoachNotificationEnabled(it) }
-                )
-                SettingsRow(
-                    label = "提醒时间",
-                    hint = "${coachHour}:${coachMinute.toString().padStart(2, '0')}",
-                    onClick = { showReminderTimeDialog = true }
-                )
-                SettingsRow(label = "暴躁语录管理", hint = "查看/添加/删除")
+            // ── 通知 ──
+            SettingsGroup("通知与个性化") {
+                SettingsSwitchRow("暴躁教练提醒", coachEnabled) { viewModel.setCoachNotificationEnabled(it) }
+                SettingsRow("提醒时间", "${coachHour}:${coachMinute.toString().padStart(2, '0')}") {
+                    showReminderTime = true
+                }
+                SettingsRow("暴躁语录管理", "查看/添加/删除")
             }
         }
     }
 
-    // ── 编辑对话框 ──
-    if (showApiUrlDialog) {
-        EditTextDialog(
-            title = "API Base URL",
-            initialValue = apiBaseUrl,
-            placeholder = AppPreferences.DEFAULT_API_BASE_URL,
-            onDismiss = { showApiUrlDialog = false },
-            onConfirm = {
-                viewModel.setApiBaseUrl(it)
-                showApiUrlDialog = false
-            }
-        )
-    }
-
-    if (showApiKeyDialog) {
-        EditTextDialog(
-            title = "API Key",
-            initialValue = apiKey,
-            placeholder = "输入 API Key",
-            isPassword = true,
-            onDismiss = { showApiKeyDialog = false },
-            onConfirm = {
-                viewModel.setApiKey(it)
-                showApiKeyDialog = false
-            }
-        )
-    }
-
-    if (showTextModelDialog) {
-        EditTextDialog(
-            title = "文本模型",
-            initialValue = textModel,
-            placeholder = AppPreferences.DEFAULT_TEXT_MODEL,
-            onDismiss = { showTextModelDialog = false },
-            onConfirm = {
-                viewModel.setTextModel(it)
-                showTextModelDialog = false
-            }
-        )
-    }
-
-    if (showVisionModelDialog) {
-        EditTextDialog(
-            title = "视觉模型",
-            initialValue = visionModel,
-            placeholder = AppPreferences.DEFAULT_VISION_MODEL,
-            onDismiss = { showVisionModelDialog = false },
-            onConfirm = {
-                viewModel.setVisionModel(it)
-                showVisionModelDialog = false
-            }
-        )
-    }
-
-    if (showTargetWeightDialog) {
-        EditNumberDialog(
-            title = "目标体重 (kg)",
-            initialValue = targetWeight.toString(),
-            onDismiss = { showTargetWeightDialog = false },
-            onConfirm = {
-                it.toDoubleOrNull()?.let { w -> viewModel.setTargetWeightKg(w) }
-                showTargetWeightDialog = false
-            }
-        )
-    }
-
-    if (showTargetCaloriesDialog) {
-        EditNumberDialog(
-            title = "每日目标热量 (kcal)",
-            initialValue = targetCalories.toString(),
-            onDismiss = { showTargetCaloriesDialog = false },
-            onConfirm = {
-                it.toIntOrNull()?.let { c -> viewModel.setTargetDailyCalories(c) }
-                showTargetCaloriesDialog = false
-            }
-        )
-    }
-
-    if (showReminderTimeDialog) {
-        TimePickerDialog(
-            initialHour = coachHour,
-            initialMinute = coachMinute,
-            onDismiss = { showReminderTimeDialog = false },
-            onConfirm = { h, m ->
-                viewModel.setCoachReminderTime(h, m)
-                showReminderTimeDialog = false
-            }
-        )
-    }
+    // ── 对话框 ──
+    if (showVisionUrl) EditTextDialog("视觉 API Base URL", visionUrl, AppPreferences.DEFAULT_VISION_BASE_URL,
+        onDismiss = { showVisionUrl = false }, onConfirm = { viewModel.setVisionApiBaseUrl(it); showVisionUrl = false })
+    if (showVisionKey) EditTextDialog("视觉 API Key", visionKey, "输入 API Key", isPassword = true,
+        onDismiss = { showVisionKey = false }, onConfirm = { viewModel.setVisionApiKey(it); showVisionKey = false })
+    if (showVisionModel) EditTextDialog("视觉模型", visionModel, AppPreferences.DEFAULT_VISION_MODEL,
+        onDismiss = { showVisionModel = false }, onConfirm = { viewModel.setVisionModel(it); showVisionModel = false })
+    if (showTextUrl) EditTextDialog("文本 API Base URL", textUrl, AppPreferences.DEFAULT_TEXT_BASE_URL,
+        onDismiss = { showTextUrl = false }, onConfirm = { viewModel.setTextApiBaseUrl(it); showTextUrl = false })
+    if (showTextKey) EditTextDialog("文本 API Key", textKey, "输入 API Key", isPassword = true,
+        onDismiss = { showTextKey = false }, onConfirm = { viewModel.setTextApiKey(it); showTextKey = false })
+    if (showTextModel) EditTextDialog("文本模型", textModel, AppPreferences.DEFAULT_TEXT_MODEL,
+        onDismiss = { showTextModel = false }, onConfirm = { viewModel.setTextModel(it); showTextModel = false })
+    if (showTargetWeight) EditNumberDialog("目标体重 (kg)", targetWeight.toString(),
+        onDismiss = { showTargetWeight = false },
+        onConfirm = { it.toDoubleOrNull()?.let { w -> viewModel.setTargetWeightKg(w) }; showTargetWeight = false })
+    if (showTargetCalories) EditNumberDialog("每日目标热量 (kcal)", targetCalories.toString(),
+        onDismiss = { showTargetCalories = false },
+        onConfirm = { it.toIntOrNull()?.let { c -> viewModel.setTargetDailyCalories(c) }; showTargetCalories = false })
+    if (showReminderTime) TimePickerDialog(coachHour, coachMinute,
+        onDismiss = { showReminderTime = false },
+        onConfirm = { h, m -> viewModel.setCoachReminderTime(h, m); showReminderTime = false })
 }
 
 // ──────────────────────────────────────────────────────────
-// 可复用组件
+// Reusable components (same as before)
 // ──────────────────────────────────────────────────────────
-
-@Composable
-private fun SettingsGroup(
-    title: String,
-    content: @Composable () -> Unit
-) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(bottom = 8.dp)
-    )
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-        )
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            content()
-        }
+@Composable private fun SettingsGroup(title: String, content: @Composable () -> Unit) {
+    Text(title, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 8.dp))
+    Card(modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) { content() }
     }
 }
-
-@Composable
-private fun SettingsRow(
-    label: String,
-    hint: String,
-    onClick: () -> Unit = {}
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = hint,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+@Composable private fun SettingsRow(label: String, hint: String, onClick: () -> Unit = {}) {
+    Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Text(hint, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     HorizontalDivider()
 }
-
-@Composable
-private fun SettingsSwitchRow(
-    label: String,
-    checked: Boolean,
-    onToggle: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
-        )
+@Composable private fun SettingsSwitchRow(label: String, checked: Boolean, onToggle: (Boolean) -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         Switch(checked = checked, onCheckedChange = onToggle)
     }
     HorizontalDivider()
 }
-
-// ──────────────────────────────────────────────────────────
-// 编辑弹窗
-// ──────────────────────────────────────────────────────────
-
-@Composable
-private fun EditTextDialog(
-    title: String,
-    initialValue: String,
-    placeholder: String,
-    isPassword: Boolean = false,
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
-) {
+@Composable private fun EditTextDialog(title: String, initialValue: String, placeholder: String,
+    isPassword: Boolean = false, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var value by remember { mutableStateOf(initialValue) }
-    var showPassword by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            OutlinedTextField(
-                value = value,
-                onValueChange = { value = it },
-                placeholder = { Text(placeholder) },
-                singleLine = true,
-                visualTransformation = if (isPassword && !showPassword) {
-                    PasswordVisualTransformation()
-                } else {
-                    VisualTransformation.None
-                },
-                trailingIcon = if (isPassword) {
-                    {
-                        TextButton(onClick = { showPassword = !showPassword }) {
-                            Text(if (showPassword) "隐藏" else "显示")
-                        }
-                    }
-                } else null,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(value.trim()) }) { Text("确定") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
-        }
-    )
+    var showPw by remember { mutableStateOf(false) }
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = {
+        OutlinedTextField(value = value, onValueChange = { value = it }, placeholder = { Text(placeholder) },
+            singleLine = true, modifier = Modifier.fillMaxWidth(),
+            visualTransformation = if (isPassword && !showPw) PasswordVisualTransformation() else VisualTransformation.None,
+            trailingIcon = if (isPassword) {{ TextButton(onClick = { showPw = !showPw }) { Text(if (showPw) "隐藏" else "显示") } }} else null)
+    }, confirmButton = { TextButton(onClick = { onConfirm(value.trim()) }) { Text("确定") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
 }
-
-@Composable
-private fun EditNumberDialog(
-    title: String,
-    initialValue: String,
-    onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
-) {
+@Composable private fun EditNumberDialog(title: String, initialValue: String, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var value by remember { mutableStateOf(initialValue) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            OutlinedTextField(
-                value = value,
-                onValueChange = { value = it },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onConfirm(value.trim()) }) { Text("确定") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
-        }
-    )
+    AlertDialog(onDismissRequest = onDismiss, title = { Text(title) }, text = {
+        OutlinedTextField(value, { value = it }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+    }, confirmButton = { TextButton(onClick = { onConfirm(value.trim()) }) { Text("确定") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
 }
-
-@Composable
-private fun TimePickerDialog(
-    initialHour: Int,
-    initialMinute: Int,
-    onDismiss: () -> Unit,
-    onConfirm: (hour: Int, minute: Int) -> Unit
-) {
-    var hourStr by remember { mutableStateOf(initialHour.toString()) }
-    var minuteStr by remember { mutableStateOf(initialMinute.toString()) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("设置提醒时间") },
-        text = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
-                    value = hourStr,
-                    onValueChange = { hourStr = it },
-                    label = { Text("时") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = " : ",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-                OutlinedTextField(
-                    value = minuteStr,
-                    onValueChange = { minuteStr = it },
-                    label = { Text("分") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                val h = hourStr.toIntOrNull() ?: initialHour
-                val m = minuteStr.toIntOrNull() ?: initialMinute
-                onConfirm(h.coerceIn(0, 23), m.coerceIn(0, 59))
-            }) { Text("确定") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+@Composable private fun TimePickerDialog(initialHour: Int, initialMinute: Int, onDismiss: () -> Unit,
+    onConfirm: (Int, Int) -> Unit) {
+    var h by remember { mutableStateOf(initialHour.toString()) }
+    var m by remember { mutableStateOf(initialMinute.toString()) }
+    AlertDialog(onDismissRequest = onDismiss, title = { Text("设置提醒时间") }, text = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(h, { h = it }, label = { Text("时") }, singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.weight(1f))
+            Text(" : ", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(horizontal = 8.dp))
+            OutlinedTextField(m, { m = it }, label = { Text("分") }, singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.weight(1f))
         }
-    )
+    }, confirmButton = {
+        TextButton(onClick = { onConfirm((h.toIntOrNull() ?: initialHour).coerceIn(0, 23),
+            (m.toIntOrNull() ?: initialMinute).coerceIn(0, 59)) }) { Text("确定") }
+    }, dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } })
 }
