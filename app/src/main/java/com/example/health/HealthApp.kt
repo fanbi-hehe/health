@@ -3,6 +3,8 @@ package com.example.health
 import android.app.Application
 import com.example.health.data.local.AppDatabase
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.health.data.preference.AppPreferences
@@ -58,12 +60,13 @@ class HealthApp : Application() {
             cleanupRequest
         )
 
-        // 暴躁教练每日提醒（每 15 分钟检查一次，Worker 内部判断是否到时间 + 是否达标）
-        val coachRequest = PeriodicWorkRequestBuilder<CoachNotificationWorker>(15, TimeUnit.MINUTES)
+        // 暴躁教练每日提醒：首次计算到提醒时间的延迟，之后每次 Worker 自己排下一次
+        val coachRequest = OneTimeWorkRequestBuilder<CoachNotificationWorker>()
+            .setInitialDelay(1, TimeUnit.MINUTES) // 启动 1 分钟后首次检查
             .build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+        WorkManager.getInstance(this).enqueueUniqueWork(
             "coach_notification",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingWorkPolicy.KEEP,
             coachRequest
         )
     }
