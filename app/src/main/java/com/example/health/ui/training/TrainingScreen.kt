@@ -1,8 +1,10 @@
 package com.example.health.ui.training
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +20,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
@@ -34,6 +37,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -41,6 +46,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,6 +64,7 @@ import com.example.health.data.local.entity.TrainingRecord
 @Composable
 fun TrainingScreen(
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToExerciseDetail: (String) -> Unit = {},
     viewModel: TrainingViewModel = viewModel()
 ) {
     val todayRecords by viewModel.todayRecords.collectAsState()
@@ -65,37 +72,61 @@ fun TrainingScreen(
 
     var showAddDialog by remember { mutableStateOf(false) }
     var showTimer by remember { mutableStateOf(false) }
+    var selectedTab by remember { mutableIntStateOf(0) } // 0=记录, 1=动作库
+    var exerciseSearchQuery by remember { mutableStateOf("") }
+
+    // 动作库过滤
+    val filteredExercises = if (exerciseSearchQuery.isBlank()) {
+        allExercises
+    } else {
+        allExercises.filter { it.name.contains(exerciseSearchQuery, ignoreCase = true) }
+    }
+    // 按部位分组
+    val groupedExercises = remember(filteredExercises) {
+        filteredExercises.groupBy { it.bodyPart.ifBlank { "其他" } }
+    }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("🏋️ 训练记录") },
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "设置")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+            Column {
+                TopAppBar(
+                    title = { Text("🏋️ 训练") },
+                    actions = {
+                        IconButton(onClick = onNavigateToSettings) {
+                            Icon(Icons.Default.Settings, contentDescription = "设置")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
-            )
+                TabRow(selectedTabIndex = selectedTab) {
+                    Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
+                        Text("训练记录", modifier = Modifier.padding(12.dp))
+                    }
+                    Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
+                        Text("动作库", modifier = Modifier.padding(12.dp))
+                    }
+                }
+            }
         },
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
-                // 休息倒计时按钮
-                ExtendedFloatingActionButton(
-                    onClick = { showTimer = !showTimer },
-                    icon = { Icon(Icons.Default.Timer, contentDescription = "休息") },
-                    text = { Text(if (showTimer) "隐藏计时器" else "组间休息") },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                ExtendedFloatingActionButton(
-                    onClick = { showAddDialog = true },
-                    icon = { Icon(Icons.Default.Add, contentDescription = "添加") },
-                    text = { Text("记录训练") }
-                )
+                if (selectedTab == 0) {
+                    ExtendedFloatingActionButton(
+                        onClick = { showTimer = !showTimer },
+                        icon = { Icon(Icons.Default.Timer, contentDescription = "休息") },
+                        text = { Text(if (showTimer) "隐藏计时" else "组间休息") },
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    ExtendedFloatingActionButton(
+                        onClick = { showAddDialog = true },
+                        icon = { Icon(Icons.Default.Add, contentDescription = "添加") },
+                        text = { Text("记录训练") }
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -105,7 +136,7 @@ fun TrainingScreen(
                 .padding(innerPadding)
         ) {
             // ── 休息倒计时 ──
-            if (showTimer) {
+            if (showTimer && selectedTab == 0) {
                 RestTimer(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -113,39 +144,90 @@ fun TrainingScreen(
                 )
             }
 
-            // ── 今日训练列表 ──
-            if (todayRecords.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "今天还没有训练记录\n点击右下角开始记录",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
+            if (selectedTab == 0) {
+                // ── 训练记录页 ──
+                if (todayRecords.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "今天还没有训练记录\n点击右下角开始记录",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                } else {
+                    val grouped = todayRecords.groupBy { it.bodyParts }
+                    LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        grouped.forEach { (bodyParts, records) ->
+                            item {
+                                Text(bodyParts, style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+                            }
+                            items(records, key = { it.id }) { record ->
+                                // 查找匹配的 ExerciseLibrary
+                                val matchedExercise = allExercises.firstOrNull {
+                                    it.name.equals(record.exerciseName, ignoreCase = true)
+                                }
+                                TrainingRecordCard(
+                                    record = record,
+                                    onClick = {
+                                        // 点击跳转详情
+                                        onNavigateToExerciseDetail(record.exerciseName)
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                        item { Spacer(modifier = Modifier.height(80.dp)) }
+                    }
                 }
             } else {
-                // 按部位分组显示
-                val grouped = todayRecords.groupBy { it.bodyParts }
-                LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    grouped.forEach { (bodyParts, records) ->
-                        item {
-                            Text(
-                                text = bodyParts,
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                            )
+                // ── 动作库浏览页 ──
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // 搜索栏
+                    OutlinedTextField(
+                        value = exerciseSearchQuery,
+                        onValueChange = { exerciseSearchQuery = it },
+                        placeholder = { Text("搜索动作...") },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+
+                    if (filteredExercises.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("暂无动作数据", style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        items(records, key = { it.id }) { record ->
-                            TrainingRecordCard(record)
-                            Spacer(modifier = Modifier.height(8.dp))
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            contentPadding = PaddingValues(bottom = 80.dp)
+                        ) {
+                            groupedExercises.forEach { (bodyPart, exercises) ->
+                                item {
+                                    Text(bodyPart, style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+                                }
+                                items(exercises, key = { it.id }) { exercise ->
+                                    ExerciseLibraryCard(
+                                        exercise = exercise,
+                                        onClick = { onNavigateToExerciseDetail(exercise.name) }
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                }
+                            }
                         }
                     }
-                    item { Spacer(modifier = Modifier.height(80.dp)) }
                 }
             }
         }
@@ -166,9 +248,9 @@ fun TrainingScreen(
 // 训练记录卡片
 // ──────────────────────────────────────────────────────────
 @Composable
-private fun TrainingRecordCard(record: TrainingRecord) {
+private fun TrainingRecordCard(record: TrainingRecord, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
         )
@@ -179,8 +261,7 @@ private fun TrainingRecordCard(record: TrainingRecord) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(record.exerciseName,
-                    style = MaterialTheme.typography.bodyLarge,
+                Text(record.exerciseName, style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium)
                 Text("${record.sets}组 × ${record.reps}次  ${record.weightKg}kg",
                     style = MaterialTheme.typography.bodySmall,
@@ -190,12 +271,52 @@ private fun TrainingRecordCard(record: TrainingRecord) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f))
                 }
             }
+            Icon(Icons.Default.MenuBook, contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
         }
     }
 }
 
 // ──────────────────────────────────────────────────────────
-// 录入训练弹窗
+// 动作库卡片
+// ──────────────────────────────────────────────────────────
+@Composable
+private fun ExerciseLibraryCard(exercise: ExerciseLibrary, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(exercise.name, style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    if (exercise.equipment.isNotEmpty()) {
+                        Text(exercise.equipment, style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    if (exercise.target.isNotEmpty()) {
+                        Text("· ${exercise.target}", style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+            if (exercise.gifUrl.isNotEmpty()) {
+                Text("🎬", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+    }
+}
+
+// ──────────────────────────────────────────────────────────
+// 录入训练弹窗（同前）
 // ──────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -207,24 +328,19 @@ private fun AddTrainingDialog(
 ) {
     val bodyPartOptions = listOf("胸", "背", "腿", "肩", "手臂", "核心")
     var selectedBodyParts by remember { mutableStateOf(setOf<String>()) }
-
     var exerciseName by remember { mutableStateOf("") }
     var showExerciseSuggestions by remember { mutableStateOf(false) }
     var sets by remember { mutableStateOf("3") }
     var reps by remember { mutableStateOf("10") }
     var weightKg by remember { mutableStateOf("0") }
     var notes by remember { mutableStateOf("") }
-
     val historyExercises by viewModel.historyExercises.collectAsState()
 
-    // 合并动作库 + 历史推荐 → 去重
     val exerciseSuggestions = buildList {
-        // 自定义优先 + 内置
         addAll(allExercises.filter {
             it.name.contains(exerciseName, ignoreCase = true) ||
             selectedBodyParts.any { bp -> it.bodyPart.contains(bp, ignoreCase = true) }
         })
-        // 历史动作补充
         historyExercises.filter { hist ->
             hist.contains(exerciseName, ignoreCase = true) &&
             none { it.name.equals(hist, ignoreCase = true) }
@@ -237,155 +353,104 @@ private fun AddTrainingDialog(
         onDismissRequest = onDismiss,
         title = { Text("记录训练") },
         text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState())
-            ) {
-                // ── 部位多选 ──
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text("训练部位", style = MaterialTheme.typography.labelMedium)
                 Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()) {
                     bodyPartOptions.take(3).forEach { part ->
-                        FilterChip(
-                            selected = part in selectedBodyParts,
-                            onClick = {
-                                selectedBodyParts = if (part in selectedBodyParts) {
-                                    selectedBodyParts - part
-                                } else {
-                                    viewModel.loadHistoryExercises(part)
-                                    selectedBodyParts + part
-                                }
-                            },
-                            label = { Text(part, style = MaterialTheme.typography.labelSmall) }
-                        )
+                        FilterChip(selected = part in selectedBodyParts, onClick = {
+                            selectedBodyParts = if (part in selectedBodyParts) {
+                                selectedBodyParts - part
+                            } else {
+                                viewModel.loadHistoryExercises(part)
+                                selectedBodyParts + part
+                            }
+                        }, label = { Text(part, style = MaterialTheme.typography.labelSmall) })
                     }
                 }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()) {
                     bodyPartOptions.drop(3).forEach { part ->
-                        FilterChip(
-                            selected = part in selectedBodyParts,
-                            onClick = {
-                                selectedBodyParts = if (part in selectedBodyParts) {
-                                    selectedBodyParts - part
-                                } else {
-                                    viewModel.loadHistoryExercises(part)
-                                    selectedBodyParts + part
-                                }
-                            },
-                            label = { Text(part, style = MaterialTheme.typography.labelSmall) }
-                        )
+                        FilterChip(selected = part in selectedBodyParts, onClick = {
+                            selectedBodyParts = if (part in selectedBodyParts) {
+                                selectedBodyParts - part
+                            } else {
+                                viewModel.loadHistoryExercises(part)
+                                selectedBodyParts + part
+                            }
+                        }, label = { Text(part, style = MaterialTheme.typography.labelSmall) })
                     }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // ── 动作名称 + 自动补全 ──
                 Box {
-                    OutlinedTextField(
-                        value = exerciseName,
-                        onValueChange = {
-                            exerciseName = it
-                            showExerciseSuggestions = it.isNotEmpty()
-                        },
-                        label = { Text("动作名称") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    OutlinedTextField(value = exerciseName, onValueChange = {
+                        exerciseName = it; showExerciseSuggestions = it.isNotEmpty()
+                    }, label = { Text("动作名称") }, singleLine = true,
+                        modifier = Modifier.fillMaxWidth())
                     DropdownMenu(
                         expanded = showExerciseSuggestions && exerciseSuggestions.isNotEmpty(),
                         onDismissRequest = { showExerciseSuggestions = false },
                         modifier = Modifier.fillMaxWidth(0.9f)
                     ) {
                         exerciseSuggestions.forEach { exercise ->
-                            DropdownMenuItem(
-                                text = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(exercise.name, fontWeight = FontWeight.Medium)
-                                        if (exercise.bodyPart.isNotEmpty()) {
-                                            Text(" · ${exercise.bodyPart}",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                        }
+                            DropdownMenuItem(text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(exercise.name, fontWeight = FontWeight.Medium)
+                                    if (exercise.bodyPart.isNotEmpty()) {
+                                        Text(" · ${exercise.bodyPart}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
-                                },
-                                onClick = {
-                                    exerciseName = exercise.name
-                                    showExerciseSuggestions = false
                                 }
-                            )
+                            }, onClick = {
+                                exerciseName = exercise.name; showExerciseSuggestions = false
+                            })
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // ── 组数 / 次数 / 重量 ──
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = sets,
-                        onValueChange = { sets = it },
-                        label = { Text("组数") },
-                        singleLine = true,
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(value = sets, onValueChange = { sets = it },
+                        label = { Text("组数") }, singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = reps,
-                        onValueChange = { reps = it },
-                        label = { Text("次数") },
-                        singleLine = true,
+                        modifier = Modifier.weight(1f))
+                    OutlinedTextField(value = reps, onValueChange = { reps = it },
+                        label = { Text("次数") }, singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = weightKg,
-                        onValueChange = { weightKg = it },
-                        label = { Text("重量(kg)") },
-                        singleLine = true,
+                        modifier = Modifier.weight(1f))
+                    OutlinedTextField(value = weightKg, onValueChange = { weightKg = it },
+                        label = { Text("重量kg") }, singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        modifier = Modifier.weight(1f)
-                    )
+                        modifier = Modifier.weight(1f))
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-
-                // ── 备注 ──
-                OutlinedTextField(
-                    value = notes,
-                    onValueChange = { notes = it },
-                    label = { Text("备注（可选 RPE 等）") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                OutlinedTextField(value = notes, onValueChange = { notes = it },
+                    label = { Text("备注（可选）") }, singleLine = true,
+                    modifier = Modifier.fillMaxWidth())
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    val name = exerciseName.trim()
-                    val parts = selectedBodyParts.toList()
-                    val setCount = sets.toIntOrNull() ?: 3
-                    val repCount = reps.toIntOrNull() ?: 10
-                    val weight = weightKg.toDoubleOrNull() ?: 0.0
-                    if (name.isNotEmpty() && parts.isNotEmpty()) {
-                        viewModel.saveRecord(parts, name, setCount, repCount, weight,
-                            notes.ifBlank { null })
-                        onSaved()
-                    }
-                },
-                enabled = exerciseName.isNotBlank() && selectedBodyParts.isNotEmpty()
+            TextButton(onClick = {
+                val name = exerciseName.trim()
+                val parts = selectedBodyParts.toList()
+                val setCount = sets.toIntOrNull() ?: 3
+                val repCount = reps.toIntOrNull() ?: 10
+                val weight = weightKg.toDoubleOrNull() ?: 0.0
+                if (name.isNotEmpty() && parts.isNotEmpty()) {
+                    viewModel.saveRecord(parts, name, setCount, repCount, weight,
+                        notes.ifBlank { null })
+                    onSaved()
+                }
+            }, enabled = exerciseName.isNotBlank() && selectedBodyParts.isNotEmpty()
             ) { Text("保存") }
         },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
-        }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
     )
 }

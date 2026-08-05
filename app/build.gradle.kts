@@ -76,6 +76,7 @@ dependencies {
 
     // Coil (Compose image loading)
     implementation(libs.coil.compose)
+    implementation("io.coil-kt:coil-gif:2.6.0")
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)

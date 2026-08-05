@@ -82,4 +82,14 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
             dao.delete(record)
         }
     }
+
+    /**
+     * 按动作名查找 ExerciseLibrary 详情（供详情页使用）。
+     */
+    suspend fun getExerciseByName(name: String): ExerciseLibrary? {
+        return exerciseRepo.getAllExercises()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+            .value
+            .firstOrNull { it.name == name }
+    }
 }

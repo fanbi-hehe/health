@@ -7,6 +7,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,7 +24,9 @@ import com.example.health.ui.diet.DietScreen
 import com.example.health.ui.diet.DietViewModel
 import com.example.health.ui.diet.FoodConfirmScreen
 import com.example.health.ui.settings.SettingsScreen
+import com.example.health.ui.training.ExerciseDetailScreen
 import com.example.health.ui.training.TrainingScreen
+import com.example.health.ui.training.TrainingViewModel
 
 /**
  * 应用主导航骨架 —— 底部导航栏 + 各 Tab 内容区域。
@@ -30,8 +34,8 @@ import com.example.health.ui.training.TrainingScreen
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    // Activity 级别的共享 ViewModel，DietScreen 和 FoodConfirmScreen 共用
     val dietViewModel: DietViewModel = viewModel()
+    val trainingViewModel: TrainingViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -76,8 +80,26 @@ fun AppNavigation() {
             }
             composable(BottomNavItem.Training.route) {
                 TrainingScreen(
-                    onNavigateToSettings = { navController.navigate("settings") }
+                    viewModel = trainingViewModel,
+                    onNavigateToSettings = { navController.navigate("settings") },
+                    onNavigateToExerciseDetail = { name ->
+                        navController.navigate("exercise_detail/$name")
+                    }
                 )
+            }
+            composable("exercise_detail/{exerciseName}") { backStackEntry ->
+                val exerciseName = backStackEntry.arguments?.getString("exerciseName") ?: ""
+                val allExercises by trainingViewModel.allExercises.collectAsState()
+                val exercise = allExercises.firstOrNull { it.name == exerciseName }
+                if (exercise != null) {
+                    ExerciseDetailScreen(
+                        exercise = exercise,
+                        onBack = { navController.popBackStack() }
+                    )
+                } else {
+                    // 找不到则直接返回
+                    LaunchedEffect(Unit) { navController.popBackStack() }
+                }
             }
             composable(BottomNavItem.Chat.route) { ChatScreen() }
             composable(BottomNavItem.Dashboard.route) { DashboardScreen() }
