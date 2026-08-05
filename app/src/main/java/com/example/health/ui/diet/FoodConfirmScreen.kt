@@ -298,30 +298,30 @@ private fun FoodEditCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 重量 + 快捷调整
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
-                    value = item.weightG.toString(),
-                    onValueChange = { v -> v.toIntOrNull()?.let { onUpdate(item.copy(weightG = it)) } },
-                    label = { Text("重量 (g)") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
+            // 重量
+            OutlinedTextField(
+                value = item.weightG.toString(),
+                onValueChange = { v -> v.toIntOrNull()?.let { onUpdate(item.copy(weightG = it)) } },
+                label = { Text("重量 (g)") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // 快捷调整按钮
+            // 快捷调整按钮（独立一行）
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+            ) {
                 listOf(-50, -10, +10, +50).forEach { delta ->
                     OutlinedButton(
                         onClick = {
                             val newWeight = (item.weightG + delta).coerceAtLeast(1)
-                            // 联动重算热量（基于热量密度）
                             val density = if (item.weightG > 0) item.caloriesKcal.toDouble() / item.weightG else 0.0
                             val newCal = (newWeight * density).toInt()
                             onUpdate(item.copy(weightG = newWeight, caloriesKcal = newCal))
                         },
-                        modifier = Modifier.padding(horizontal = 2.dp)
+                        modifier = Modifier.weight(1f)
                     ) {
                         Text(
                             text = if (delta > 0) "+$delta" else "$delta",

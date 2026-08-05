@@ -222,15 +222,49 @@ fun DashboardScreen(
 
     // ── 体重录入弹窗 ──
     if (showWeightDialog) {
-        var weightStr by remember { mutableStateOf("") }
+        val lastWeight = remember(weightRecords) { weightRecords.firstOrNull()?.weightKg }
+        var weightStr by remember(lastWeight) { mutableStateOf(lastWeight?.toString() ?: "") }
+
         AlertDialog(
             onDismissRequest = { showWeightDialog = false },
             title = { Text("录入体重") },
             text = {
-                OutlinedTextField(value = weightStr, onValueChange = { weightStr = it },
-                    label = { Text("体重 (kg)") }, singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.fillMaxWidth())
+                Column {
+                    lastWeight?.let {
+                        Text("上次: ${it}kg", style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    OutlinedTextField(value = weightStr, onValueChange = { weightStr = it },
+                        label = { Text("体重 (kg)") }, singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth())
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // 快捷调整
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        listOf(-0.5, -0.1, 0.1, 0.5).forEach { delta ->
+                            val current = weightStr.toDoubleOrNull() ?: (lastWeight ?: 0.0)
+                            OutlinedButton(
+                                onClick = {
+                                    val newVal = (current + delta).coerceAtLeast(0.0)
+                                    weightStr = if (delta == (delta.toInt().toDouble()))
+                                        "%.0f".format(newVal) else "%.1f".format(newVal)
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = if (delta > 0) "+$delta" else "$delta",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
+                    }
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
