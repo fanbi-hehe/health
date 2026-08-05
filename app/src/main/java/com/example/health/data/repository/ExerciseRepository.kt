@@ -54,9 +54,9 @@ class ExerciseRepository(private val context: Context) {
                     equipment = dto.equipment ?: "",
                     muscleGroup = dto.muscle_group ?: "",
                     target = dto.target ?: "",
-                    secondaryMuscles = gson.toJson(dto.secondary_muscles ?: emptyList()),
+                    secondaryMuscles = gson.toJson(dto.secondary_muscles ?: emptyList<String>()),
                     instructions = dto.instructions?.zh ?: "",
-                    instructionSteps = gson.toJson(dto.instruction_steps?.zh ?: emptyList()),
+                    instructionSteps = gson.toJson(dto.instruction_steps?.zh ?: emptyList<String>()),
                     image = dto.image ?: "",
                     gifUrl = dto.gif_url ?: "",
                     isCustom = false

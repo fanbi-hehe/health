@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -106,6 +107,8 @@ fun RestTimer(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            val arcActiveColor = MaterialTheme.colorScheme.primary
+            val arcEndColor = MaterialTheme.colorScheme.error
             // 圆环倒计时
             Box(contentAlignment = Alignment.Center) {
                 Canvas(modifier = Modifier.size(100.dp)) {
@@ -129,10 +132,7 @@ fun RestTimer(
                     )
                     // 进度弧
                     drawArc(
-                        color = if (remainingSeconds > 10)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.error,
+                        color = if (remainingSeconds > 10) arcActiveColor else arcEndColor,
                         startAngle = -90f,
                         sweepAngle = 360f * progress,
                         useCenter = false,
