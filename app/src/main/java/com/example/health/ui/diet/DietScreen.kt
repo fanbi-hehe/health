@@ -30,6 +30,8 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,6 +57,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +71,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.FoodLibrary
 import com.example.health.data.local.entity.MealTemplate
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +81,7 @@ fun DietScreen(
     viewModel: DietViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val todayRecords by viewModel.todayRecords.collectAsState()
+    val allRecords by viewModel.allRecords.collectAsState()
     val recognitionState by viewModel.recognitionState.collectAsState()
     val allFoods by viewModel.allFoods.collectAsState()
     val mealTemplates by viewModel.mealTemplates.collectAsState()
@@ -119,6 +123,18 @@ fun DietScreen(
     var showEditDialog by remember { mutableStateOf<DietRecord?>(null) }
     var showTemplatesDialog by remember { mutableStateOf(false) }
     var renamingTemplate by remember { mutableStateOf<MealTemplate?>(null) }
+
+    // ── 日期回看（默认今天，可左右切换） ──
+    var selectedDate by rememberSaveable { mutableStateOf(LocalDate.now().toString()) }
+    val dayRecords = remember(allRecords, selectedDate) {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        allRecords.filter { sdf.format(java.util.Date(it.timestamp)) == selectedDate }
+    }
+    val dateLabel = remember(selectedDate) {
+        val d = LocalDate.parse(selectedDate)
+        val base = "${d.monthValue}月${d.dayOfMonth}日"
+        if (selectedDate == LocalDate.now().toString()) "$base（今天）" else base
+    }
 
     // ── 监听 AI 识别结果，导航到确认页 ──
     LaunchedEffect(Unit) {
@@ -204,8 +220,36 @@ fun DietScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TodayCalorieSummary(
-                records = todayRecords,
+            // ── 日期切换 ──
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = {
+                    selectedDate = LocalDate.parse(selectedDate).minusDays(1).toString()
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "前一天")
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(dateLabel, style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold)
+                    if (selectedDate != LocalDate.now().toString()) {
+                        TextButton(onClick = { selectedDate = LocalDate.now().toString() }) {
+                            Text("回到今天", style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                }
+                IconButton(onClick = {
+                    selectedDate = LocalDate.parse(selectedDate).plusDays(1).toString()
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "后一天")
+                }
+            }
+
+            DayCalorieSummary(
+                records = dayRecords,
+                dateLabel = dateLabel,
                 modifier = Modifier.padding(16.dp)
             )
 
@@ -225,13 +269,13 @@ fun DietScreen(
                 }
             }
 
-            if (todayRecords.isEmpty()) {
+            if (dayRecords.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "今天还没有饮食记录\n点击右下角拍照开始记录",
+                        text = "$dateLabel 还没有饮食记录\n点击右下角拍照或手动录入",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -239,7 +283,7 @@ fun DietScreen(
                 }
             } else {
                 LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    items(todayRecords, key = { it.id }) { record ->
+                    items(dayRecords, key = { it.id }) { record ->
                         DietRecordCard(record, onClick = { showEditDialog = record })
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -254,8 +298,8 @@ fun DietScreen(
         ManualInputDialog(
             allFoods = allFoods,
             onDismiss = { showManualDialog = false },
-            onSave = { name, weight, calories, mealType ->
-                viewModel.saveManualRecord(name, weight, calories, mealType)
+            onSave = { name, weight, calories, mealType, protein, carbs, fat ->
+                viewModel.saveManualRecord(name, weight, calories, mealType, protein, carbs, fat, selectedDate)
                 showManualDialog = false
             }
         )
@@ -267,8 +311,8 @@ fun DietScreen(
             record = record,
             allFoods = allFoods,
             onDismiss = { showEditDialog = null },
-            onSave = { name, weight, calories, mealType ->
-                viewModel.updateRecord(record.id, name, weight, calories, mealType)
+            onSave = { name, weight, calories, mealType, protein, carbs, fat ->
+                viewModel.updateRecord(record.id, name, weight, calories, mealType, protein, carbs, fat)
                 showEditDialog = null
             },
             onDelete = {
@@ -406,9 +450,18 @@ private fun MealTemplatesDialog(
 // ──────────────────────────────────────────────────────────
 // 今日热量汇总
 // ──────────────────────────────────────────────────────────
+// 当日摄入摘要（热量 + 三大营养素）
+// ──────────────────────────────────────────────────────────
 @Composable
-private fun TodayCalorieSummary(records: List<DietRecord>, modifier: Modifier = Modifier) {
+private fun DayCalorieSummary(
+    records: List<DietRecord>,
+    dateLabel: String,
+    modifier: Modifier = Modifier
+) {
     val totalCal = records.sumOf { it.caloriesKcal }
+    val totalProtein = records.sumOf { it.proteinG }
+    val totalCarbs = records.sumOf { it.carbsG }
+    val totalFat = records.sumOf { it.fatG }
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -419,11 +472,13 @@ private fun TodayCalorieSummary(records: List<DietRecord>, modifier: Modifier = 
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("今日摄入", style = MaterialTheme.typography.titleSmall,
+            Text(dateLabel, style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer)
             Text("$totalCal", style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text("kcal", style = MaterialTheme.typography.bodySmall,
+            Text(
+                "kcal · 蛋白 ${totalProtein}g · 碳水 ${totalCarbs}g · 脂肪 ${totalFat}g",
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
         }
     }
@@ -460,6 +515,13 @@ private fun DietRecordCard(record: DietRecord, onClick: () -> Unit = {}) {
                 }
                 Text("${record.weightG}g", style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (record.proteinG > 0 || record.carbsG > 0 || record.fatG > 0) {
+                    Text(
+                        "蛋白 ${record.proteinG}g · 碳水 ${record.carbsG}g · 脂肪 ${record.fatG}g",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
             }
             Text("${record.caloriesKcal} kcal", style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
@@ -475,11 +537,14 @@ private fun DietRecordCard(record: DietRecord, onClick: () -> Unit = {}) {
 private fun ManualInputDialog(
     allFoods: List<FoodLibrary>,
     onDismiss: () -> Unit,
-    onSave: (name: String, weightG: Int, caloriesKcal: Int, mealType: String) -> Unit
+    onSave: (name: String, weightG: Int, caloriesKcal: Int, mealType: String, proteinG: Int, carbsG: Int, fatG: Int) -> Unit
 ) {
     var foodName by remember { mutableStateOf("") }
     var weightG by remember { mutableStateOf("100") }
     var caloriesKcal by remember { mutableStateOf("") }
+    var proteinG by remember { mutableStateOf("") }
+    var carbsG by remember { mutableStateOf("") }
+    var fatG by remember { mutableStateOf("") }
     var mealType by remember { mutableStateOf(defaultMealType()) }
     var showSuggestions by remember { mutableStateOf(false) }
     val mealTypes = listOf("早餐", "午餐", "晚餐", "加餐")
@@ -533,6 +598,9 @@ private fun ManualInputDialog(
                                 onClick = {
                                     foodName = food.name
                                     caloriesKcal = food.caloriesPer100g.toString()
+                                    if (food.proteinPer100g > 0) proteinG = food.proteinPer100g.toString()
+                                    if (food.carbsPer100g > 0) carbsG = food.carbsPer100g.toString()
+                                    if (food.fatPer100g > 0) fatG = food.fatPer100g.toString()
                                 }
                             )
                         }
@@ -565,6 +633,16 @@ private fun ManualInputDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // ── 宏量营养素（可选） ──
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()) {
+                    MacroInputField("蛋白质g", proteinG) { proteinG = it }
+                    MacroInputField("碳水g", carbsG) { carbsG = it }
+                    MacroInputField("脂肪g", fatG) { fatG = it }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 // ── 餐别选择 ──
                 Text("餐别", style = MaterialTheme.typography.labelMedium)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -585,7 +663,12 @@ private fun ManualInputDialog(
                     val weight = weightG.toIntOrNull() ?: 100
                     val cal = caloriesKcal.toIntOrNull() ?: 0
                     if (name.isNotEmpty() && cal > 0) {
-                        onSave(name, weight, cal, mealType)
+                        onSave(
+                            name, weight, cal, mealType,
+                            proteinG.toIntOrNull() ?: 0,
+                            carbsG.toIntOrNull() ?: 0,
+                            fatG.toIntOrNull() ?: 0
+                        )
                     }
                 },
                 enabled = foodName.isNotBlank() && caloriesKcal.isNotBlank()
@@ -606,12 +689,15 @@ private fun EditDietDialog(
     record: DietRecord,
     allFoods: List<FoodLibrary>,
     onDismiss: () -> Unit,
-    onSave: (name: String, weightG: Int, caloriesKcal: Int, mealType: String) -> Unit,
+    onSave: (name: String, weightG: Int, caloriesKcal: Int, mealType: String, proteinG: Int, carbsG: Int, fatG: Int) -> Unit,
     onDelete: () -> Unit
 ) {
     var foodName by remember { mutableStateOf(record.foodName) }
     var weightG by remember { mutableStateOf(record.weightG.toString()) }
     var caloriesKcal by remember { mutableStateOf(record.caloriesKcal.toString()) }
+    var proteinG by remember { mutableStateOf(record.proteinG.toString()) }
+    var carbsG by remember { mutableStateOf(record.carbsG.toString()) }
+    var fatG by remember { mutableStateOf(record.fatG.toString()) }
     var mealType by remember { mutableStateOf(record.mealType) }
     var showSuggestions by remember { mutableStateOf(false) }
     val mealTypes = listOf("早餐", "午餐", "晚餐", "加餐")
@@ -649,7 +735,13 @@ private fun EditDietDialog(
                                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 },
-                                onClick = { foodName = food.name; caloriesKcal = food.caloriesPer100g.toString() }
+                                onClick = {
+                                    foodName = food.name
+                                    caloriesKcal = food.caloriesPer100g.toString()
+                                    if (food.proteinPer100g > 0) proteinG = food.proteinPer100g.toString()
+                                    if (food.carbsPer100g > 0) carbsG = food.carbsPer100g.toString()
+                                    if (food.fatPer100g > 0) fatG = food.fatPer100g.toString()
+                                }
                             )
                         }
                     )
@@ -662,6 +754,13 @@ private fun EditDietDialog(
                 OutlinedTextField(caloriesKcal, { caloriesKcal = it }, label = { Text("热量 (kcal)") },
                     singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()) {
+                    MacroInputField("蛋白质g", proteinG) { proteinG = it }
+                    MacroInputField("碳水g", carbsG) { carbsG = it }
+                    MacroInputField("脂肪g", fatG) { fatG = it }
+                }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text("餐别", style = MaterialTheme.typography.labelMedium)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -677,7 +776,14 @@ private fun EditDietDialog(
                 val name = foodName.trim()
                 val weight = weightG.toIntOrNull() ?: 100
                 val cal = caloriesKcal.toIntOrNull() ?: 0
-                if (name.isNotEmpty() && cal > 0) onSave(name, weight, cal, mealType)
+                if (name.isNotEmpty() && cal > 0) {
+                    onSave(
+                        name, weight, cal, mealType,
+                        proteinG.toIntOrNull() ?: 0,
+                        carbsG.toIntOrNull() ?: 0,
+                        fatG.toIntOrNull() ?: 0
+                    )
+                }
             }, enabled = foodName.isNotBlank() && caloriesKcal.isNotBlank()) { Text("保存") }
         },
         dismissButton = {
@@ -686,5 +792,24 @@ private fun EditDietDialog(
                 TextButton(onClick = onDismiss) { Text("取消") }
             }
         }
+    )
+}
+
+/** 宏量营养素输入框（只允许数字或空）。 */
+@Composable
+private fun androidx.compose.foundation.layout.RowScope.MacroInputField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { v ->
+            if (v.isEmpty() || v.all { it.isDigit() }) onValueChange(v)
+        },
+        label = { Text(label) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.weight(1f)
     )
 }

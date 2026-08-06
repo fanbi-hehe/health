@@ -40,13 +40,8 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
     private val foodRepo = FoodRepository(application)
     private val gson = Gson()
 
-    // ── 今日记录（按本地日期动态过滤，跨天自动切换） ──
-    val todayRecords: StateFlow<List<DietRecord>> = dao.getAllRecords()
-        .map { records ->
-            val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            records.filter { sdf.format(Date(it.timestamp)) == todayStr }
-        }
+    // ── 全部记录（按时间倒序，页面按选中日期过滤回看） ──
+    val allRecords: StateFlow<List<DietRecord>> = dao.getAllRecords()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // ── 食物搜索（手动录入自动补全） ──
@@ -164,22 +159,43 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 手动保存一条饮食记录。
      */
-    fun saveManualRecord(name: String, weightG: Int, caloriesKcal: Int, mealType: String) {
+    fun saveManualRecord(
+        name: String,
+        weightG: Int,
+        caloriesKcal: Int,
+        mealType: String,
+        proteinG: Int = 0,
+        carbsG: Int = 0,
+        fatG: Int = 0,
+        date: String = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+    ) {
         viewModelScope.launch {
             dao.insert(
                 DietRecord(
                     foodName = name,
                     weightG = weightG,
                     caloriesKcal = caloriesKcal,
+                    proteinG = proteinG,
+                    carbsG = carbsG,
+                    fatG = fatG,
                     mealType = mealType,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = dateToTimestamp(date)
                 )
             )
             refreshCalorieWidget()
         }
     }
 
-    fun updateRecord(id: Long, name: String, weightG: Int, caloriesKcal: Int, mealType: String) {
+    fun updateRecord(
+        id: Long,
+        name: String,
+        weightG: Int,
+        caloriesKcal: Int,
+        mealType: String,
+        proteinG: Int,
+        carbsG: Int,
+        fatG: Int
+    ) {
         viewModelScope.launch {
             // 保留原始 timestamp 和 imagePath，使用 @Update 按主键更新
             val existing = dao.getRecordById(id)
@@ -188,7 +204,10 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
                     foodName = name,
                     weightG = weightG,
                     caloriesKcal = caloriesKcal,
-                    mealType = mealType
+                    mealType = mealType,
+                    proteinG = proteinG,
+                    carbsG = carbsG,
+                    fatG = fatG
                 ))
                 refreshCalorieWidget()
             }
@@ -270,6 +289,15 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
         } catch (_: Exception) {
             // 小组件刷新失败不影响主流程
         }
+    }
+
+    /** "yyyy-MM-dd" → 当天 12:00 的时间戳（用于回看历史时补录）。 */
+    private fun dateToTimestamp(date: String): Long {
+        return LocalDate.parse(date)
+            .atTime(12, 0)
+            .atZone(java.time.ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
     }
 }
 
