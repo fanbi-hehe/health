@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Claude Code 本地配置与临时任务
+.claude/
+.claude-tasks/
