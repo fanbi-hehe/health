@@ -27,6 +27,7 @@ import com.example.health.ui.diet.DietViewModel
 import com.example.health.ui.diet.FoodConfirmScreen
 import com.example.health.ui.settings.SettingsScreen
 import com.example.health.ui.settings.FoodLibraryScreen
+import com.example.health.ui.stats.ActivityStatsScreen
 import com.example.health.ui.training.ExerciseDetailScreen
 import com.example.health.ui.training.TrainingScreen
 import com.example.health.ui.training.TrainingViewModel
@@ -106,6 +107,12 @@ fun AppNavigation() {
             }
             composable(BottomNavItem.Chat.route) {
                 ChatScreen(onNavigateToSettings = { navController.navigate("settings") })
+            }
+            composable(BottomNavItem.ActivityStats.route) {
+                ActivityStatsScreen(
+                    onNavigateToActivity = { navController.navigate("activity") },
+                    onNavigateToSettings = { navController.navigate("settings") }
+                )
             }
             composable(BottomNavItem.Dashboard.route) {
                 val dashboardViewModel: DashboardViewModel = viewModel()

@@ -3,6 +3,7 @@ package com.example.health.ui.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -27,6 +28,12 @@ sealed class BottomNavItem(
         icon = Icons.Default.FitnessCenter
     )
 
+    data object ActivityStats : BottomNavItem(
+        route = "activity_stats",
+        label = "运动",
+        icon = Icons.Default.DirectionsRun
+    )
+
     data object Chat : BottomNavItem(
         route = "chat",
         label = "对话",
@@ -40,6 +47,6 @@ sealed class BottomNavItem(
     )
 
     companion object {
-        val items = listOf(Diet, Training, Chat, Dashboard)
+        val items = listOf(Diet, Training, ActivityStats, Chat, Dashboard)
     }
 }
