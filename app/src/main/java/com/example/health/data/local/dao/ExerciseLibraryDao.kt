@@ -27,6 +27,9 @@ interface ExerciseLibraryDao {
     @Query("SELECT * FROM exercise_library ORDER BY isCustom DESC, name ASC")
     fun getAllExercises(): Flow<List<ExerciseLibrary>>
 
+    @Query("SELECT * FROM exercise_library ORDER BY isCustom DESC, name ASC")
+    suspend fun getAllExercisesOnce(): List<ExerciseLibrary>
+
     @Query("SELECT * FROM exercise_library WHERE name LIKE '%' || :query || '%' ORDER BY isCustom DESC, name ASC")
     fun searchExercises(query: String): Flow<List<ExerciseLibrary>>
 

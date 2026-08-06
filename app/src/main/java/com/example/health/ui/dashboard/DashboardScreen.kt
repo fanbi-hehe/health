@@ -50,11 +50,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.health.data.local.entity.BodyWeight
+import androidx.compose.ui.graphics.Color
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -70,6 +73,7 @@ fun DashboardScreen(
     val targetWeight by viewModel.targetWeightKg.collectAsState()
     val targetCalories by viewModel.targetDailyCalories.collectAsState()
     val todayCals by viewModel.todayCalories.collectAsState()
+    val sevenDayCals by viewModel.sevenDayCalories.collectAsState()
     val trainingRecords by viewModel.trainingRecords.collectAsState()
     val backupStatus by viewModel.backupStatus.collectAsState()
 
@@ -124,6 +128,19 @@ fun DashboardScreen(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            // ── 近7天热量柱状图 ──
+            if (sevenDayCals.isNotEmpty()) {
+                Text("近7天摄入", style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(4.dp))
+                CalorieBarChart(
+                    dailyData = sevenDayCals,
+                    targetCalories = targetCalories,
+                    modifier = Modifier.fillMaxWidth().height(180.dp)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
             // ── 训练档案 ──
             val height by viewModel.userHeight.collectAsState()
@@ -353,6 +370,45 @@ private fun StatItem(label: String, value: String) {
         Text(label, style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+// ──────────────────────────────────────────────────────────
+// Vico 近7天热量柱状图（橙=摄入，虚线=目标，蓝=消耗预留）
+// ──────────────────────────────────────────────────────────
+@Composable
+private fun CalorieBarChart(
+    dailyData: List<DashboardViewModel.DailyCalorie>,
+    targetCalories: Int,
+    modifier: Modifier = Modifier
+) {
+    val modelProducer = remember { CartesianChartModelProducer() }
+
+    LaunchedEffect(dailyData, targetCalories) {
+        modelProducer.runTransaction {
+            // 橙柱：每日实际摄入
+            columnSeries {
+                series(dailyData.map { it.calories.toFloat() })
+            }
+            // 虚线：每日目标
+            lineSeries {
+                series(dailyData.map { targetCalories.toFloat() })
+            }
+            // 蓝线：后期消耗能量（当前为 0，占位）
+            lineSeries {
+                series(dailyData.map { 0f })
+            }
+        }
+    }
+
+    CartesianChartHost(
+        chart = rememberCartesianChart(
+            rememberColumnCartesianLayer(),
+            rememberLineCartesianLayer(),
+            rememberLineCartesianLayer()
+        ),
+        modelProducer = modelProducer,
+        modifier = modifier
+    )
 }
 
 // ──────────────────────────────────────────────────────────

@@ -33,8 +33,8 @@ import com.example.health.data.local.entity.TrainingRecord
         MealTemplate::class,
         ExerciseLibrary::class
     ],
-    version = 4,
-    exportSchema = false
+    version = 5,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -58,7 +58,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "health_assistant.db"
                 )
-                    .fallbackToDestructiveMigration(false)
+                    .fallbackToDestructiveMigration(true) // 开发期清库重建；发布前替换为真实 Migration
                     .build()
                     .also { INSTANCE = it }
             }

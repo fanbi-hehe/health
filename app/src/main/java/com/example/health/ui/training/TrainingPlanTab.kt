@@ -102,8 +102,8 @@ fun TrainingPlanTab(
     var completeDialog by remember { mutableStateOf<PlanExercise?>(null) }
     var showWeekView by remember { mutableStateOf(false) }
     val today = LocalDate.now()
-    val todayShort = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINESE).replace("星期", "周")
-    val todayIndex = plan.indexOfFirst { it.day == todayShort }.coerceAtLeast(0)
+    val todayDateStr = today.format(DateTimeFormatter.ofPattern("MM-dd"))
+    val todayIndex = plan.indexOfFirst { it.date == todayDateStr }.coerceAtLeast(0)
     val pagerState = rememberPagerState(initialPage = todayIndex, pageCount = { plan.size.coerceAtLeast(1) })
     val scope = rememberCoroutineScope()
 
@@ -176,33 +176,44 @@ fun TrainingPlanTab(
                 }
             }
         } else {
-            // ── 日期指示器 ──
-            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.Center) {
-                    plan.forEachIndexed { i, dp ->
-                        val isCurrent = i == pagerState.currentPage
-                        val isToday = dp.day == todayShort
-                        Box(
-                            Modifier.clickable { scope.launch { pagerState.animateScrollToPage(i) } }
-                                .padding(horizontal = 3.dp)
-                                .size(28.dp).clip(RoundedCornerShape(8.dp))
-                                .background(if (isCurrent) MaterialTheme.colorScheme.primary else if (isToday) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(dp.day.replace("周", ""), style = MaterialTheme.typography.labelSmall,
-                                fontWeight = if (isCurrent || isToday) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isCurrent) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
+            // ── 日期指示器（显示 MM-DD 周X，点击切换日） ──
+            Column {
+                Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                    Row(Modifier.weight(1f), horizontalArrangement = Arrangement.Center) {
+                        plan.forEachIndexed { i, dp ->
+                            val isCurrent = i == pagerState.currentPage
+                            val isToday = dp.date == todayDateStr
+                            // 从 "08-06 周三" 格式提取日期短名
+                            val shortLabel = dp.date // "08-06"
+                            Box(
+                                Modifier.clickable { scope.launch { pagerState.animateScrollToPage(i) } }
+                                    .padding(horizontal = 3.dp)
+                                    .size(32.dp).clip(RoundedCornerShape(8.dp))
+                                    .background(if (isCurrent) MaterialTheme.colorScheme.primary else if (isToday) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(shortLabel, style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = if (isCurrent || isToday) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (isCurrent) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
+                            }
                         }
                     }
+                    IconButton(onClick = { showWeekView = !showWeekView }, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.DateRange, if (showWeekView) "日" else "周", Modifier.size(16.dp))
+                    }
                 }
-                IconButton(onClick = { showWeekView = !showWeekView }, modifier = Modifier.size(28.dp)) {
-                    Icon(Icons.Default.DateRange, if (showWeekView) "日" else "周", Modifier.size(16.dp))
+                // 当前日期标签
+                val currentPlan = plan.getOrNull(pagerState.currentPage)
+                if (currentPlan != null) {
+                    Text(currentPlan.day, style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                 }
             }
 
             if (showWeekView) {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
-                    plan.forEachIndexed { i, dp -> WeekDayCard(dp, dp.day == todayShort, ::isCompleted, { onExerciseDetail(it) }); Spacer(Modifier.height(4.dp)) }
+                    plan.forEachIndexed { i, dp -> WeekDayCard(dp, dp.date == todayDateStr, ::isCompleted, { onExerciseDetail(it) }); Spacer(Modifier.height(4.dp)) }
                 }
             } else {
                 // ── 核心：大卡片动作列表 ──
@@ -210,9 +221,9 @@ fun TrainingPlanTab(
                     val dayPlan = plan.getOrNull(page) ?: return@HorizontalPager
                     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(4.dp))
-                        // 部位标签
+                        // 部位标签 + 完整日期
                         Text(dayPlan.focus, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                        Text("${dayPlan.day} ${dayPlan.date}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(dayPlan.day, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(Modifier.height(12.dp))
 
                         // 每个动作 = 一张大卡片
@@ -270,10 +281,14 @@ private fun WeekDayCard(dp: DayPlan, isToday: Boolean, isCompleted: (String) -> 
     Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
         containerColor = if (isToday) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
         else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))) {
-        Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(dp.day, style = MaterialTheme.typography.labelMedium, fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal, modifier = Modifier.width(36.dp))
-            Text(dp.focus, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.width(70.dp))
-            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(Modifier.padding(10.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(dp.day, style = MaterialTheme.typography.labelMedium, fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal)
+                Spacer(Modifier.width(8.dp))
+                Text(dp.focus, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(Modifier.height(4.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 dp.exercises.take(4).forEach { ex ->
                     val done = isCompleted(ex.name)
                     Text(ex.name, style = MaterialTheme.typography.labelSmall,

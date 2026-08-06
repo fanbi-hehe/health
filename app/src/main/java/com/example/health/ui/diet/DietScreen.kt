@@ -162,12 +162,25 @@ fun DietScreen(
                         ),
                         modifier = Modifier.padding(bottom = 8.dp)
                     ) {
-                        Text(
-                            text = (recognitionState as RecognitionState.Error).message,
-                            modifier = Modifier.padding(8.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = (recognitionState as RecognitionState.Error).message,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                TextButton(onClick = {
+                                    viewModel.clearRecognitionError()
+                                    showManualDialog = true
+                                }) {
+                                    Text("手动录入", style = MaterialTheme.typography.labelMedium)
+                                }
+                                TextButton(onClick = { viewModel.clearRecognitionError() }) {
+                                    Text("关闭", style = MaterialTheme.typography.labelMedium)
+                                }
+                            }
+                        }
                     }
                 }
                 ExtendedFloatingActionButton(
@@ -285,6 +298,11 @@ private fun TodayCalorieSummary(records: List<DietRecord>, modifier: Modifier = 
 // ──────────────────────────────────────────────────────────
 @Composable
 private fun DietRecordCard(record: DietRecord, onClick: () -> Unit = {}) {
+    val timeStr = remember(record.timestamp) {
+        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        sdf.format(java.util.Date(record.timestamp))
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
@@ -297,8 +315,13 @@ private fun DietRecordCard(record: DietRecord, onClick: () -> Unit = {}) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("${record.mealType} · ${record.foodName}",
-                    style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${record.mealType} · ${record.foodName}",
+                        style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(timeStr, style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
+                }
                 Text("${record.weightG}g", style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }

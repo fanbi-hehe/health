@@ -8,6 +8,7 @@ data class TrainingRecord(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val date: String,           // "yyyy-MM-dd"
+    val timestamp: Long = System.currentTimeMillis(),  // 精确时间戳
     val bodyParts: String,      // 逗号分隔多选部位，如 "胸,肩"
     val exerciseName: String,
     val sets: Int,

@@ -6,27 +6,20 @@ import androidx.lifecycle.viewModelScope
 import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.BodyWeight
 import com.example.health.data.preference.AppPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
     private val prefs = AppPreferences(application)
-    private val gson = Gson()
+    private val backupRepo = com.example.health.data.repository.BackupRepository(application)
     private val today = LocalDate.now()
 
     // ── 体重记录 ──
@@ -91,29 +84,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun exportAllData() {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    val export = mapOf(
-                        "diet_records" to db.dietRecordDao().getAllRecords()
-                            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value,
-                        "training_records" to db.trainingRecordDao().getAllRecords()
-                            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value,
-                        "body_weights" to db.bodyWeightDao().getAllRecords()
-                            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value,
-                        "chat_messages" to db.chatMessageDao().getAllMessages()
-                            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value,
-                        "food_library" to db.foodLibraryDao().getAllFoods()
-                            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value,
-                        "exercise_library" to db.exerciseLibraryDao().getAllExercises()
-                            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value,
-                    )
-                    val json = gson.toJson(export)
-                    val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(
-                        android.os.Environment.DIRECTORY_DOWNLOADS)
-                    val fileName = "增重助手备份_${today.format(DateTimeFormatter.ISO_LOCAL_DATE)}.json"
-                    val file = File(downloadsDir, fileName)
-                    file.writeText(json)
-                    _backupStatus.value = "导出成功: ${file.absolutePath}"
-                }
+                val fileName = backupRepo.exportAll()
+                _backupStatus.value = "导出成功: $fileName"
             } catch (e: Exception) {
                 _backupStatus.value = "导出失败: ${e.message}"
             }
@@ -124,23 +96,55 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun importData(jsonString: String) {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    val mapType = object : TypeToken<Map<String, Any>>() {}.type
-                    val map = gson.fromJson<Map<String, Any>>(jsonString, mapType)
-                    // 简单策略：删除现有数据后批量插入
-                    db.dietRecordDao().deleteAll()
-                    db.trainingRecordDao().deleteAll()
-                    db.bodyWeightDao().deleteAll()
-                    db.chatMessageDao().deleteAll()
-                    db.foodLibraryDao().deleteAllCustom()
-                    db.exerciseLibraryDao().deleteAllCustom()
+                val result = backupRepo.importFromJson(jsonString)
+                _backupStatus.value = buildString {
+                    append("导入成功！")
+                    append("饮食${result.dietCount}条、")
+                    append("训练${result.trainingCount}条、")
+                    append("体重${result.weightCount}条、")
+                    append("聊天${result.chatCount}条")
+                    if (result.foodCount > 0) append("、食物${result.foodCount}个")
+                    if (result.exerciseCount > 0) append("、动作${result.exerciseCount}个")
                 }
-                _backupStatus.value = "导入成功"
             } catch (e: Exception) {
                 _backupStatus.value = "导入失败: ${e.message}"
             }
         }
     }
+
+    // ── 近7天每日摄入（用于柱状图） ──
+    data class DailyCalorie(
+        val date: String,       // "MM-dd"
+        val dateFull: String,   // "yyyy-MM-dd"
+        val calories: Int
+    )
+
+    val sevenDayCalories: StateFlow<List<DailyCalorie>> = db.dietRecordDao().getAllRecords()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        .let { flow ->
+            val result = MutableStateFlow<List<DailyCalorie>>(emptyList())
+            viewModelScope.launch {
+                flow.collect { records ->
+                    val fmt = DateTimeFormatter.ofPattern("MM-dd")
+                    val fullFmt = DateTimeFormatter.ISO_LOCAL_DATE
+                    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                    // 近7天（含今天）
+                    val days = (0..6).map { today.minusDays(it.toLong()) }.reversed()
+                    result.value = days.map { day ->
+                        val dateStr = day.format(fullFmt)
+                        val cals = records
+                            .filter { sdf.format(java.util.Date(it.timestamp)) == dateStr }
+                            .sumOf { it.caloriesKcal }
+                        DailyCalorie(
+                            date = day.format(fmt),
+                            dateFull = dateStr,
+                            calories = cals
+                        )
+                    }
+                }
+            }
+            result.asStateFlow()
+        }
 
     fun clearBackupStatus() { _backupStatus.value = null }
 }

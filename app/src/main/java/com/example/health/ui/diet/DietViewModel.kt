@@ -100,12 +100,10 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
                         _navigateToConfirm.emit(foods)
                     },
                     onFailure = { error ->
-                        // AI 失败 → 转手动录入（可传空结果）
+                        // AI 失败 → 留在主页显示错误，不跳转确认页
                         _recognitionState.value = RecognitionState.Error(
-                            error.message ?: "识别失败"
+                            error.message ?: "识别失败，请重试或手动录入"
                         )
-                        _lastRecognitionResult.value = FoodRecognitionResult()
-                        _navigateToConfirm.emit(FoodRecognitionResult())
                     }
                 )
             } catch (e: Exception) {
@@ -161,9 +159,16 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateRecord(id: Long, name: String, weightG: Int, caloriesKcal: Int, mealType: String) {
         viewModelScope.launch {
-            dao.insert(DietRecord(id = id, foodName = name, weightG = weightG,
-                caloriesKcal = caloriesKcal, mealType = mealType,
-                timestamp = System.currentTimeMillis(), imagePath = null))
+            // 保留原始 timestamp 和 imagePath，使用 @Update 按主键更新
+            val existing = dao.getRecordById(id)
+            if (existing != null) {
+                dao.update(existing.copy(
+                    foodName = name,
+                    weightG = weightG,
+                    caloriesKcal = caloriesKcal,
+                    mealType = mealType
+                ))
+            }
         }
     }
 

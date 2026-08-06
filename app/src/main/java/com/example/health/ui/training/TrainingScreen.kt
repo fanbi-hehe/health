@@ -334,6 +334,11 @@ fun TrainingScreen(
 // ──────────────────────────────────────────────────────────
 @Composable
 private fun TrainingRecordCard(record: TrainingRecord, onClick: () -> Unit = {}) {
+    val timeStr = remember(record.timestamp) {
+        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        sdf.format(java.util.Date(record.timestamp))
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
@@ -346,8 +351,13 @@ private fun TrainingRecordCard(record: TrainingRecord, onClick: () -> Unit = {})
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(record.exerciseName, style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(record.exerciseName, style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(timeStr, style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
+                }
                 Text("${record.sets}组 × ${record.reps}次  ${record.weightKg}kg",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)

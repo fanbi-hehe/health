@@ -26,6 +26,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     private val prefs = AppPreferences(application)
     private val db = AppDatabase.getInstance(application)
+    private val backupRepo = com.example.health.data.repository.BackupRepository(application)
     private val gson = Gson()
     private val today = LocalDate.now()
 
@@ -84,29 +85,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun exportAllData() {
         viewModelScope.launch {
             try {
-                val dietFlow = db.dietRecordDao().getAllRecords()
-                val trainingFlow = db.trainingRecordDao().getAllRecords()
-                val weightFlow = db.bodyWeightDao().getAllRecords()
-                val chatFlow = db.chatMessageDao().getAllMessages()
-                val foodFlow = db.foodLibraryDao().getAllFoods()
-                val exerciseFlow = db.exerciseLibraryDao().getAllExercises()
-
-                val export = mapOf(
-                    "diet_records" to (dietFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value),
-                    "training_records" to (trainingFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value),
-                    "body_weights" to (weightFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value),
-                    "chat_messages" to (chatFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value),
-                    "food_library" to (foodFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value),
-                    "exercise_library" to (exerciseFlow.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value),
-                )
-                val json = gson.toJson(export)
-                withContext(Dispatchers.IO) {
-                    val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(
-                        android.os.Environment.DIRECTORY_DOWNLOADS)
-                    val file = File(downloadsDir, "增重助手备份_${today.format(DateTimeFormatter.ISO_LOCAL_DATE)}.json")
-                    file.writeText(json)
-                }
-                _backupStatus.value = "导出成功"
+                val fileName = backupRepo.exportAll()
+                _backupStatus.value = "导出成功: $fileName"
             } catch (e: Exception) {
                 _backupStatus.value = "导出失败: ${e.message}"
             }
@@ -116,17 +96,21 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun importData() {
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    val jsonString = _importJson.value
-                    if (jsonString.isBlank()) return@withContext
-                    val mapType = object : TypeToken<Map<String, Any>>() {}.type
-                    gson.fromJson<Map<String, Any>>(jsonString, mapType)
-                    db.dietRecordDao().deleteAll()
-                    db.trainingRecordDao().deleteAll()
-                    db.bodyWeightDao().deleteAll()
-                    db.chatMessageDao().deleteAll()
+                val jsonString = _importJson.value
+                if (jsonString.isBlank()) {
+                    _backupStatus.value = "导入失败: JSON 数据为空"
+                    return@launch
                 }
-                _backupStatus.value = "导入成功"
+                val result = backupRepo.importFromJson(jsonString)
+                _backupStatus.value = buildString {
+                    append("导入成功！")
+                    append("饮食${result.dietCount}条、")
+                    append("训练${result.trainingCount}条、")
+                    append("体重${result.weightCount}条、")
+                    append("聊天${result.chatCount}条")
+                    if (result.foodCount > 0) append("、食物${result.foodCount}个")
+                    if (result.exerciseCount > 0) append("、动作${result.exerciseCount}个")
+                }
             } catch (e: Exception) {
                 _backupStatus.value = "导入失败: ${e.message}"
             }

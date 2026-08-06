@@ -19,6 +19,9 @@ interface BodyWeightDao {
     @Query("SELECT * FROM body_weight ORDER BY date DESC")
     fun getAllRecords(): Flow<List<BodyWeight>>
 
+    @Query("SELECT * FROM body_weight ORDER BY date DESC")
+    suspend fun getAllRecordsOnce(): List<BodyWeight>
+
     @Query("SELECT * FROM body_weight WHERE date BETWEEN :startDate AND :endDate ORDER BY date ASC")
     fun getRecordsBetweenDates(startDate: String, endDate: String): Flow<List<BodyWeight>>
 

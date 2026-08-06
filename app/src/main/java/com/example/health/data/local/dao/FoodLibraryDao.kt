@@ -27,6 +27,9 @@ interface FoodLibraryDao {
     @Query("SELECT * FROM food_library ORDER BY isCustom DESC, name ASC")
     fun getAllFoods(): Flow<List<FoodLibrary>>
 
+    @Query("SELECT * FROM food_library ORDER BY isCustom DESC, name ASC")
+    suspend fun getAllFoodsOnce(): List<FoodLibrary>
+
     @Query("SELECT * FROM food_library WHERE name LIKE '%' || :query || '%' ORDER BY isCustom DESC, name ASC")
     fun searchFoods(query: String): Flow<List<FoodLibrary>>
 

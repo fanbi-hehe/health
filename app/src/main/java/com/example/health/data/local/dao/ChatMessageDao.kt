@@ -16,6 +16,9 @@ interface ChatMessageDao {
     @Query("SELECT * FROM chat_message ORDER BY timestamp ASC")
     fun getAllMessages(): Flow<List<ChatMessage>>
 
+    @Query("SELECT * FROM chat_message ORDER BY timestamp ASC")
+    suspend fun getAllMessagesOnce(): List<ChatMessage>
+
     /**
      * 滑动窗口：仅取最近 N 条用于 API 调用。
      */

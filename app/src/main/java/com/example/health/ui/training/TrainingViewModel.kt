@@ -29,7 +29,9 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     private val aiRepo = AiRepository(application)
     private val gson = Gson()
 
-    private val todayDate: String = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+    // 动态获取当天日期（修复跨天不刷新问题）
+    private val todayDate: String get() = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+    private val now: Long get() = System.currentTimeMillis()
 
     // ── 今日训练记录 ──
     val todayRecords: StateFlow<List<TrainingRecord>> = dao.getAllRecords()
@@ -71,8 +73,9 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     fun completePlanExercise(name: String, sets: Int, reps: String, weightKg: Double) {
         viewModelScope.launch {
             val repsInt = reps.toIntOrNull() ?: 0
+            val ts = now
             dao.insert(TrainingRecord(
-                date = todayDate, bodyParts = "", exerciseName = name,
+                date = todayDate, timestamp = ts, bodyParts = "", exerciseName = name,
                 sets = sets, reps = repsInt, weightKg = weightKg,
                 notes = "计划完成"
             ))
@@ -99,8 +102,14 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                 val recentTraining = history.take(15).joinToString("\n") {
                     "${it.date} ${it.bodyParts} ${it.exerciseName} ${it.sets}×${it.reps} ${it.weightKg}kg"
                 }
+                val today = LocalDate.now()
+                val todayStr = today.format(DateTimeFormatter.ofPattern("MM月dd日"))
+                val dayOfWeek = today.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.CHINESE)
+                val fmt = DateTimeFormatter.ofPattern("MM-dd")
+
                 val prompt = buildString {
                     append("你是一位专业健身教练。请根据以下用户信息制定7天训练计划。\n\n")
+                    append("当前日期：${todayStr} ${dayOfWeek}\n\n")
                     append("用户档案：\n")
                     append("- 身高: ${height}cm\n")
                     append("- 体重: ${weight}kg\n")
@@ -115,11 +124,13 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                         append("最近训练记录：\n$recentTraining\n\n")
                     }
                     append("可选动作库：$exerciseNames\n\n")
-                    append("要求：返回纯JSON数组，每天一个对象，7天（周一到周日）。\n")
-                    append("格式：[{\"day\":\"周一\",\"date\":\"日期\",\"focus\":\"训练部位\",\"exercises\":")
+                    append("要求：返回纯JSON数组，每天一个对象，7天。\n")
+                    append("格式：[{\"day\":\"${today.format(fmt)} 周X\",\"date\":\"MM-dd\",\"focus\":\"训练部位\",\"exercises\":")
                     append("[{\"name\":\"动作名\",\"sets\":3,\"reps\":\"8-12\",\"notes\":\"备注\"}]}]\n")
+                    append("day 字段格式必须为\"MM-dd 周X\"，如\"${today.format(fmt)} ${dayOfWeek.replace("星期", "周")}\"。\n")
+                    append("date 字段为短日期如\"${today.format(fmt)}\"。\n")
                     append("休息日 focus 写\"休息日\"，exercises 为空数组。\n")
-                    append("合理分配部位，符合每周${trainingDays}天训练的安排。只返回JSON！")
+                    append("合理分配部位，符合每周${trainingDays}天训练的安排。从今天开始，连续7天。只返回JSON！")
                 }
 
                 val result = aiRepo.chatCompletion(prompt, null, emptyList(), maxTokens = 4096)
@@ -176,7 +187,6 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     private fun buildFallbackPlan(trainingDays: Int): List<DayPlan> {
         val now = LocalDate.now()
         val fmt = DateTimeFormatter.ofPattern("MM-dd")
-        val days = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
         val all = mutableListOf<DayPlan>()
 
         val plan: List<Pair<String, List<Triple<String, Int, String>>>> = when {
@@ -210,10 +220,11 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
         }
 
         plan.forEachIndexed { i, (focus, exercises) ->
-            val dayName = days.getOrElse(i) { "周日" }
-            val date = now.plusDays(i.toLong() - now.dayOfWeek.value + 1)
+            val date = now.plusDays(i.toLong())
+            val dayOfWeek = date.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.CHINESE).replace("星期", "周")
+            val dayLabel = "${date.format(fmt)} $dayOfWeek"
             all.add(DayPlan(
-                day = dayName,
+                day = dayLabel,
                 date = date.format(fmt),
                 focus = focus,
                 exercises = exercises.map { (n, s, r) -> PlanExercise(n, s, r, null) }
@@ -296,9 +307,11 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
         notes: String?
     ) {
         viewModelScope.launch {
+            val ts = now
             dao.insert(
                 TrainingRecord(
                     date = todayDate,
+                    timestamp = ts,
                     bodyParts = bodyParts.joinToString(","),
                     exerciseName = exerciseName,
                     sets = sets,
@@ -322,9 +335,18 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     fun updateRecord(id: Long, bodyParts: List<String>, exerciseName: String,
                      sets: Int, reps: Int, weightKg: Double, notes: String?) {
         viewModelScope.launch {
-            dao.insert(TrainingRecord(id = id, date = todayDate,
-                bodyParts = bodyParts.joinToString(","), exerciseName = exerciseName,
-                sets = sets, reps = reps, weightKg = weightKg, notes = notes))
+            // 保留原始 date，使用 @Update 按主键更新
+            val existing = dao.getRecordById(id)
+            if (existing != null) {
+                dao.update(existing.copy(
+                    bodyParts = bodyParts.joinToString(","),
+                    exerciseName = exerciseName,
+                    sets = sets,
+                    reps = reps,
+                    weightKg = weightKg,
+                    notes = notes
+                ))
+            }
         }
     }
 

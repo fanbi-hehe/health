@@ -96,3 +96,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
+
+// Room schema 导出目录（纳入版本管理，支持 Migration 编写）
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}

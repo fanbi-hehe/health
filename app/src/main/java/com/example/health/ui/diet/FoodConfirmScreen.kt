@@ -74,8 +74,8 @@ fun FoodConfirmScreen(
         editableFoods = lastResult!!.foods.map { food ->
             MutableFoodItem(
                 name = food.name,
-                weightG = food.weightG,
-                caloriesKcal = food.caloriesKcal
+                weightGStr = food.weightG.toString(),
+                caloriesKcalStr = food.caloriesKcal.toString()
             )
         }
         initialized = true
@@ -165,8 +165,8 @@ fun FoodConfirmScreen(
                 onClick = {
                     editableFoods = editableFoods + MutableFoodItem(
                         name = "",
-                        weightG = 100,
-                        caloriesKcal = 0
+                        weightGStr = "100",
+                        caloriesKcalStr = "0"
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -300,8 +300,13 @@ private fun FoodEditCard(
 
             // 重量
             OutlinedTextField(
-                value = item.weightG.toString(),
-                onValueChange = { v -> v.toIntOrNull()?.let { onUpdate(item.copy(weightG = it)) } },
+                value = item.weightGStr,
+                onValueChange = { v ->
+                    // 允许空字符串，只允许数字或空
+                    if (v.isEmpty() || v.all { it.isDigit() }) {
+                        onUpdate(item.copy(weightGStr = v))
+                    }
+                },
                 label = { Text("重量 (g)") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -316,10 +321,14 @@ private fun FoodEditCard(
                 listOf(-50, -10, +10, +50).forEach { delta ->
                     OutlinedButton(
                         onClick = {
-                            val newWeight = (item.weightG + delta).coerceAtLeast(1)
-                            val density = if (item.weightG > 0) item.caloriesKcal.toDouble() / item.weightG else 0.0
+                            val currentWeight = item.weightG  // computed from string
+                            val newWeight = (currentWeight + delta).coerceAtLeast(1)
+                            val density = if (currentWeight > 0) item.caloriesKcal.toDouble() / currentWeight else 0.0
                             val newCal = (newWeight * density).toInt()
-                            onUpdate(item.copy(weightG = newWeight, caloriesKcal = newCal))
+                            onUpdate(item.copy(
+                                weightGStr = newWeight.toString(),
+                                caloriesKcalStr = newCal.toString()
+                            ))
                         },
                         modifier = Modifier.weight(1f)
                     ) {
@@ -335,8 +344,13 @@ private fun FoodEditCard(
 
             // 热量
             OutlinedTextField(
-                value = item.caloriesKcal.toString(),
-                onValueChange = { v -> v.toIntOrNull()?.let { onUpdate(item.copy(caloriesKcal = it)) } },
+                value = item.caloriesKcalStr,
+                onValueChange = { v ->
+                    // 允许空字符串，只允许数字或空
+                    if (v.isEmpty() || v.all { it.isDigit() }) {
+                        onUpdate(item.copy(caloriesKcalStr = v))
+                    }
+                },
                 label = { Text("热量 (kcal)") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -355,12 +369,15 @@ private fun FoodEditCard(
     }
 }
 
-// ── 可变食物项（编辑用） ──
+// ── 可变食物项（编辑用，中间值存为字符串以支持清空输入框） ──
 data class MutableFoodItem(
     val name: String,
-    val weightG: Int,
-    val caloriesKcal: Int
-)
+    val weightGStr: String,
+    val caloriesKcalStr: String
+) {
+    val weightG: Int get() = weightGStr.toIntOrNull() ?: 0
+    val caloriesKcal: Int get() = caloriesKcalStr.toIntOrNull() ?: 0
+}
 
 fun defaultMealType(): String = when (java.time.LocalTime.now().hour) {
     in 5..10 -> "早餐"
