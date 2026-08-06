@@ -14,8 +14,8 @@ android {
         applicationId = "com.example.health"
         minSdk = 30
         targetSdk = 37
-        versionCode = 10
-        versionName = "0.10"
+        versionCode = 11
+        versionName = "0.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
