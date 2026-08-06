@@ -22,9 +22,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 class DietViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -34,8 +40,13 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
     private val foodRepo = FoodRepository(application)
     private val gson = Gson()
 
-    // ── 今日记录 ──
+    // ── 今日记录（按本地日期动态过滤，跨天自动切换） ──
     val todayRecords: StateFlow<List<DietRecord>> = dao.getAllRecords()
+        .map { records ->
+            val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            records.filter { sdf.format(Date(it.timestamp)) == todayStr }
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // ── 食物搜索（手动录入自动补全） ──
