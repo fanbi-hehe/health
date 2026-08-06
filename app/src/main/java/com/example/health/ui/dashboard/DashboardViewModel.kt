@@ -45,13 +45,24 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     // ── 用户档案 ──
     val userHeight: StateFlow<Int> = prefs.userHeight.stateIn(viewModelScope, SharingStarted.Eagerly, 170)
     val userWeight: StateFlow<Double> = prefs.userCurrentWeight.stateIn(viewModelScope, SharingStarted.Eagerly, 65.0)
+    val userAge: StateFlow<Int> = prefs.userAge.stateIn(viewModelScope, SharingStarted.Eagerly, 25)
+    val userGender: StateFlow<String> = prefs.userGender.stateIn(viewModelScope, SharingStarted.Eagerly, "男")
     val userGoal: StateFlow<String> = prefs.userGoal.stateIn(viewModelScope, SharingStarted.Eagerly, "增重增肌")
     val userExperience: StateFlow<String> = prefs.userExperience.stateIn(viewModelScope, SharingStarted.Eagerly, "新手")
     val userEquipment: StateFlow<String> = prefs.userEquipment.stateIn(viewModelScope, SharingStarted.Eagerly, "")
     val userTrainingDays: StateFlow<Int> = prefs.userTrainingDays.stateIn(viewModelScope, SharingStarted.Eagerly, 4)
 
-    fun saveUserProfile(h: Int, w: Double, g: String, e: String, eq: String, d: Int) {
-        viewModelScope.launch { prefs.setUserProfile(h, w, g, e, eq, d) }
+    fun saveUserProfile(
+        h: Int,
+        w: Double,
+        g: String,
+        e: String,
+        eq: String,
+        d: Int,
+        age: Int = 25,
+        gender: String = "男"
+    ) {
+        viewModelScope.launch { prefs.setUserProfile(h, w, g, e, eq, d, age, gender) }
     }
 
     // ── 备份状态 ──

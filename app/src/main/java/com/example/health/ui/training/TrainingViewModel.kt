@@ -66,8 +66,17 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     val isOnboarded: StateFlow<Boolean> = prefs.userOnboarded
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    fun saveUserProfile(height: Int, weight: Double, goal: String, experience: String, equipment: String, days: Int) {
-        viewModelScope.launch { prefs.setUserProfile(height, weight, goal, experience, equipment, days) }
+    fun saveUserProfile(
+        height: Int,
+        weight: Double,
+        goal: String,
+        experience: String,
+        equipment: String,
+        days: Int,
+        age: Int = 25,
+        gender: String = "男"
+    ) {
+        viewModelScope.launch { prefs.setUserProfile(height, weight, goal, experience, equipment, days, age, gender) }
     }
 
     fun completePlanExercise(name: String, sets: Int, reps: String, weightKg: Double) {

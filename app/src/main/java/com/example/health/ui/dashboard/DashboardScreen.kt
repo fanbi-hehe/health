@@ -155,6 +155,8 @@ fun DashboardScreen(
             // ── 训练档案 ──
             val height by viewModel.userHeight.collectAsState()
             val uWeight by viewModel.userWeight.collectAsState()
+            val uAge by viewModel.userAge.collectAsState()
+            val uGender by viewModel.userGender.collectAsState()
             val uGoal by viewModel.userGoal.collectAsState()
             val uExp by viewModel.userExperience.collectAsState()
             val uEquip by viewModel.userEquipment.collectAsState()
@@ -189,9 +191,11 @@ fun DashboardScreen(
                     initialExperience = uExp,
                     initialEquipment = uEquip,
                     initialDays = uDays.toString(),
+                    initialAge = uAge.toString(),
+                    initialGender = uGender,
                     onDismiss = { showProfileEdit = false },
-                    onSave = { h, w, g, e, eq, d ->
-                        viewModel.saveUserProfile(h, w, g, e, eq, d)
+                    onSave = { h, w, g, e, eq, d, age, gender ->
+                        viewModel.saveUserProfile(h, w, g, e, eq, d, age, gender)
                         showProfileEdit = false
                     }
                 )
@@ -569,11 +573,14 @@ private fun WeightLineChart(weights: List<BodyWeight>, modifier: Modifier = Modi
 private fun ProfileEditDialog(
     initialHeight: String, initialWeight: String, initialGoal: String,
     initialExperience: String, initialEquipment: String, initialDays: String,
+    initialAge: String, initialGender: String,
     onDismiss: () -> Unit,
-    onSave: (h: Int, w: Double, g: String, e: String, eq: String, d: Int) -> Unit
+    onSave: (h: Int, w: Double, g: String, e: String, eq: String, d: Int, age: Int, gender: String) -> Unit
 ) {
     var h by remember { mutableStateOf(initialHeight) }
     var w by remember { mutableStateOf(initialWeight) }
+    var age by remember { mutableStateOf(initialAge) }
+    var gender by remember { mutableStateOf(initialGender) }
     var g by remember { mutableStateOf(initialGoal) }
     var e by remember { mutableStateOf(initialExperience) }
     var eq by remember { mutableStateOf(initialEquipment) }
@@ -593,6 +600,20 @@ private fun ProfileEditDialog(
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(w, { w = it }, label = { Text("体重 (kg)") }, singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(age, { age = it }, label = { Text("年龄") }, singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("性别", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("男", "女").forEach { option ->
+                        FilterChip(
+                            selected = gender == option,
+                            onClick = { gender = option },
+                            label = { Text(option, style = MaterialTheme.typography.labelSmall) }
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("目标", style = MaterialTheme.typography.labelMedium)
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -636,7 +657,14 @@ private fun ProfileEditDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                onSave(h.toIntOrNull() ?: 170, w.toDoubleOrNull() ?: 65.0, g, e, eq, d.toIntOrNull() ?: 4)
+                onSave(
+                    h.toIntOrNull() ?: 170,
+                    w.toDoubleOrNull() ?: 65.0,
+                    g, e, eq,
+                    d.toIntOrNull() ?: 4,
+                    age.toIntOrNull() ?: 25,
+                    gender
+                )
             }) { Text("保存") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }

@@ -34,6 +34,8 @@ class AppPreferences(private val context: Context) {
         // ── 用户档案 ──
         val USER_HEIGHT = intPreferencesKey("user_height_cm")
         val USER_CURRENT_WEIGHT = doublePreferencesKey("user_current_weight")
+        val USER_AGE = intPreferencesKey("user_age")
+        val USER_GENDER = stringPreferencesKey("user_gender")
         val USER_GOAL = stringPreferencesKey("user_goal")
         val USER_EXPERIENCE = stringPreferencesKey("user_experience")
         val USER_EQUIPMENT = stringPreferencesKey("user_equipment")
@@ -101,6 +103,8 @@ class AppPreferences(private val context: Context) {
     // ────────── 用户档案 ──────────
     val userHeight: Flow<Int> = context.dataStore.data.map { prefs -> prefs[USER_HEIGHT] ?: 170 }
     val userCurrentWeight: Flow<Double> = context.dataStore.data.map { prefs -> prefs[USER_CURRENT_WEIGHT] ?: 65.0 }
+    val userAge: Flow<Int> = context.dataStore.data.map { prefs -> prefs[USER_AGE] ?: 25 }
+    val userGender: Flow<String> = context.dataStore.data.map { prefs -> prefs[USER_GENDER] ?: "男" }
     val userGoal: Flow<String> = context.dataStore.data.map { prefs -> prefs[USER_GOAL] ?: "增重增肌" }
     val userExperience: Flow<String> = context.dataStore.data.map { prefs -> prefs[USER_EXPERIENCE] ?: "新手" }
     val userEquipment: Flow<String> = context.dataStore.data.map { prefs -> prefs[USER_EQUIPMENT] ?: "" }
@@ -146,9 +150,19 @@ class AppPreferences(private val context: Context) {
     suspend fun setExercisesInitialized(initialized: Boolean) { context.dataStore.edit { it[EXERCISES_INITIALIZED] = initialized } }
     suspend fun setCoachQuotes(json: String) { context.dataStore.edit { it[COACH_QUOTES] = json } }
 
-    suspend fun setUserProfile(height: Int, weight: Double, goal: String, experience: String, equipment: String, days: Int) {
+    suspend fun setUserProfile(
+        height: Int,
+        weight: Double,
+        goal: String,
+        experience: String,
+        equipment: String,
+        days: Int,
+        age: Int = 25,
+        gender: String = "男"
+    ) {
         context.dataStore.edit {
             it[USER_HEIGHT] = height; it[USER_CURRENT_WEIGHT] = weight
+            it[USER_AGE] = age; it[USER_GENDER] = gender
             it[USER_GOAL] = goal; it[USER_EXPERIENCE] = experience
             it[USER_EQUIPMENT] = equipment; it[USER_TRAINING_DAYS] = days
             it[USER_ONBOARDED] = true

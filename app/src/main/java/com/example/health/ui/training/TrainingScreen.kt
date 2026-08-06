@@ -690,6 +690,8 @@ private fun EditTrainingDialog(
 private fun OnboardingDialog(viewModel: TrainingViewModel, onDismiss: () -> Unit) {
     var height by remember { mutableStateOf("170") }
     var weight by remember { mutableStateOf("65") }
+    var age by remember { mutableStateOf("25") }
+    var gender by remember { mutableStateOf("男") }
     var goal by remember { mutableStateOf("增重增肌") }
     var experience by remember { mutableStateOf("新手") }
     var equipment by remember { mutableStateOf("") }
@@ -711,6 +713,21 @@ private fun OnboardingDialog(viewModel: TrainingViewModel, onDismiss: () -> Unit
                 OutlinedTextField(weight, { weight = it }, label = { Text("体重 (kg)") },
                     singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(age, { age = it }, label = { Text("年龄") },
+                    singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("性别", style = MaterialTheme.typography.labelMedium)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    listOf("男", "女").forEach { option ->
+                        FilterChip(
+                            selected = gender == option,
+                            onClick = { gender = option },
+                            label = { Text(option, style = MaterialTheme.typography.labelSmall) }
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text("训练目标", style = MaterialTheme.typography.labelMedium)
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
@@ -761,7 +778,9 @@ private fun OnboardingDialog(viewModel: TrainingViewModel, onDismiss: () -> Unit
                     height.toIntOrNull() ?: 170,
                     weight.toDoubleOrNull() ?: 65.0,
                     goal, experience, equipment,
-                    days.toIntOrNull() ?: 4
+                    days.toIntOrNull() ?: 4,
+                    age.toIntOrNull() ?: 25,
+                    gender
                 )
                 onDismiss()
             }) { Text("保存") }
