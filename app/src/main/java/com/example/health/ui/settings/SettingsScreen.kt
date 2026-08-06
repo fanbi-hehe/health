@@ -50,6 +50,7 @@ import com.example.health.data.preference.AppPreferences
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit = {},
+    onNavigateToFoodLibrary: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel()
 ) {
     // ── 视觉模型 ──
@@ -130,7 +131,7 @@ fun SettingsScreen(
 
             // ── 自定义食物库 ──
             SettingsGroup("自定义食物库") {
-                SettingsRow("食物管理", "添加/编辑/删除")
+                SettingsRow("食物管理", "添加/编辑/删除") { onNavigateToFoodLibrary() }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

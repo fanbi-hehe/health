@@ -25,6 +25,7 @@ import com.example.health.ui.diet.DietScreen
 import com.example.health.ui.diet.DietViewModel
 import com.example.health.ui.diet.FoodConfirmScreen
 import com.example.health.ui.settings.SettingsScreen
+import com.example.health.ui.settings.FoodLibraryScreen
 import com.example.health.ui.training.ExerciseDetailScreen
 import com.example.health.ui.training.TrainingScreen
 import com.example.health.ui.training.TrainingViewModel
@@ -114,7 +115,13 @@ fun AppNavigation() {
             }
             composable("settings") {
                 SettingsScreen(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToFoodLibrary = { navController.navigate("food_library") }
+                )
+            }
+            composable("food_library") {
+                FoodLibraryScreen(
+                    onBack = { navController.popBackStack() }
                 )
             }
             composable("food_confirm") {
