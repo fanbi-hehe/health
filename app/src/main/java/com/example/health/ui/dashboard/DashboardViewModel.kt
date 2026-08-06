@@ -259,7 +259,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             val result = MutableStateFlow(0)
             viewModelScope.launch {
                 flow.collect { records ->
-                    val todayStr = today.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                    // 动态取当天日期，避免跨天后仍显示昨天的摄入
+                    val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                     result.value = records
                         .filter { record ->
                             val recordDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())

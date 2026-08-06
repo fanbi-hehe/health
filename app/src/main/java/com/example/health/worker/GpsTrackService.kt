@@ -63,6 +63,7 @@ class GpsTrackService : Service(), LocationListener {
     private var hasLastPoint = false
     private var lastLat = 0.0
     private var lastLon = 0.0
+    private var finishing = false
     private val points = mutableListOf<TrackPoint>()
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -88,11 +89,15 @@ class GpsTrackService : Service(), LocationListener {
     private fun startForegroundAndTracking() {
         scope.launch {
             weightKg = AppPreferences(this@GpsTrackService).userCurrentWeight.first()
+            // 体重读取完成后刷新一次消耗显示（避免长时间停留在默认体重估算）
+            syncStateAndNotification()
         }
         try {
             startForeground(NOTIFICATION_ID, buildNotification())
         } catch (_: Exception) {
-            // 通知权限被拒等场景：继续记录，不显示前台通知
+            // 前台服务启动失败（如权限/系统限制）：立即停止，避免后台存活被系统强杀
+            stopSelf()
+            return
         }
         startLocationUpdates()
         syncStateAndNotification()
@@ -184,6 +189,8 @@ class GpsTrackService : Service(), LocationListener {
     }
 
     private fun finishAndSave() {
+        if (finishing) return // 防双击结束导致重复入库
+        finishing = true
         tickJob?.cancel()
         locationManager?.removeUpdates(this)
 

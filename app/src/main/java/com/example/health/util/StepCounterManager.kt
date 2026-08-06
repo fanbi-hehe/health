@@ -1,6 +1,8 @@
 package com.example.health.util
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -9,6 +11,7 @@ import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.DailyStepCount
 import com.example.health.data.preference.AppPreferences
 import com.example.health.domain.calorie.CalorieCalculator
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
@@ -29,6 +32,13 @@ object StepCounterManager {
 
     /** 读取传感器累计值并同步每日步数。 */
     suspend fun syncNow(context: Context) {
+        // 未授予身体活动权限时直接跳过（避免每次空等 5 秒超时）
+        if (ContextCompat.checkSelfPermission(
+                context, Manifest.permission.ACTIVITY_RECOGNITION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         val sensorTotal = readSensorTotal(context) ?: return
         val prefs = AppPreferences(context)
         val dao = AppDatabase.getInstance(context).dailyStepCountDao()

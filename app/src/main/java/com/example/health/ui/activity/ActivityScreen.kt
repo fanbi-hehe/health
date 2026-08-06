@@ -80,7 +80,14 @@ fun ActivityScreen(
     // 定位权限申请
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { }
+    ) { grants ->
+        // 用户授权后自动开始记录（无需再点一次）
+        if (grants[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        ) {
+            viewModel.startTracking(selectedType)
+        }
+    }
     fun ensureLocationPermission(onGranted: () -> Unit) {
         val granted = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
