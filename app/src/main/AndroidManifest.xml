@@ -37,6 +37,16 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- 组间休息倒计时前台服务（specialUse：训练休息计时） -->
+        <service
+            android:name=".worker.RestTimerService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="training_rest_timer" />
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
