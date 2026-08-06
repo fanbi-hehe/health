@@ -393,9 +393,16 @@ private fun FoodEditCard(
                             val newWeight = (currentWeight + delta).coerceAtLeast(1)
                             val density = if (currentWeight > 0) item.caloriesKcal.toDouble() / currentWeight else 0.0
                             val newCal = (newWeight * density).toInt()
+                            // 宏量营养素随重量按比例联动
+                            val proteinDensity = if (currentWeight > 0) item.proteinG.toDouble() / currentWeight else 0.0
+                            val carbsDensity = if (currentWeight > 0) item.carbsG.toDouble() / currentWeight else 0.0
+                            val fatDensity = if (currentWeight > 0) item.fatG.toDouble() / currentWeight else 0.0
                             onUpdate(item.copy(
                                 weightGStr = newWeight.toString(),
-                                caloriesKcalStr = newCal.toString()
+                                caloriesKcalStr = newCal.toString(),
+                                proteinGStr = (newWeight * proteinDensity).toInt().toString(),
+                                carbsGStr = (newWeight * carbsDensity).toInt().toString(),
+                                fatGStr = (newWeight * fatDensity).toInt().toString()
                             ))
                         },
                         modifier = Modifier.weight(1f)
