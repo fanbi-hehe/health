@@ -45,8 +45,9 @@ class GpsTrackService : Service(), LocationListener {
         const val EXTRA_TYPE = "extra_type"
 
         private const val NOTIFICATION_ID = 2002
-        private const val MIN_TIME_MS = 1000L
-        private const val MIN_DISTANCE_M = 5f
+        private const val MIN_TIME_MS = 5000L
+        private const val MIN_DISTANCE_M = 10f
+        private const val MAX_ACCURACY_M = 30f
         private const val MAX_POINTS = 8000
     }
 
@@ -90,7 +91,8 @@ class GpsTrackService : Service(), LocationListener {
         scope.launch {
             weightKg = AppPreferences(this@GpsTrackService).userCurrentWeight.first()
             // 体重读取完成后刷新一次消耗显示（避免长时间停留在默认体重估算）
-            syncStateAndNotification()
+            syncState()
+            updateNotification()
         }
         try {
             startForeground(NOTIFICATION_ID, buildNotification())
@@ -100,12 +102,15 @@ class GpsTrackService : Service(), LocationListener {
             return
         }
         startLocationUpdates()
-        syncStateAndNotification()
+        syncState()
+        updateNotification()
         tickJob = scope.launch {
             while (true) {
                 delay(1000L)
                 durationSeconds++
-                syncStateAndNotification()
+                syncState()
+                // 通知每 5 秒刷新一次，避免高频更新耗电
+                if (durationSeconds % 5 == 0) updateNotification()
             }
         }
     }
@@ -133,6 +138,8 @@ class GpsTrackService : Service(), LocationListener {
     }
 
     override fun onLocationChanged(location: Location) {
+        // 过滤低精度点（GPS 漂移），避免距离虚高
+        if (location.accuracy > MAX_ACCURACY_M) return
         val lat = location.latitude
         val lon = location.longitude
         if (hasLastPoint) {
@@ -153,7 +160,8 @@ class GpsTrackService : Service(), LocationListener {
         if (points.size > MAX_POINTS) {
             points.removeAt(0)
         }
-        syncStateAndNotification()
+        syncState()
+        updateNotification()
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -162,7 +170,7 @@ class GpsTrackService : Service(), LocationListener {
 
     override fun onProviderDisabled(provider: String) {}
 
-    private fun syncStateAndNotification() {
+    private fun syncState() {
         val minutes = (durationSeconds + 59) / 60
         GpsTrackController.updateState(
             GpsTrackController.TrackState(
@@ -175,6 +183,9 @@ class GpsTrackService : Service(), LocationListener {
                 pointCount = points.size
             )
         )
+    }
+
+    private fun updateNotification() {
         try {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.notify(NOTIFICATION_ID, buildNotification())
@@ -269,6 +280,7 @@ class GpsTrackService : Service(), LocationListener {
     override fun onDestroy() {
         tickJob?.cancel()
         locationManager?.removeUpdates(this)
+        GpsTrackController.updateState(GpsTrackController.TrackState())
         super.onDestroy()
     }
 

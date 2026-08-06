@@ -185,6 +185,8 @@ class RestTimerService : Service() {
     private fun stopTimer() {
         tickJob?.cancel()
         running = false
+        // 复位 UI 状态，避免页面残留"休息中"
+        RestTimerController.updateState(RestTimerController.State())
         try {
             stopForeground(STOP_FOREGROUND_REMOVE)
         } catch (_: Exception) {
@@ -194,6 +196,7 @@ class RestTimerService : Service() {
 
     override fun onDestroy() {
         tickJob?.cancel()
+        RestTimerController.updateState(RestTimerController.State())
         super.onDestroy()
     }
 }
