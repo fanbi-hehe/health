@@ -106,7 +106,7 @@ object UserActionParser {
 
         // 名称：触发词后到第一个数字/标点前
         val name = Regex(
-            "(?:添加食物|新增食物|添加|新增|加入|加个)\\s*[，,、]?\\s*([^\\d，。,.!！?？\\n]+)"
+            "(?:添加食物|新增食物|添加|新增|加入|加个)\\s*[，,、]?\\s*([^\\d每，。,.!！?？\\n]+)"
         ).find(text)?.groupValues?.get(1)?.replace("食物", "")?.trim() ?: return null
         if (name.isBlank() || name.length > 20) return null
 
@@ -122,14 +122,27 @@ object UserActionParser {
         }
         if (name.isBlank() || calories <= 0) return null
 
-        // 蛋白质（可选）："75.7克蛋白质" 或 "蛋白质75.7克"
-        val protein = Regex("(\\d+(?:\\.\\d+)?)\\s*克\\s*蛋白质").find(text)
+        // 蛋白质（可选）："蛋白质75.7克" 或 "75.7克蛋白质"
+        // 先匹配关键词在前的写法，避免"50克 蛋白质"把碳水的 50 误认成蛋白质
+        val protein = Regex("蛋白质[^\\d]{0,8}(\\d+(?:\\.\\d+)?)\\s*克").find(text)
             ?.groupValues?.get(1)?.toDoubleOrNull()
-            ?: Regex("蛋白质[^\\d]{0,8}(\\d+(?:\\.\\d+)?)\\s*克").find(text)
+            ?: Regex("(\\d+(?:\\.\\d+)?)\\s*克\\s*蛋白质").find(text)
                 ?.groupValues?.get(1)?.toDoubleOrNull()
             ?: 0.0
 
-        return UserAction.AddFood(name, calories, protein)
+        // 碳水/脂肪（可选）："碳水50克" "脂肪10克"
+        val carbs = Regex("碳水(?:化合物)?[^\\d]{0,8}(\\d+(?:\\.\\d+)?)\\s*克").find(text)
+            ?.groupValues?.get(1)?.toDoubleOrNull()
+            ?: Regex("(\\d+(?:\\.\\d+)?)\\s*克\\s*碳水(?:化合物)?").find(text)
+                ?.groupValues?.get(1)?.toDoubleOrNull()
+            ?: 0.0
+        val fat = Regex("脂肪[^\\d]{0,8}(\\d+(?:\\.\\d+)?)\\s*克").find(text)
+            ?.groupValues?.get(1)?.toDoubleOrNull()
+            ?: Regex("(\\d+(?:\\.\\d+)?)\\s*克\\s*脂肪").find(text)
+                ?.groupValues?.get(1)?.toDoubleOrNull()
+            ?: 0.0
+
+        return UserAction.AddFood(name, calories, protein, carbs, fat)
     }
 
     // ── 修改食物热量 ──

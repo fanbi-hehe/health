@@ -61,13 +61,18 @@ class UserActionExecutor(private val db: AppDatabase) {
                 name = action.name,
                 caloriesPer100g = action.caloriesPer100g,
                 proteinPer100g = action.proteinPer100g,
+                carbsPer100g = action.carbsPer100g,
+                fatPer100g = action.fatPer100g,
                 isCustom = true
             )
         )
-        val proteinText = if (action.proteinPer100g > 0) {
-            "（蛋白质 ${"%.1f".format(action.proteinPer100g)} g/100g）"
-        } else ""
-        return "已添加自定义食物：「${action.name}」${action.caloriesPer100g} kcal/100g$proteinText。"
+        val macros = buildList {
+            if (action.proteinPer100g > 0) add("蛋白 ${"%.1f".format(action.proteinPer100g)}g")
+            if (action.carbsPer100g > 0) add("碳水 ${"%.1f".format(action.carbsPer100g)}g")
+            if (action.fatPer100g > 0) add("脂肪 ${"%.1f".format(action.fatPer100g)}g")
+        }
+        val macrosText = if (macros.isNotEmpty()) "（${macros.joinToString(" · ")}/100g）" else ""
+        return "已添加自定义食物：「${action.name}」${action.caloriesPer100g} kcal/100g$macrosText。"
     }
 
     /** 更新食物热量（模糊匹配名称）。 */

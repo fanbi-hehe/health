@@ -17,7 +17,9 @@ sealed class UserAction {
     data class AddFood(
         val name: String,
         val caloriesPer100g: Int,
-        val proteinPer100g: Double = 0.0
+        val proteinPer100g: Double = 0.0,
+        val carbsPer100g: Double = 0.0,
+        val fatPer100g: Double = 0.0
     ) : UserAction()
 
     /** 修改食物库中已有食物的热量。 */

@@ -131,6 +131,21 @@ class UserActionParserTest {
     }
 
     @Test
+    fun `添加食物 — 完整宏量`() {
+        val action = UserActionParser.parse(
+            "添加食物 燕麦 每百克 1500千焦 碳水50克 蛋白质15克 脂肪8克",
+            exercises
+        )
+        assertTrue(action is UserAction.AddFood)
+        action as UserAction.AddFood
+        assertEquals("燕麦", action.name)
+        assertEquals(359, action.caloriesPer100g)
+        assertEquals(15.0, action.proteinPer100g, 0.01)
+        assertEquals(50.0, action.carbsPer100g, 0.01)
+        assertEquals(8.0, action.fatPer100g, 0.01)
+    }
+
+    @Test
     fun `修改食物热量`() {
         val action = UserActionParser.parse("把红烧肉的热量改成 350", exercises)
         assertTrue(action is UserAction.UpdateFood)
