@@ -29,12 +29,20 @@ class FoodRepository(private val context: Context) {
 
     // ── 自定义食物 CRUD ──
 
-    suspend fun insertCustomFood(name: String, caloriesPer100g: Int, proteinPer100g: Double = 0.0): Long {
+    suspend fun insertCustomFood(
+        name: String,
+        caloriesPer100g: Int,
+        proteinPer100g: Double = 0.0,
+        carbsPer100g: Double = 0.0,
+        fatPer100g: Double = 0.0
+    ): Long {
         return dao.insert(
             FoodLibrary(
                 name = name,
                 caloriesPer100g = caloriesPer100g,
                 proteinPer100g = proteinPer100g,
+                carbsPer100g = carbsPer100g,
+                fatPer100g = fatPer100g,
                 isCustom = true
             )
         )

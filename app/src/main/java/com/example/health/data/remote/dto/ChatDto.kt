@@ -54,5 +54,8 @@ data class FoodRecognitionResult(
 data class RecognizedFood(
     val name: String = "",
     @SerializedName("weight_g") val weightG: Int = 0,
-    @SerializedName("calories_kcal") val caloriesKcal: Int = 0
+    @SerializedName("calories_kcal") val caloriesKcal: Int = 0,
+    @SerializedName("protein_g") val proteinG: Int = 0,
+    @SerializedName("carbs_g") val carbsG: Int = 0,
+    @SerializedName("fat_g") val fatG: Int = 0
 )

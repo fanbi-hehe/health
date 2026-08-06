@@ -46,6 +46,15 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private val _todayStepCalories = MutableStateFlow(0)
     val todayStepCalories: StateFlow<Int> = _todayStepCalories.asStateFlow()
 
+    data class TodayMacros(
+        val proteinG: Int = 0,
+        val carbsG: Int = 0,
+        val fatG: Int = 0
+    )
+
+    private val _todayMacros = MutableStateFlow(TodayMacros())
+    val todayMacros: StateFlow<TodayMacros> = _todayMacros.asStateFlow()
+
     init {
         viewModelScope.launch {
             db.activityRecordDao().getAllRecords().collect { list ->
@@ -60,6 +69,18 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             stepCounts.collect { list ->
                 val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 _todayStepCalories.value = list.firstOrNull { it.date == todayStr }?.caloriesKcal ?: 0
+            }
+        }
+        viewModelScope.launch {
+            db.dietRecordDao().getAllRecords().collect { list ->
+                val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                val todayRecords = list.filter { sdf.format(java.util.Date(it.timestamp)) == todayStr }
+                _todayMacros.value = TodayMacros(
+                    proteinG = todayRecords.sumOf { it.proteinG },
+                    carbsG = todayRecords.sumOf { it.carbsG },
+                    fatG = todayRecords.sumOf { it.fatG }
+                )
             }
         }
     }
@@ -224,6 +245,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val netIntake = dietCal - activityCal - stepCal
         sb.appendLine("【净摄入】$dietCal − $activityCal（运动） − $stepCal（步数） = $netIntake kcal")
         sb.appendLine("- 目标 $targetCal kcal，缺口 ${targetCal - netIntake} kcal（正=还差，负=超出）")
+        val macros = _todayMacros.value
+        sb.appendLine("- 今日宏量：蛋白质 ${macros.proteinG}g · 碳水 ${macros.carbsG}g · 脂肪 ${macros.fatG}g")
 
         // ── 体重趋势（统计值，不传原始数据） ──
         val thirtyDaysAgo = LocalDate.now().minusDays(29).format(fmt)

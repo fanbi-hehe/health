@@ -22,8 +22,16 @@ class FoodLibraryViewModel(application: Application) : AndroidViewModel(applicat
     val allFoods: StateFlow<List<FoodLibrary>> = repo.getAllFoods()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    fun addFood(name: String, caloriesPer100g: Int, proteinPer100g: Double = 0.0) {
-        viewModelScope.launch { repo.insertCustomFood(name.trim(), caloriesPer100g, proteinPer100g) }
+    fun addFood(
+        name: String,
+        caloriesPer100g: Int,
+        proteinPer100g: Double = 0.0,
+        carbsPer100g: Double = 0.0,
+        fatPer100g: Double = 0.0
+    ) {
+        viewModelScope.launch {
+            repo.insertCustomFood(name.trim(), caloriesPer100g, proteinPer100g, carbsPer100g, fatPer100g)
+        }
     }
 
     fun updateFood(food: FoodLibrary) {

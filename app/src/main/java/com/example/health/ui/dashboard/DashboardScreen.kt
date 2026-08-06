@@ -91,6 +91,7 @@ fun DashboardScreen(
     val todayCals by viewModel.todayCalories.collectAsState()
     val todayActivityCals by viewModel.todayActivityCalories.collectAsState()
     val todayStepCals by viewModel.todayStepCalories.collectAsState()
+    val todayMacros by viewModel.todayMacros.collectAsState()
     val bmr by viewModel.bmr.collectAsState()
     val sevenDayCals by viewModel.sevenDayCalories.collectAsState()
     val trainingRecords by viewModel.trainingRecords.collectAsState()
@@ -173,6 +174,17 @@ fun DashboardScreen(
                         Text("$netIntake kcal", style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary)
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("宏量营养", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            "蛋白 ${todayMacros.proteinG}g · 碳水 ${todayMacros.carbsG}g · 脂肪 ${todayMacros.fatG}g",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                     Text("基础代谢约 $bmr kcal/天", style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

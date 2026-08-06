@@ -83,7 +83,10 @@ fun FoodConfirmScreen(
             MutableFoodItem(
                 name = food.name,
                 weightGStr = food.weightG.toString(),
-                caloriesKcalStr = food.caloriesKcal.toString()
+                caloriesKcalStr = food.caloriesKcal.toString(),
+                proteinGStr = food.proteinG.toString(),
+                carbsGStr = food.carbsG.toString(),
+                fatGStr = food.fatG.toString()
             )
         }
         initialized = true
@@ -179,7 +182,10 @@ fun FoodConfirmScreen(
                     editableFoods = editableFoods + MutableFoodItem(
                         name = "",
                         weightGStr = "100",
-                        caloriesKcalStr = "0"
+                        caloriesKcalStr = "0",
+                        proteinGStr = "0",
+                        carbsGStr = "0",
+                        fatGStr = "0"
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -305,7 +311,10 @@ private fun validFoods(items: List<MutableFoodItem>): List<RecognizedFood> {
             RecognizedFood(
                 name = it.name,
                 weightG = it.weightG,
-                caloriesKcal = it.caloriesKcal
+                caloriesKcal = it.caloriesKcal,
+                proteinG = it.proteinG,
+                carbsG = it.carbsG,
+                fatG = it.fatG
             )
         }
 }
@@ -416,6 +425,16 @@ private fun FoodEditCard(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // ── 宏量营养素（蛋白质/碳水/脂肪，g） ──
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            ) {
+                MacroField("蛋白质", item.proteinGStr) { v -> onUpdate(item.copy(proteinGStr = v)) }
+                MacroField("碳水", item.carbsGStr) { v -> onUpdate(item.copy(carbsGStr = v)) }
+                MacroField("脂肪", item.fatGStr) { v -> onUpdate(item.copy(fatGStr = v)) }
+            }
+
             // 删除按钮
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
@@ -432,10 +451,35 @@ private fun FoodEditCard(
 data class MutableFoodItem(
     val name: String,
     val weightGStr: String,
-    val caloriesKcalStr: String
+    val caloriesKcalStr: String,
+    val proteinGStr: String = "0",
+    val carbsGStr: String = "0",
+    val fatGStr: String = "0"
 ) {
     val weightG: Int get() = weightGStr.toIntOrNull() ?: 0
     val caloriesKcal: Int get() = caloriesKcalStr.toIntOrNull() ?: 0
+    val proteinG: Int get() = proteinGStr.toIntOrNull() ?: 0
+    val carbsG: Int get() = carbsGStr.toIntOrNull() ?: 0
+    val fatG: Int get() = fatGStr.toIntOrNull() ?: 0
+}
+
+/** 宏量营养素输入框（只允许数字或空）。 */
+@Composable
+private fun androidx.compose.foundation.layout.RowScope.MacroField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { v ->
+            if (v.isEmpty() || v.all { it.isDigit() }) onValueChange(v)
+        },
+        label = { Text(label) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.weight(1f)
+    )
 }
 
 fun defaultMealType(): String = when (java.time.LocalTime.now().hour) {

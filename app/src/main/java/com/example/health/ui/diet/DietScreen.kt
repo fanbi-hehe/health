@@ -520,8 +520,12 @@ private fun ManualInputDialog(
                                     Column {
                                         Text(food.name, fontWeight = FontWeight.Medium)
                                         Text(
-                                            "${food.caloriesPer100g} kcal/100g" +
-                                                if (food.proteinPer100g > 0) " · 蛋白 ${"%.1f".format(food.proteinPer100g)}g" else "",
+                                            buildString {
+                                                append("${food.caloriesPer100g} kcal/100g")
+                                                if (food.proteinPer100g > 0) append(" · 蛋白 ${"%.1f".format(food.proteinPer100g)}g")
+                                                if (food.carbsPer100g > 0) append(" · 碳水 ${"%.1f".format(food.carbsPer100g)}g")
+                                                if (food.fatPer100g > 0) append(" · 脂肪 ${"%.1f".format(food.fatPer100g)}g")
+                                            },
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
@@ -635,8 +639,12 @@ private fun EditDietDialog(
                                     Column {
                                         Text(food.name, fontWeight = FontWeight.Medium)
                                         Text(
-                                            "${food.caloriesPer100g} kcal/100g" +
-                                                if (food.proteinPer100g > 0) " · 蛋白 ${"%.1f".format(food.proteinPer100g)}g" else "",
+                                            buildString {
+                                                append("${food.caloriesPer100g} kcal/100g")
+                                                if (food.proteinPer100g > 0) append(" · 蛋白 ${"%.1f".format(food.proteinPer100g)}g")
+                                                if (food.carbsPer100g > 0) append(" · 碳水 ${"%.1f".format(food.carbsPer100g)}g")
+                                                if (food.fatPer100g > 0) append(" · 脂肪 ${"%.1f".format(food.fatPer100g)}g")
+                                            },
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }

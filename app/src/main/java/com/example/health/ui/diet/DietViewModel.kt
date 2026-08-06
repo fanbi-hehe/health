@@ -148,6 +148,9 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
                     foodName = food.name,
                     weightG = food.weightG,
                     caloriesKcal = food.caloriesKcal,
+                    proteinG = food.proteinG,
+                    carbsG = food.carbsG,
+                    fatG = food.fatG,
                     mealType = mealType,
                     timestamp = now,
                     imagePath = imagePath

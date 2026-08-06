@@ -133,9 +133,11 @@ fun FoodLibraryScreen(
             initialName = "",
             initialCalories = "",
             initialProtein = "",
+            initialCarbs = "",
+            initialFat = "",
             onDismiss = { showAddDialog = false },
-            onSave = { name, cal, protein ->
-                viewModel.addFood(name, cal, protein)
+            onSave = { name, cal, protein, carbs, fat ->
+                viewModel.addFood(name, cal, protein, carbs, fat)
                 showAddDialog = false
             }
         )
@@ -148,13 +150,17 @@ fun FoodLibraryScreen(
             initialName = food.name,
             initialCalories = food.caloriesPer100g.toString(),
             initialProtein = if (food.proteinPer100g > 0) food.proteinPer100g.toString() else "",
+            initialCarbs = if (food.carbsPer100g > 0) food.carbsPer100g.toString() else "",
+            initialFat = if (food.fatPer100g > 0) food.fatPer100g.toString() else "",
             onDismiss = { editingFood = null },
-            onSave = { name, cal, protein ->
+            onSave = { name, cal, protein, carbs, fat ->
                 viewModel.updateFood(
                     food.copy(
                         name = name.trim(),
                         caloriesPer100g = cal,
-                        proteinPer100g = protein
+                        proteinPer100g = protein,
+                        carbsPer100g = carbs,
+                        fatPer100g = fat
                     )
                 )
                 editingFood = null
@@ -209,6 +215,8 @@ private fun FoodLibraryRow(
                 Text(
                     text = "${food.caloriesPer100g} kcal/100g" +
                         if (food.proteinPer100g > 0) " · 蛋白 ${"%.1f".format(food.proteinPer100g)}g" else "" +
+                        if (food.carbsPer100g > 0) " · 碳水 ${"%.1f".format(food.carbsPer100g)}g" else "" +
+                        if (food.fatPer100g > 0) " · 脂肪 ${"%.1f".format(food.fatPer100g)}g" else "" +
                         if (food.isCustom) " · 自定义" else " · 内置",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -235,12 +243,16 @@ private fun FoodEditDialog(
     initialName: String,
     initialCalories: String,
     initialProtein: String,
+    initialCarbs: String,
+    initialFat: String,
     onDismiss: () -> Unit,
-    onSave: (name: String, caloriesPer100g: Int, proteinPer100g: Double) -> Unit
+    onSave: (name: String, caloriesPer100g: Int, proteinPer100g: Double, carbsPer100g: Double, fatPer100g: Double) -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
     var calories by remember { mutableStateOf(initialCalories) }
     var protein by remember { mutableStateOf(initialProtein) }
+    var carbs by remember { mutableStateOf(initialCarbs) }
+    var fat by remember { mutableStateOf(initialFat) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -276,6 +288,28 @@ private fun FoodEditDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = carbs,
+                    onValueChange = { v ->
+                        if (v.isEmpty() || v.toDoubleOrNull() != null) carbs = v
+                    },
+                    label = { Text("碳水化合物（g/100g，可选）") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = fat,
+                    onValueChange = { v ->
+                        if (v.isEmpty() || v.toDoubleOrNull() != null) fat = v
+                    },
+                    label = { Text("脂肪（g/100g，可选）") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
@@ -283,8 +317,10 @@ private fun FoodEditDialog(
                 onClick = {
                     val cal = calories.toIntOrNull()
                     val proteinValue = protein.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
+                    val carbsValue = carbs.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
+                    val fatValue = fat.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
                     if (name.isNotBlank() && cal != null && cal > 0) {
-                        onSave(name.trim(), cal, proteinValue)
+                        onSave(name.trim(), cal, proteinValue, carbsValue, fatValue)
                     }
                 },
                 enabled = name.isNotBlank() && (calories.toIntOrNull() ?: 0) > 0
