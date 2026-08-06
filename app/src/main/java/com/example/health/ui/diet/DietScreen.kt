@@ -26,7 +26,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,6 +39,7 @@ import com.example.health.ui.components.ScrollableDropdown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +67,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.FoodLibrary
+import com.example.health.data.local.entity.MealTemplate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +80,7 @@ fun DietScreen(
     val todayRecords by viewModel.todayRecords.collectAsState()
     val recognitionState by viewModel.recognitionState.collectAsState()
     val allFoods by viewModel.allFoods.collectAsState()
+    val mealTemplates by viewModel.mealTemplates.collectAsState()
 
     // ── 相机 launcher ──
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -111,6 +117,8 @@ fun DietScreen(
     // ── 手动录入弹窗 ──
     var showManualDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf<DietRecord?>(null) }
+    var showTemplatesDialog by remember { mutableStateOf(false) }
+    var renamingTemplate by remember { mutableStateOf<MealTemplate?>(null) }
 
     // ── 监听 AI 识别结果，导航到确认页 ──
     LaunchedEffect(Unit) {
@@ -205,8 +213,12 @@ fun DietScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                TextButton(onClick = { showTemplatesDialog = true }) {
+                    Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text("模板", modifier = Modifier.padding(start = 4.dp))
+                }
                 TextButton(onClick = { showManualDialog = true }) {
                     Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                     Text("手动录入", modifier = Modifier.padding(start = 4.dp))
@@ -265,6 +277,130 @@ fun DietScreen(
             }
         )
     }
+
+    // ── 餐食模板弹窗 ──
+    if (showTemplatesDialog) {
+        MealTemplatesDialog(
+            templates = mealTemplates,
+            onDismiss = { showTemplatesDialog = false },
+            onUse = { template ->
+                viewModel.loadTemplate(template)
+                showTemplatesDialog = false
+            },
+            onRename = { template ->
+                renamingTemplate = template
+                showTemplatesDialog = false
+            },
+            onDelete = { template ->
+                viewModel.deleteTemplate(template)
+            }
+        )
+    }
+
+    // ── 模板重命名弹窗 ──
+    renamingTemplate?.let { template ->
+        var newName by remember { mutableStateOf(template.templateName) }
+        AlertDialog(
+            onDismissRequest = { renamingTemplate = null },
+            title = { Text("重命名模板") },
+            text = {
+                OutlinedTextField(
+                    value = newName,
+                    onValueChange = { newName = it },
+                    label = { Text("模板名称") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.renameTemplate(template, newName)
+                        renamingTemplate = null
+                    },
+                    enabled = newName.isNotBlank()
+                ) { Text("保存") }
+            },
+            dismissButton = {
+                TextButton(onClick = { renamingTemplate = null }) { Text("取消") }
+            }
+        )
+    }
+}
+
+// ──────────────────────────────────────────────────────────
+// 餐食模板列表弹窗（一键填入 / 重命名 / 删除）
+// ──────────────────────────────────────────────────────────
+@Composable
+private fun MealTemplatesDialog(
+    templates: List<MealTemplate>,
+    onDismiss: () -> Unit,
+    onUse: (MealTemplate) -> Unit,
+    onRename: (MealTemplate) -> Unit,
+    onDelete: (MealTemplate) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("我的餐食模板") },
+        text = {
+            Column(modifier = Modifier.heightIn(max = 380.dp)) {
+                if (templates.isEmpty()) {
+                    Text(
+                        text = "暂无模板\n在 AI 识别确认页点击「存为模板」即可保存",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                } else {
+                    androidx.compose.foundation.lazy.LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(templates, key = { it.id }) { template ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onUse(template) }
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = template.templateName,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick = { onRename(template) },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "重命名",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                IconButton(
+                                    onClick = { onDelete(template) },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "删除",
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                            HorizontalDivider()
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("关闭") }
+        }
+    )
 }
 
 // ──────────────────────────────────────────────────────────

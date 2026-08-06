@@ -8,10 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.FoodLibrary
+import com.example.health.data.local.entity.MealTemplate
 import com.example.health.data.remote.dto.FoodRecognitionResult
 import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.data.repository.AiRepository
 import com.example.health.data.repository.FoodRepository
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,8 +28,10 @@ import java.io.File
 class DietViewModel(application: Application) : AndroidViewModel(application) {
 
     private val dao = AppDatabase.getInstance(application).dietRecordDao()
+    private val templateDao = AppDatabase.getInstance(application).mealTemplateDao()
     private val aiRepo = AiRepository(application)
     private val foodRepo = FoodRepository(application)
+    private val gson = Gson()
 
     // ── 今日记录 ──
     val todayRecords: StateFlow<List<DietRecord>> = dao.getAllRecords()
@@ -183,6 +188,59 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
     // ── 新增：FoodLibrary 加载状态 ──
     val allFoods: StateFlow<List<FoodLibrary>> = foodRepo.getAllFoods()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    // ── 餐食模板 ──
+    val mealTemplates: StateFlow<List<MealTemplate>> = templateDao.getAllTemplates()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    /**
+     * 保存当前食物组合为餐食模板。
+     */
+    fun saveMealTemplate(name: String, foods: List<RecognizedFood>) {
+        viewModelScope.launch {
+            templateDao.insert(
+                MealTemplate(
+                    templateName = name.trim(),
+                    itemsJson = gson.toJson(foods)
+                )
+            )
+        }
+    }
+
+    /**
+     * 一键加载模板：解析食物项 → 作为识别结果填充确认页 → 跳转。
+     */
+    fun loadTemplate(template: MealTemplate) {
+        viewModelScope.launch {
+            val items = parseTemplateItems(template)
+            _currentPhotoPath.value = null
+            _lastRecognitionResult.value = FoodRecognitionResult(foods = items)
+            _navigateToConfirm.emit(FoodRecognitionResult(foods = items))
+        }
+    }
+
+    fun renameTemplate(template: MealTemplate, newName: String) {
+        if (newName.isBlank()) return
+        viewModelScope.launch {
+            templateDao.update(template.copy(templateName = newName.trim()))
+        }
+    }
+
+    fun deleteTemplate(template: MealTemplate) {
+        viewModelScope.launch {
+            templateDao.delete(template)
+        }
+    }
+
+    private fun parseTemplateItems(template: MealTemplate): List<RecognizedFood> {
+        if (template.itemsJson.isBlank()) return emptyList()
+        return try {
+            val type = object : TypeToken<List<RecognizedFood>>() {}.type
+            gson.fromJson(template.itemsJson, type) ?: emptyList()
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
 }
 
 // ── AI 识别状态封装 ──

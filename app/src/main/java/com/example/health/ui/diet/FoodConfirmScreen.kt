@@ -20,6 +20,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,6 +37,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -47,8 +51,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.widget.Toast
 import coil.compose.rememberAsyncImagePainter
 import com.example.health.data.remote.dto.RecognizedFood
 import java.io.File
@@ -63,11 +69,13 @@ fun FoodConfirmScreen(
     val photoPath by viewModel.currentPhotoPath.collectAsState()
     val allFoods by viewModel.allFoods.collectAsState()
     val lastResult by viewModel.lastRecognitionResult.collectAsState()
+    val context = LocalContext.current
 
     // 从 ViewModel 获取的识别结果
     var editableFoods by remember { mutableStateOf<List<MutableFoodItem>>(emptyList()) }
     var mealType by remember { mutableStateOf(defaultMealType()) }
     var initialized by remember { mutableStateOf(false) }
+    var showSaveTemplateDialog by remember { mutableStateOf(false) }
 
     // 初始化：从 ViewModel 读取识别结果
     if (!initialized && lastResult != null) {
@@ -89,6 +97,11 @@ fun FoodConfirmScreen(
         topBar = {
             TopAppBar(
                 title = { Text("确认食物") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -224,19 +237,10 @@ fun FoodConfirmScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ── 保存按钮 ──
+            // ── 保存 / 存为模板 ──
             Button(
                 onClick = {
-                    val foods = editableFoods
-                        .filter { it.name.isNotBlank() }
-                        .map {
-                            RecognizedFood(
-                                name = it.name,
-                                weightG = it.weightG,
-                                caloriesKcal = it.caloriesKcal
-                            )
-                        }
-                    viewModel.saveFoodRecords(foods, mealType, photoPath)
+                    viewModel.saveFoodRecords(validFoods(editableFoods), mealType, photoPath)
                     onSaved()
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -246,9 +250,64 @@ fun FoodConfirmScreen(
                 Text("保存记录", modifier = Modifier.padding(start = 8.dp))
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = { showSaveTemplateDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = editableFoods.any { it.name.isNotBlank() }
+            ) {
+                Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = null)
+                Text("存为模板", modifier = Modifier.padding(start = 8.dp))
+            }
+
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
+
+    // ── 存为模板弹窗 ──
+    if (showSaveTemplateDialog) {
+        var templateName by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showSaveTemplateDialog = false },
+            title = { Text("存为餐食模板") },
+            text = {
+                OutlinedTextField(
+                    value = templateName,
+                    onValueChange = { templateName = it },
+                    label = { Text("模板名称（如：我的早餐）") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.saveMealTemplate(templateName, validFoods(editableFoods))
+                        Toast.makeText(context, "模板已保存", Toast.LENGTH_SHORT).show()
+                        showSaveTemplateDialog = false
+                    },
+                    enabled = templateName.isNotBlank()
+                ) { Text("保存") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSaveTemplateDialog = false }) { Text("取消") }
+            }
+        )
+    }
+}
+
+/** 过滤空名称并转换为识别结果结构。 */
+private fun validFoods(items: List<MutableFoodItem>): List<RecognizedFood> {
+    return items
+        .filter { it.name.isNotBlank() }
+        .map {
+            RecognizedFood(
+                name = it.name,
+                weightG = it.weightG,
+                caloriesKcal = it.caloriesKcal
+            )
+        }
 }
 
 // ── 单个食物编辑卡片 ──

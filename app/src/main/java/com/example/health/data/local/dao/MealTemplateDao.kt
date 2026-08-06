@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.health.data.local.entity.MealTemplate
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +14,9 @@ interface MealTemplateDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(template: MealTemplate): Long
+
+    @Update
+    suspend fun update(template: MealTemplate)
 
     @Delete
     suspend fun delete(template: MealTemplate)
