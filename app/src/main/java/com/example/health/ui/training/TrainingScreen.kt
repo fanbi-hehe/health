@@ -130,7 +130,7 @@ fun TrainingScreen(
         },
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
-                if (selectedTab == 0) {
+                if (selectedTab == 1) {
                     ExtendedFloatingActionButton(
                         onClick = { showTimer = !showTimer },
                         icon = { Icon(Icons.Default.Timer, contentDescription = "休息") },
@@ -154,7 +154,7 @@ fun TrainingScreen(
                 .padding(innerPadding)
         ) {
             // ── 休息倒计时 ──
-            if (showTimer && selectedTab == 0) {
+            if (showTimer && selectedTab == 1) {
                 RestTimer(
                     modifier = Modifier
                         .fillMaxWidth()

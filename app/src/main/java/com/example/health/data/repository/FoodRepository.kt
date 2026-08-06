@@ -44,7 +44,8 @@ class FoodRepository(private val context: Context) {
      * 通过 DataStore 标记确保只执行一次。
      */
     suspend fun initializeBuiltinFoodsIfNeeded() {
-        if (prefs.foodsInitialized.first()) return // 已初始化
+        // 已初始化且表非空时才跳过；若表被清空（如数据库升级重建），自动重新导入内置食物
+        if (prefs.foodsInitialized.first() && dao.getAllFoods().first().isNotEmpty()) return
 
         try {
             val json = context.assets.open("builtin_foods.json")

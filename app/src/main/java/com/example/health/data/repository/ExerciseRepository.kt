@@ -37,7 +37,8 @@ class ExerciseRepository(private val context: Context) {
      * 首次启动时从 assets/exercises.json 导入内置动作到 Room。
      */
     suspend fun initializeBuiltinExercisesIfNeeded() {
-        if (prefs.exercisesInitialized.first()) return
+        // 已初始化且表非空时才跳过；若表被清空（如数据库升级重建），自动重新导入内置动作
+        if (prefs.exercisesInitialized.first() && dao.getAllExercises().first().isNotEmpty()) return
 
         try {
             val json = context.assets.open("exercises.json")
