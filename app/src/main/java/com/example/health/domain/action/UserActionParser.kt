@@ -46,7 +46,9 @@ object UserActionParser {
 
         val exercise = knownExercises
             .sortedByDescending { it.length }
-            .firstOrNull { text.contains(it) } ?: return null
+            .firstOrNull { text.contains(it) }
+            // 动作库没有的动作名：从触发词后、数字前提取
+            ?: extractUnknownExercise(text) ?: return null
 
         val sets = Regex("(\\d+)\\s*[组組xX×]").find(text)
             ?.groupValues?.get(1)?.toIntOrNull() ?: 1
@@ -67,6 +69,16 @@ object UserActionParser {
             reps = reps.coerceAtLeast(1),
             weightKg = weight
         )
+    }
+
+    /** 提取动作库外的动作名（触发词后到第一个数字/标点之间的文字，最多两个词）。 */
+    private fun extractUnknownExercise(text: String): String? {
+        val match = Regex(
+            "(?:做了|练了|记录一下|练|做)\\s*([^\\d，。,.!！?？\\s]+(?:\\s[^\\d，。,.!！?？\\s]+)?)"
+        ).find(text) ?: return null
+        val name = match.groupValues[1].trim()
+        if (name.isBlank() || name.length > 12) return null
+        return name
     }
 
     // ── 添加食物 ──

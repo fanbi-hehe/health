@@ -41,9 +41,13 @@ class UserActionParserTest {
     }
 
     @Test
-    fun `记录训练 — 无已知动作名不解析`() {
+    fun `记录训练 — 未知动作名也能提取`() {
         val action = UserActionParser.parse("我做了仰卧起坐 3组 20次", exercises)
-        assertEquals(UserAction.None, action)
+        assertTrue(action is UserAction.RecordTraining)
+        action as UserAction.RecordTraining
+        assertEquals("仰卧起坐", action.exerciseName)
+        assertEquals(3, action.sets)
+        assertEquals(20, action.reps)
     }
 
     @Test

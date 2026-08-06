@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -49,9 +50,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,12 +80,14 @@ fun TrainingScreen(
 
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditTrainingDialog by remember { mutableStateOf<TrainingRecord?>(null) }
-    var showTimer by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0=计划, 1=记录, 2=动作库
-    var exerciseSearchQuery by remember { mutableStateOf("") }
-    var showOnboarding by remember { mutableStateOf(false) }
-    // 折叠状态：记录每个"部位_器械组"是否展开，器械组默认折叠
-    val expandedEquipGroups = remember { mutableStateMapOf<String, Boolean>() }
+    var showTimer by rememberSaveable { mutableStateOf(false) }
+    // 使用 rememberSaveable：从详情页返回时保持当前 Tab、搜索词与展开状态
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) } // 0=计划, 1=记录, 2=动作库
+    var exerciseSearchQuery by rememberSaveable { mutableStateOf("") }
+    var showOnboarding by rememberSaveable { mutableStateOf(false) }
+    // 折叠状态：已展开的"部位_器械组" key 列表（可保存）
+    var expandedGroups by rememberSaveable { mutableStateOf(listOf<String>()) }
+    val actionLibraryListState = rememberLazyListState()
 
     // 动作库过滤
     val filteredExercises = if (exerciseSearchQuery.isBlank()) {
@@ -237,6 +240,7 @@ fun TrainingScreen(
                         }
                     } else {
                         LazyColumn(
+                            state = actionLibraryListState,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             contentPadding = PaddingValues(bottom = 80.dp)
                         ) {
@@ -257,7 +261,7 @@ fun TrainingScreen(
 
                                 equipmentGroups.forEach { (equipGroup, exercises) ->
                                     val equipKey = "${bodyPart}_$equipGroup"
-                                    val isExpanded = isSearching || (expandedEquipGroups[equipKey] ?: false)
+                                    val isExpanded = isSearching || expandedGroups.contains(equipKey)
 
                                     // 器械组标题（可点击折叠）
                                     item(key = "sub_$equipKey") {
@@ -266,7 +270,12 @@ fun TrainingScreen(
                                                 .fillMaxWidth()
                                                 .clickable {
                                                     if (!isSearching) {
-                                                        expandedEquipGroups[equipKey] = !isExpanded
+                                                        expandedGroups =
+                                                            if (expandedGroups.contains(equipKey)) {
+                                                                expandedGroups - equipKey
+                                                            } else {
+                                                                expandedGroups + equipKey
+                                                            }
                                                     }
                                                 }
                                                 .padding(start = 4.dp, top = 8.dp, bottom = 8.dp),
