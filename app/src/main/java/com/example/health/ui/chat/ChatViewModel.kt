@@ -8,6 +8,9 @@ import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.ChatMessage
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.AiRepository
+import com.example.health.domain.action.UserAction
+import com.example.health.domain.action.UserActionExecutor
+import com.example.health.domain.action.UserActionParser
 import com.example.health.domain.context.UserContextBuilder
 import com.example.health.domain.router.IntentQuery
 import com.example.health.domain.router.IntentRouter
@@ -67,7 +70,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 // 3. 意图路由 + 查询上下文（IO 线程）
                 val systemPrompt = withContext(Dispatchers.IO) {
-                    buildSystemPromptWithContext(text.trim())
+                    val knownExercises = contextBuilder.getKnownExerciseNames()
+                    // AI 教练可执行动作：训练记录写入 / 食物库添加与修改（删除一律拦截）
+                    val action = UserActionParser.parse(text.trim(), knownExercises)
+                    val actionFeedback = if (action != UserAction.None) {
+                        UserActionExecutor(db).execute(action)
+                    } else ""
+                    buildSystemPromptWithContext(text.trim(), actionFeedback)
                 }
 
                 // 4. 调用 AI
@@ -154,7 +163,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
      * 根据用户输入文本，完成意图路由 → 数据查询 → 系统提示组装。
      * 在 IO 线程上运行。
      */
-    private suspend fun buildSystemPromptWithContext(userText: String): String {
+    private suspend fun buildSystemPromptWithContext(
+        userText: String,
+        actionFeedback: String = ""
+    ): String {
         // 1. 获取已知动作名
         val knownExercises = contextBuilder.getKnownExerciseNames()
 
@@ -178,6 +190,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 appendLine()
                 appendLine("## 用户近期数据")
                 appendLine(contextData)
+            }
+
+            // 已执行的本地操作结果（让 AI 基于事实回复）
+            if (actionFeedback.isNotBlank()) {
+                appendLine()
+                appendLine("## 系统操作结果")
+                appendLine(actionFeedback)
             }
 
             // 闲聊时不强制数据回答
