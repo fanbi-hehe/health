@@ -49,15 +49,21 @@ object StepCounterManager {
         val weight = prefs.userCurrentWeight.first()
 
         if (baseDate == today) {
-            // 当天已设基线：正常差值
-            val steps = (sensorTotal - baseTotal).coerceAtLeast(0).toInt()
-            dao.upsert(
-                DailyStepCount(
-                    date = today,
-                    steps = steps,
-                    caloriesKcal = CalorieCalculator.stepCalories(steps, weight)
+            val diff = sensorTotal - baseTotal
+            if (diff < 0) {
+                // 传感器重启（累计值变小）：重置基线，当天从 0 开始，避免一直显示 0
+                prefs.setStepBase(sensorTotal, today)
+                dao.upsert(DailyStepCount(date = today, steps = 0, caloriesKcal = 0))
+            } else {
+                val steps = diff.toInt()
+                dao.upsert(
+                    DailyStepCount(
+                        date = today,
+                        steps = steps,
+                        caloriesKcal = CalorieCalculator.stepCalories(steps, weight)
+                    )
                 )
-            )
+            }
         } else {
             // 跨天：把上次基线后的差值尽力归到前一天（0 点定时任务没跑时的兜底）
             if (baseDate.isNotBlank() && baseTotal > 0 && sensorTotal >= baseTotal) {
