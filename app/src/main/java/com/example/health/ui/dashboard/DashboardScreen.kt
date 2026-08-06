@@ -74,6 +74,7 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun DashboardScreen(
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToActivity: () -> Unit = {},
     viewModel: DashboardViewModel = viewModel()
 ) {
     val weightRecords by viewModel.weightRecords.collectAsState()
@@ -273,6 +274,33 @@ fun DashboardScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ── 运动记录入口 ──
+            Text("运动记录", style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = "GPS 记录跑步 / 骑行 / 步行，支持手动补录运动消耗",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = onNavigateToActivity,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("进入运动记录")
                     }
                 }
             }
