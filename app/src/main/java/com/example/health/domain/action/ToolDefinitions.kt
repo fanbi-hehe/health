@@ -30,7 +30,7 @@ object ToolDefinitions {
         Tool(
             function = FunctionSpec(
                 name = "add_food",
-                description = "把食物添加进自定义食物库。热量必须是每 100 克的值并换算为 kcal（1 kcal = 4.184 kJ），可附带每 100 克的蛋白质/碳水/脂肪克数。",
+                description = "把食物添加进自定义食物库。热量必须是每 100 克的值并换算为 kcal（1 kcal = 4.184 kJ），可附带每 100 克的蛋白质/碳水/脂肪克数；如果用户同时说了本次吃了多少克（如'吃了60克'），用 amount_g 参数一并记录今日饮食。",
                 parameters = mapOf(
                     "type" to "object",
                     "properties" to mapOf(
@@ -38,7 +38,8 @@ object ToolDefinitions {
                         "calories_per_100g" to mapOf("type" to "integer", "description" to "每 100 克热量（kcal，1-2000）"),
                         "protein_per_100g" to mapOf("type" to "number", "description" to "每 100 克蛋白质克数（可选）"),
                         "carbs_per_100g" to mapOf("type" to "number", "description" to "每 100 克碳水化合物克数（可选）"),
-                        "fat_per_100g" to mapOf("type" to "number", "description" to "每 100 克脂肪克数（可选）")
+                        "fat_per_100g" to mapOf("type" to "number", "description" to "每 100 克脂肪克数（可选）"),
+                        "amount_g" to mapOf("type" to "number", "description" to "本次食用的克数（可选，提供则同时记录今日饮食）")
                     ),
                     "required" to listOf("name", "calories_per_100g")
                 )

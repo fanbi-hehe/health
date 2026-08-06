@@ -1,8 +1,11 @@
 package com.example.health.domain.action
 
 import com.example.health.data.local.AppDatabase
+import com.example.health.data.local.entity.DietRecord
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.LocalTime
+import kotlin.math.roundToInt
 
 /**
  * 执行 AI 模型返回的工具调用。
@@ -51,10 +54,32 @@ class ToolExecutor(private val db: AppDatabase) {
         val protein = doubleArg(args, "protein_per_100g") ?: 0.0
         val carbs = doubleArg(args, "carbs_per_100g") ?: 0.0
         val fat = doubleArg(args, "fat_per_100g") ?: 0.0
+        val amountG = doubleArg(args, "amount_g") ?: 0.0
+        if (amountG < 0 || amountG > 5000) return "分量参数超出合理范围，未写入。"
 
-        return UserActionExecutor(db).execute(
+        val foodFeedback = UserActionExecutor(db).execute(
             UserAction.AddFood(name, calories, protein, carbs, fat)
         )
+
+        // 用户说了本次分量（如"吃了60克"）：同步记录今日饮食
+        if (amountG > 0) {
+            val grams = amountG.roundToInt()
+            db.dietRecordDao().insert(
+                DietRecord(
+                    foodName = name,
+                    weightG = grams,
+                    caloriesKcal = (calories * amountG / 100).roundToInt(),
+                    proteinG = (protein * amountG / 100).roundToInt(),
+                    carbsG = (carbs * amountG / 100).roundToInt(),
+                    fatG = (fat * amountG / 100).roundToInt(),
+                    mealType = detectMealType(),
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+            val dietCal = (calories * amountG / 100).roundToInt()
+            return "$foodFeedback\n已同步记录今日饮食：$name $grams g，约 $dietCal kcal。"
+        }
+        return foodFeedback
     }
 
     private suspend fun updateFood(args: Map<String, Any>): String {
@@ -79,5 +104,13 @@ class ToolExecutor(private val db: AppDatabase) {
     private fun doubleArg(args: Map<String, Any>, key: String): Double? {
         return (args[key] as? Double)
             ?: (args[key] as? String)?.toDoubleOrNull()
+    }
+
+    /** 按当前时间推断餐别（与 App 内一致）。 */
+    private fun detectMealType(): String = when (LocalTime.now().hour) {
+        in 5..10 -> "早餐"
+        in 10..14 -> "午餐"
+        in 14..20 -> "晚餐"
+        else -> "加餐"
     }
 }

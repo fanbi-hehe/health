@@ -39,6 +39,31 @@ class ToolExecutorTest {
     }
 
     @Test
+    fun `add_food 带分量同时记今日饮食`() = runBlocking {
+        val db = FakeAppDatabase()
+        val feedback = ToolExecutor(db).execute(
+            "add_food",
+            """{"name":"蛋白粉","calories_per_100g":423,"protein_per_100g":75.7,"carbs_per_100g":50,"fat_per_100g":8,"amount_g":60}"""
+        )
+        assertTrue(feedback, feedback.contains("已同步记录今日饮食"))
+
+        // 食物库已写入
+        val food = db.foodDao.getAllFoodsOnce()[0]
+        assertEquals("蛋白粉", food.name)
+        assertEquals(423, food.caloriesPer100g)
+
+        // 饮食记录已写入：60g → 253.8 ≈ 254 kcal，蛋白 45g，碳水 30g，脂肪 5g
+        val diet = db.dietDao.getAllRecordsOnce()
+        assertEquals(1, diet.size)
+        assertEquals("蛋白粉", diet[0].foodName)
+        assertEquals(60, diet[0].weightG)
+        assertEquals(254, diet[0].caloriesKcal)
+        assertEquals(45, diet[0].proteinG)
+        assertEquals(30, diet[0].carbsG)
+        assertEquals(5, diet[0].fatG)
+    }
+
+    @Test
     fun `非法参数被拒绝`() = runBlocking {
         val db = FakeAppDatabase()
         val feedback = ToolExecutor(db).execute(

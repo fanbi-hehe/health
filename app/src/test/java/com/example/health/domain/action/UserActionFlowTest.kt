@@ -15,6 +15,7 @@ import com.example.health.data.local.dao.FoodLibraryDao
 import com.example.health.data.local.dao.MealTemplateDao
 import com.example.health.data.local.dao.TrainingRecordDao
 import com.example.health.data.local.entity.ExerciseLibrary
+import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.FoodLibrary
 import com.example.health.data.local.entity.TrainingRecord
 import kotlinx.coroutines.flow.Flow
@@ -132,12 +133,13 @@ internal class FakeAppDatabase : AppDatabase() {
     val trainingDao = FakeTrainingRecordDao()
     val foodDao = FakeFoodLibraryDao()
     val exerciseDao = FakeExerciseLibraryDao()
+    val dietDao = FakeDietRecordDao()
 
     override fun trainingRecordDao(): TrainingRecordDao = trainingDao
     override fun foodLibraryDao(): FoodLibraryDao = foodDao
     override fun exerciseLibraryDao(): ExerciseLibraryDao = exerciseDao
+    override fun dietRecordDao(): DietRecordDao = dietDao
 
-    override fun dietRecordDao(): DietRecordDao = throw UnsupportedOperationException()
     override fun bodyWeightDao(): BodyWeightDao = throw UnsupportedOperationException()
     override fun chatMessageDao(): ChatMessageDao = throw UnsupportedOperationException()
     override fun adviceLogDao(): AdviceLogDao = throw UnsupportedOperationException()
@@ -220,4 +222,32 @@ internal class FakeExerciseLibraryDao : ExerciseLibraryDao {
     override suspend fun update(exercise: ExerciseLibrary) = throw UnsupportedOperationException()
     override suspend fun delete(exercise: ExerciseLibrary) = throw UnsupportedOperationException()
     override suspend fun deleteAllCustom() = throw UnsupportedOperationException()
+}
+
+internal class FakeDietRecordDao : DietRecordDao {
+    val records = mutableListOf<DietRecord>()
+    private var nextId = 1L
+
+    override suspend fun insert(record: DietRecord): Long {
+        val withId = record.copy(id = nextId++)
+        records.add(withId)
+        return withId.id
+    }
+
+    override suspend fun insertAll(records: List<DietRecord>) { records.forEach { insert(it) } }
+    override suspend fun delete(record: DietRecord) { records.remove(record) }
+    override fun getAllRecords(): Flow<List<DietRecord>> = flowOf(records.toList())
+    override fun getRecordsByMealType(mealType: String): Flow<List<DietRecord>> = flowOf(emptyList())
+    override suspend fun getRecordsByDate(date: String): List<DietRecord> = emptyList()
+    override suspend fun getTotalCaloriesByDate(date: String): Int? = null
+    override suspend fun getRecordsBetweenDates(startDate: String, endDate: String): List<DietRecord> = emptyList()
+    override suspend fun getTotalCaloriesBetweenDates(startDate: String, endDate: String): Int? = null
+    override suspend fun getRecordById(id: Long): DietRecord? = records.firstOrNull { it.id == id }
+    override suspend fun getAllRecordsOnce(): List<DietRecord> = records.toList()
+    override suspend fun getRecentDatesWithRecords(limit: Int): List<String> = emptyList()
+    override suspend fun update(record: DietRecord) {
+        val idx = records.indexOfFirst { it.id == record.id }
+        if (idx >= 0) records[idx] = record
+    }
+    override suspend fun deleteAll() { records.clear() }
 }
