@@ -93,10 +93,8 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                 val equipment: String = prefs.userEquipment.first()
                 val trainingDays: Int = prefs.userTrainingDays.first()
 
-                val exercises = exerciseRepo.getAllExercises()
-                    .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value
-                val history = dao.getAllRecords()
-                    .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList()).value
+                val exercises = exerciseRepo.getAllExercises().first()
+                val history = dao.getAllRecords().first()
 
                 val exerciseNames = exercises.take(60).joinToString("、") { it.name }
                 val recentTraining = history.take(15).joinToString("\n") {
@@ -354,9 +352,6 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
      * 按动作名查找 ExerciseLibrary 详情（供详情页使用）。
      */
     suspend fun getExerciseByName(name: String): ExerciseLibrary? {
-        return exerciseRepo.getAllExercises()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-            .value
-            .firstOrNull { it.name == name }
+        return exerciseRepo.getAllExercises().first().firstOrNull { it.name == name }
     }
 }

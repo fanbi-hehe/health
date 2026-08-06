@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
@@ -52,15 +51,6 @@ object ImageCompressor {
         val newHeight = (height * ratio).toInt()
 
         return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-    }
-
-    /**
-     * Bitmap → Base64（用于 AI API 调用）。
-     */
-    fun toBase64(bitmap: Bitmap): String {
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, baos)
-        return android.util.Base64.encodeToString(baos.toByteArray(), android.util.Base64.NO_WRAP)
     }
 
     /**

@@ -113,9 +113,6 @@ class AiRepository(private val context: Context) {
                 if (msg.content.isNotBlank()) {
                     parts.add(ContentPart(type = "text", text = msg.content))
                 }
-                if (msg.imagePath != null && role == "user") {
-                    // 历史中的图片不再重复发送（避免 token 过大），仅保留文字
-                }
                 if (parts.isNotEmpty()) {
                     messages.add(Message(role = role, content = parts))
                 }

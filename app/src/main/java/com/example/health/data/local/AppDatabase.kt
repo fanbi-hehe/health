@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.health.data.local.converter.Converters
 import com.example.health.data.local.dao.AdviceLogDao
 import com.example.health.data.local.dao.BodyWeightDao
 import com.example.health.data.local.dao.ChatMessageDao
