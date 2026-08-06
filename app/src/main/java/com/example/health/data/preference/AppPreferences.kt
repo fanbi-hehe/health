@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +43,10 @@ class AppPreferences(private val context: Context) {
         val USER_TRAINING_DAYS = intPreferencesKey("user_training_days")
         val USER_ONBOARDED = booleanPreferencesKey("user_onboarded")
         val TRAINING_PLAN_JSON = stringPreferencesKey("training_plan_json")
+
+        // ── 步数基线（轻量档：传感器只给累计值，App 按天记账） ──
+        val STEP_BASE_TOTAL = longPreferencesKey("step_base_total")
+        val STEP_BASE_DATE = stringPreferencesKey("step_base_date")
 
         // ── 暴躁语录 ──
         val COACH_QUOTES = stringPreferencesKey("coach_quotes")
@@ -111,6 +116,8 @@ class AppPreferences(private val context: Context) {
     val userTrainingDays: Flow<Int> = context.dataStore.data.map { prefs -> prefs[USER_TRAINING_DAYS] ?: 4 }
     val userOnboarded: Flow<Boolean> = context.dataStore.data.map { prefs -> prefs[USER_ONBOARDED] ?: false }
     val trainingPlanJson: Flow<String> = context.dataStore.data.map { prefs -> prefs[TRAINING_PLAN_JSON] ?: "" }
+    val stepBaseTotal: Flow<Long> = context.dataStore.data.map { prefs -> prefs[STEP_BASE_TOTAL] ?: 0L }
+    val stepBaseDate: Flow<String> = context.dataStore.data.map { prefs -> prefs[STEP_BASE_DATE] ?: "" }
 
     // ────────── 通知 ──────────
     val coachReminderHour: Flow<Int> = context.dataStore.data.map { prefs ->
@@ -169,4 +176,12 @@ class AppPreferences(private val context: Context) {
         }
     }
     suspend fun setTrainingPlanJson(json: String) { context.dataStore.edit { it[TRAINING_PLAN_JSON] = json } }
+
+    /** 更新步数基线（传感器累计值 + 所属日期）。 */
+    suspend fun setStepBase(total: Long, date: String) {
+        context.dataStore.edit {
+            it[STEP_BASE_TOTAL] = total
+            it[STEP_BASE_DATE] = date
+        }
+    }
 }

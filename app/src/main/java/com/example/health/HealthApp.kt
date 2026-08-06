@@ -13,6 +13,7 @@ import com.example.health.data.repository.FoodRepository
 import com.example.health.worker.CoachNotificationWorker
 import com.example.health.worker.NotificationHelper
 import com.example.health.worker.PhotoCleanupWorker
+import com.example.health.worker.StepSyncWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -58,6 +59,15 @@ class HealthApp : Application() {
             "photo_cleanup",
             ExistingPeriodicWorkPolicy.KEEP,
             cleanupRequest
+        )
+
+        // 步数基线定时同步（每 6 小时；App 打开/看板进入时另有即时同步）
+        val stepSyncRequest = PeriodicWorkRequestBuilder<StepSyncWorker>(6, TimeUnit.HOURS)
+            .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "step_sync",
+            ExistingPeriodicWorkPolicy.KEEP,
+            stepSyncRequest
         )
 
         // 暴躁教练每日提醒：首次计算到提醒时间的延迟，之后每次 Worker 自己排下一次

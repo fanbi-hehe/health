@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.AdviceLog
 import com.example.health.data.local.entity.BodyWeight
+import com.example.health.data.local.entity.DailyStepCount
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.AiRepository
+import com.example.health.util.StepCounterManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,6 +32,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     // ── 体重记录 ──
     val weightRecords: StateFlow<List<BodyWeight>> = db.bodyWeightDao().getAllRecords()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    // ── 每日步数 ──
+    val stepCounts: StateFlow<List<DailyStepCount>> = db.dailyStepCountDao().getAll()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // ── 训练记录 ──
@@ -271,6 +277,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
     fun clearBackupStatus() { _backupStatus.value = null }
+
+    /** 即时同步系统步数（传感器 → 每日步数表）。 */
+    fun syncSteps() {
+        viewModelScope.launch {
+            StepCounterManager.syncNow(getApplication())
+        }
+    }
 }
 
 // ── AI 每日评估状态 ──

@@ -1,5 +1,9 @@
 package com.example.health.ui.dashboard
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,11 +54,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.content.ContextCompat
 import com.example.health.data.local.entity.AdviceLog
 import com.example.health.data.local.entity.BodyWeight
 import androidx.compose.ui.graphics.Color
@@ -77,7 +83,9 @@ fun DashboardScreen(
     onNavigateToActivity: () -> Unit = {},
     viewModel: DashboardViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val weightRecords by viewModel.weightRecords.collectAsState()
+    val stepCounts by viewModel.stepCounts.collectAsState()
     val targetWeight by viewModel.targetWeightKg.collectAsState()
     val targetCalories by viewModel.targetDailyCalories.collectAsState()
     val todayCals by viewModel.todayCalories.collectAsState()
@@ -92,6 +100,15 @@ fun DashboardScreen(
     var showImportDialog by remember { mutableStateOf(false) }
     var importJson by remember { mutableStateOf("") }
     var showReviewHistory by remember { mutableStateOf(false) }
+
+    // 今日步数（每日步数表按日期倒序）
+    val todaySteps = remember(stepCounts) {
+        val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+        stepCounts.firstOrNull { it.date == todayStr }
+    }
+    val stepPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> if (granted) viewModel.syncSteps() }
 
     Scaffold(
         topBar = {
@@ -274,6 +291,49 @@ fun DashboardScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ── 今日步数 ──
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("今日步数", style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold)
+                        Row(verticalAlignment = Alignment.Bottom) {
+                            Text("${todaySteps?.steps ?: 0}",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold)
+                            Text(" 步", style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 4.dp))
+                        }
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text("约 ${todaySteps?.caloriesKcal ?: 0} kcal",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        TextButton(onClick = {
+                            if (ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.ACTIVITY_RECOGNITION
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                viewModel.syncSteps()
+                            } else {
+                                stepPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                            }
+                        }) { Text("同步", style = MaterialTheme.typography.labelMedium) }
                     }
                 }
             }
