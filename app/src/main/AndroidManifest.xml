@@ -47,6 +47,19 @@
                 android:value="training_rest_timer" />
         </service>
 
+        <!-- 桌面小组件：今日热量进度 -->
+        <receiver
+            android:name=".widget.CalorieWidgetReceiver"
+            android:exported="true"
+            android:label="@string/calorie_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/calorie_widget_info" />
+        </receiver>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

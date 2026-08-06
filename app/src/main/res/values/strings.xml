@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">health</string>
+    <string name="calorie_widget_label">今日热量</string>
+    <string name="calorie_widget_description">展示今日摄入热量与目标进度，保存饮食记录时自动刷新</string>
 </resources>

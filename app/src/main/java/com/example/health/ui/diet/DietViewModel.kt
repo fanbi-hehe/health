@@ -13,6 +13,7 @@ import com.example.health.data.remote.dto.FoodRecognitionResult
 import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.data.repository.AiRepository
 import com.example.health.data.repository.FoodRepository
+import com.example.health.widget.CalorieWidget
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -142,6 +143,7 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
             dao.insertAll(records)
+            refreshCalorieWidget()
         }
     }
 
@@ -159,6 +161,7 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
                     timestamp = System.currentTimeMillis()
                 )
             )
+            refreshCalorieWidget()
         }
     }
 
@@ -173,12 +176,16 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
                     caloriesKcal = caloriesKcal,
                     mealType = mealType
                 ))
+                refreshCalorieWidget()
             }
         }
     }
 
     fun deleteRecord(record: DietRecord) {
-        viewModelScope.launch { dao.delete(record) }
+        viewModelScope.launch {
+            dao.delete(record)
+            refreshCalorieWidget()
+        }
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -239,6 +246,15 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
             gson.fromJson(template.itemsJson, type) ?: emptyList()
         } catch (_: Exception) {
             emptyList()
+        }
+    }
+
+    /** 饮食数据变化后主动刷新桌面小组件。 */
+    private suspend fun refreshCalorieWidget() {
+        try {
+            CalorieWidget.updateAll(getApplication())
+        } catch (_: Exception) {
+            // 小组件刷新失败不影响主流程
         }
     }
 }
