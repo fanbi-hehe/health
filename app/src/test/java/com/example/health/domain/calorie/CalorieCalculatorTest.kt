@@ -47,6 +47,20 @@ class CalorieCalculatorTest {
     }
 
     @Test
+    fun `gps activity calories running`() {
+        // 跑步 30 分钟 70kg：9.8 × 3.5 × 70 / 200 × 30 ≈ 360
+        val result = CalorieCalculator.gpsActivityCalories("running", 70.0, 30)
+        assertEquals(360, result)
+    }
+
+    @Test
+    fun `gps activity calories cycling`() {
+        // 骑行 30 分钟 70kg：6.8 × 3.5 × 70 / 200 × 30 ≈ 250
+        val result = CalorieCalculator.gpsActivityCalories("cycling", 70.0, 30)
+        assertEquals(250, result)
+    }
+
+    @Test
     fun `max heart rate`() {
         assertEquals(190, CalorieCalculator.maxHeartRate(30))
     }

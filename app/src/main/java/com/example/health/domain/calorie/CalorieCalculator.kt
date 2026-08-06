@@ -39,6 +39,19 @@ object CalorieCalculator {
         return (steps * 0.0005 * weightKg).roundToInt()
     }
 
+    /**
+     * GPS 户外运动消耗（MET 公式）：kcal/min = MET × 3.5 × 体重(kg) / 200。
+     * 跑步 9.8 MET（约 8km/h）、骑行 6.8 MET、步行 3.5 MET。
+     */
+    fun gpsActivityCalories(type: String, weightKg: Double, minutes: Int): Int {
+        val met = when (type) {
+            "running" -> 9.8
+            "cycling" -> 6.8
+            else -> 3.5
+        }
+        return (met * 3.5 * weightKg / 200 * minutes).roundToInt()
+    }
+
     /** 最大心率（220 − 年龄）。 */
     fun maxHeartRate(age: Int): Int = 220 - age
 

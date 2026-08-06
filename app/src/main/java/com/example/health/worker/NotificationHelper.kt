@@ -15,6 +15,8 @@ object NotificationHelper {
     const val CHANNEL_NAME = "暴躁教练"
     const val REST_TIMER_CHANNEL_ID = "rest_timer"
     const val REST_TIMER_CHANNEL_NAME = "组间休息倒计时"
+    const val GPS_TRACK_CHANNEL_ID = "gps_track"
+    const val GPS_TRACK_CHANNEL_NAME = "运动记录"
 
     fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -40,6 +42,18 @@ object NotificationHelper {
                 enableVibration(false)
             }
             manager.createNotificationChannel(restChannel)
+
+            // 运动记录常驻通道：低优先级、静音，避免打扰
+            val gpsChannel = NotificationChannel(
+                GPS_TRACK_CHANNEL_ID,
+                GPS_TRACK_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "GPS 运动记录进行中（常驻通知）"
+                setSound(null, null)
+                enableVibration(false)
+            }
+            manager.createNotificationChannel(gpsChannel)
         }
     }
 
@@ -101,6 +115,41 @@ object NotificationHelper {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .addAction(0, "结束", stopPendingIntent)
+            .build()
+    }
+
+    /**
+     * 构建 GPS 运动记录常驻通知。
+     */
+    fun buildGpsTrackNotification(
+        context: Context,
+        typeLabel: String,
+        durationSeconds: Int,
+        distanceMeters: Double
+    ): android.app.Notification {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 2, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val minutes = durationSeconds / 60
+        val seconds = durationSeconds % 60
+        val distanceText = if (distanceMeters >= 1000) {
+            "%.2f km".format(distanceMeters / 1000)
+        } else {
+            "${distanceMeters.toInt()} m"
+        }
+
+        return NotificationCompat.Builder(context, GPS_TRACK_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+            .setContentTitle("$typeLabel 记录中")
+            .setContentText("时长 %02d:%02d · 距离 $distanceText".format(minutes, seconds))
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(pendingIntent)
             .build()
     }
 }

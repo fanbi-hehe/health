@@ -4,6 +4,11 @@
 
     <!-- 网络权限 —— AI 识别与对话 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 定位权限 —— GPS 运动记录 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 身体活动识别 —— 系统步数 -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <!-- 相机权限 —— 饮食拍照 -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- 震动权限 —— 训练休息倒计时 -->
@@ -46,6 +51,12 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="training_rest_timer" />
         </service>
+
+        <!-- GPS 运动记录前台服务 -->
+        <service
+            android:name=".worker.GpsTrackService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
 
         <!-- 桌面小组件：今日热量进度 -->
         <receiver
