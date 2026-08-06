@@ -89,6 +89,9 @@ fun DashboardScreen(
     val targetWeight by viewModel.targetWeightKg.collectAsState()
     val targetCalories by viewModel.targetDailyCalories.collectAsState()
     val todayCals by viewModel.todayCalories.collectAsState()
+    val todayActivityCals by viewModel.todayActivityCalories.collectAsState()
+    val todayStepCals by viewModel.todayStepCalories.collectAsState()
+    val bmr by viewModel.bmr.collectAsState()
     val sevenDayCals by viewModel.sevenDayCalories.collectAsState()
     val trainingRecords by viewModel.trainingRecords.collectAsState()
     val backupStatus by viewModel.backupStatus.collectAsState()
@@ -127,29 +130,65 @@ fun DashboardScreen(
             modifier = Modifier.fillMaxSize().padding(innerPadding)
                 .verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
-            // ── 今日热量进度 ──
+            // ── 今日热量评估 ──
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("今日摄入", style = MaterialTheme.typography.titleSmall)
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text("$todayCals", style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold)
-                        Text(" / $targetCalories kcal", style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 8.dp))
+                    Text("今日热量评估", style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("摄入", style = MaterialTheme.typography.bodyMedium)
+                        Text("$todayCals / $targetCalories kcal",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium)
                     }
-                    val progress = if (targetCalories > 0) (todayCals.toFloat() / targetCalories).coerceIn(0f, 1.5f) else 0f
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("运动消耗", style = MaterialTheme.typography.bodyMedium)
+                        Text("$todayActivityCals kcal", style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("步数消耗", style = MaterialTheme.typography.bodyMedium)
+                        Text("$todayStepCals kcal", style = MaterialTheme.typography.bodyMedium)
+                    }
+                    val netIntake = todayCals - todayActivityCals - todayStepCals
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("净摄入", style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold)
+                        Text("$netIntake kcal", style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary)
+                    }
+                    Text("基础代谢约 $bmr kcal/天", style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val progress = if (targetCalories > 0) (netIntake.toFloat() / targetCalories).coerceIn(0f, 1.5f) else 0f
                     LinearProgressIndicator(progress = { if (progress > 1f) 1f else progress },
                         modifier = Modifier.fillMaxWidth().height(10.dp))
-                    if (progress < 1f) {
-                        Text("还差 ${targetCalories - todayCals} kcal", style = MaterialTheme.typography.bodySmall,
+                    val deficit = targetCalories - netIntake
+                    if (deficit > 0) {
+                        Text("还差 $deficit kcal 达目标，建议加餐",
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error)
                     } else {
-                        Text("已达标 ✓", style = MaterialTheme.typography.bodySmall,
+                        Text("热量盈余 ${-deficit} kcal",
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary)
                     }
                 }

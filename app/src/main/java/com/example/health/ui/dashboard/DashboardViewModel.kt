@@ -9,7 +9,9 @@ import com.example.health.data.local.entity.BodyWeight
 import com.example.health.data.local.entity.DailyStepCount
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.AiRepository
+import com.example.health.domain.calorie.CalorieCalculator
 import com.example.health.util.StepCounterManager
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -37,6 +40,31 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     // ── 每日步数 ──
     val stepCounts: StateFlow<List<DailyStepCount>> = db.dailyStepCountDao().getAll()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    // ── 今日运动消耗 / 步数消耗 / BMR ──
+    private val _todayActivityCalories = MutableStateFlow(0)
+    val todayActivityCalories: StateFlow<Int> = _todayActivityCalories.asStateFlow()
+
+    private val _todayStepCalories = MutableStateFlow(0)
+    val todayStepCalories: StateFlow<Int> = _todayStepCalories.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            db.activityRecordDao().getAllRecords().collect { list ->
+                val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                _todayActivityCalories.value = list
+                    .filter { sdf.format(java.util.Date(it.startTime)) == todayStr }
+                    .sumOf { it.caloriesKcal }
+            }
+        }
+        viewModelScope.launch {
+            stepCounts.collect { list ->
+                val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                _todayStepCalories.value = list.firstOrNull { it.date == todayStr }?.caloriesKcal ?: 0
+            }
+        }
+    }
 
     // ── 训练记录 ──
     val trainingRecords = db.trainingRecordDao().getAllRecords()
@@ -57,6 +85,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val userExperience: StateFlow<String> = prefs.userExperience.stateIn(viewModelScope, SharingStarted.Eagerly, "新手")
     val userEquipment: StateFlow<String> = prefs.userEquipment.stateIn(viewModelScope, SharingStarted.Eagerly, "")
     val userTrainingDays: StateFlow<Int> = prefs.userTrainingDays.stateIn(viewModelScope, SharingStarted.Eagerly, 4)
+
+    /** 基础代谢（Mifflin-St Jeor），档案变化时自动重算。 */
+    val bmr: StateFlow<Int> = combine(
+        userHeight, userWeight, userAge, userGender
+    ) { height, weight, age, gender ->
+        CalorieCalculator.bmr(weight, height, age, gender).roundToInt()
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     fun saveUserProfile(
         h: Int,
@@ -165,6 +200,33 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             sb.appendLine("- $d: $cal kcal")
         }
 
+        // ── 今日运动与步数 ──
+        val activityRecords = db.activityRecordDao().getRecordsByDate(todayStr)
+        val activityCal = activityRecords.sumOf { it.caloriesKcal }
+        sb.appendLine("【今日运动】")
+        if (activityRecords.isEmpty()) {
+            sb.appendLine("- 无运动记录")
+        } else {
+            activityRecords.forEach {
+                val dist = if (it.distanceMeters > 0) {
+                    "，${"%.2f".format(it.distanceMeters / 1000)} km"
+                } else ""
+                sb.appendLine("- ${it.typeLabel()} ${it.durationMinutes} 分钟$dist，约 ${it.caloriesKcal} kcal")
+            }
+        }
+        sb.appendLine("- 运动消耗合计：$activityCal kcal")
+
+        val stepToday = db.dailyStepCountDao().getByDate(todayStr)
+        val stepCal = stepToday?.caloriesKcal ?: 0
+        if (stepToday != null && stepToday.steps > 0) {
+            sb.appendLine("- 今日步数：${stepToday.steps} 步（约 $stepCal kcal）")
+        }
+
+        // ── 净摄入与缺口 ──
+        val netIntake = dietCal - activityCal - stepCal
+        sb.appendLine("【净摄入】$dietCal − $activityCal（运动） − $stepCal（步数） = $netIntake kcal")
+        sb.appendLine("- 目标 $targetCal kcal，缺口 ${targetCal - netIntake} kcal（正=还差，负=超出）")
+
         // ── 体重趋势（统计值，不传原始数据） ──
         val thirtyDaysAgo = LocalDate.now().minusDays(29).format(fmt)
         val avgWeight = db.bodyWeightDao().getAverageWeightBetween(thirtyDaysAgo, todayStr)
@@ -180,6 +242,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         return sb.toString()
+    }
+
+    private fun com.example.health.data.local.entity.ActivityRecord.typeLabel(): String = when (type) {
+        "running" -> "跑步"
+        "cycling" -> "骑行"
+        "walking" -> "步行"
+        "manual" -> "手动补录"
+        else -> "运动"
     }
 
     // ── 今日摄入 ──

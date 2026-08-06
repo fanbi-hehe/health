@@ -32,6 +32,11 @@ object IntentRouter {
         "最近表现", "最近状态"
     )
 
+    private val activityKeywords = listOf(
+        "消耗", "运动消耗", "步数", "走了", "跑了", "骑行", "骑车",
+        "运动记录", "走了多少", "跑了多少", "走了几步", "今天运动", "卡路里消耗"
+    )
+
     private val profileKeywords = listOf(
         "目标", "体重目标", "热量目标", "档案", "我的信息",
         "训练天数", "训练经验", "身高", "体重", "设置"
@@ -57,23 +62,28 @@ object IntentRouter {
         // 1. 动作进度（最高优先级 — 动作名 + 进度/重量关键词）
         resolveExerciseProgress(clean, knownExercises)?.let { return it }
 
-        // 2. 热量/饮食
+        // 2. 运动/步数消耗
+        if (matchesAnyKeyword(clean, activityKeywords)) {
+            return IntentQuery.ActivitySummary
+        }
+
+        // 3. 热量/饮食
         if (matchesAnyKeyword(clean, dietKeywords)) {
             return IntentQuery.DietCalories(timeRange = detectTimeRange(clean))
         }
 
-        // 3. 整体趋势
+        // 4. 整体趋势
         if (matchesAnyKeyword(clean, overallKeywords)) {
             return IntentQuery.OverallSummary
         }
 
-        // 4. 用户档案
+        // 5. 用户档案
         // "体重" alone could be ambiguous; require a profile-specific keyword combo
         if (matchesAnyKeyword(clean, profileKeywords)) {
             return IntentQuery.UserProfile
         }
 
-        // 5. 兜底：闲聊
+        // 6. 兜底：闲聊
         return IntentQuery.GeneralChat
     }
 

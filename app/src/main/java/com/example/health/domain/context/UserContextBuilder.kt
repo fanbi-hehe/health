@@ -23,6 +23,8 @@ class UserContextBuilder(
     private val trainingDao get() = db.trainingRecordDao()
     private val weightDao get() = db.bodyWeightDao()
     private val exerciseLibDao get() = db.exerciseLibraryDao()
+    private val activityDao get() = db.activityRecordDao()
+    private val stepDao get() = db.dailyStepCountDao()
 
     private val dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
@@ -59,9 +61,49 @@ class UserContextBuilder(
             is IntentQuery.DietCalories -> buildDietContext(intent.timeRange)
             is IntentQuery.ExerciseProgress -> buildExerciseContext(intent.exerciseName)
             IntentQuery.OverallSummary -> buildOverallContext()
+            IntentQuery.ActivitySummary -> buildActivityContext()
             IntentQuery.UserProfile -> "" // 已在系统提示中通过 buildProfileText 提供
             IntentQuery.GeneralChat -> ""
         }
+    }
+
+    /**
+     * 运动/步数上下文：今日运动明细 + 步数 + 近 3 天运动消耗统计。
+     */
+    private suspend fun buildActivityContext(): String {
+        val sb = StringBuilder()
+        val today = today()
+        val recent3 = (0..2).map { daysAgo(it) }
+
+        // 今日运动记录
+        val todayActivities = activityDao.getRecordsByDate(today)
+        val todayCal = todayActivities.sumOf { it.caloriesKcal }
+        sb.appendLine("【今日运动】")
+        if (todayActivities.isEmpty()) {
+            sb.appendLine("- 无运动记录")
+        } else {
+            todayActivities.forEach {
+                val dist = if (it.distanceMeters > 0) {
+                    "，${"%.2f".format(it.distanceMeters / 1000)} km"
+                } else ""
+                sb.appendLine("- ${it.typeLabel()} ${it.durationMinutes} 分钟$dist，约 ${it.caloriesKcal} kcal")
+            }
+        }
+        sb.appendLine("- 运动消耗合计：$todayCal kcal")
+
+        // 今日步数
+        val steps = stepDao.getByDate(today)
+        if (steps != null && steps.steps > 0) {
+            sb.appendLine("- 今日步数：${steps.steps} 步，约 ${steps.caloriesKcal} kcal")
+        } else {
+            sb.appendLine("- 今日步数：暂无数据")
+        }
+
+        // 近 3 天运动消耗统计
+        val total3 = recent3.sumOf { activityDao.getTotalCaloriesByDate(it) }
+        sb.appendLine("- 近 3 天运动消耗合计：$total3 kcal")
+
+        return sb.toString().trim()
     }
 
     /** 获取用户历史训练过的所有动作名称，供 IntentRouter 使用。 */
@@ -231,5 +273,13 @@ class UserContextBuilder(
             yesterday -> "昨天"
             else -> dateStr
         }
+    }
+
+    private fun com.example.health.data.local.entity.ActivityRecord.typeLabel(): String = when (type) {
+        "running" -> "跑步"
+        "cycling" -> "骑行"
+        "walking" -> "步行"
+        "manual" -> "手动补录"
+        else -> "运动"
     }
 }

@@ -53,6 +53,32 @@ class IntentRouterTest {
         assertEquals("yesterday", (result as IntentQuery.DietCalories).timeRange)
     }
 
+    // ── 运动消耗/步数类 ──
+
+    @Test
+    fun `运动消耗 — 今日消耗`() {
+        val result = IntentRouter.resolve("我今天消耗了多少卡路里？", sampleExercises)
+        assertEquals(IntentQuery.ActivitySummary, result)
+    }
+
+    @Test
+    fun `运动消耗 — 今日步数`() {
+        val result = IntentRouter.resolve("今天走了多少步？", sampleExercises)
+        assertEquals(IntentQuery.ActivitySummary, result)
+    }
+
+    @Test
+    fun `运动消耗 — 跑了多远`() {
+        val result = IntentRouter.resolve("我昨天跑了多远？", sampleExercises)
+        assertEquals(IntentQuery.ActivitySummary, result)
+    }
+
+    @Test
+    fun `运动消耗 — 运动记录优先于整体趋势`() {
+        val result = IntentRouter.resolve("最近运动记录怎么样？", sampleExercises)
+        assertEquals(IntentQuery.ActivitySummary, result)
+    }
+
     // ── 动作进度类 ──
 
     @Test

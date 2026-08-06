@@ -26,6 +26,9 @@ sealed class IntentQuery {
     /** 整体趋势/最近状态查询（近3天摘要 + 30天统计）。 */
     object OverallSummary : IntentQuery()
 
+    /** 运动消耗/步数查询（消耗、步数、跑了/走了多少）。 */
+    object ActivitySummary : IntentQuery()
+
     /** 用户档案/目标查询（体重目标、每日热量目标等）。 */
     object UserProfile : IntentQuery()
 
