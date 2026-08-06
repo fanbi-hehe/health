@@ -13,6 +13,12 @@ interface DailyStepCountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(count: DailyStepCount)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(counts: List<DailyStepCount>)
+
+    @Query("SELECT * FROM daily_step_count ORDER BY date DESC")
+    suspend fun getAllOnce(): List<DailyStepCount>
+
     @Query("SELECT * FROM daily_step_count WHERE date = :date")
     suspend fun getByDate(date: String): DailyStepCount?
 

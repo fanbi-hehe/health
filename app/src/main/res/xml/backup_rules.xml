@@ -6,8 +6,6 @@
    See https://developer.android.com/about/versions/12/backup-restore
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <!-- 排除 DataStore（含 API Key），避免云备份带走密钥 -->
+    <exclude domain="file" path="datastore/app_settings.preferences_pb"/>
 </full-backup-content>

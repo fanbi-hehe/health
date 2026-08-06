@@ -24,6 +24,9 @@ interface MealTemplateDao {
     @Query("SELECT * FROM meal_template ORDER BY templateName ASC")
     fun getAllTemplates(): Flow<List<MealTemplate>>
 
+    @Query("SELECT * FROM meal_template ORDER BY templateName ASC")
+    suspend fun getAllTemplatesOnce(): List<MealTemplate>
+
     @Query("DELETE FROM meal_template")
     suspend fun deleteAll()
 }

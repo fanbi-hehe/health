@@ -8,9 +8,13 @@ import androidx.room.withTransaction
 import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.BodyWeight
 import com.example.health.data.local.entity.ChatMessage
+import com.example.health.data.local.entity.ActivityRecord
+import com.example.health.data.local.entity.AdviceLog
+import com.example.health.data.local.entity.DailyStepCount
 import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.ExerciseLibrary
 import com.example.health.data.local.entity.FoodLibrary
+import com.example.health.data.local.entity.MealTemplate
 import com.example.health.data.local.entity.TrainingRecord
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -38,7 +42,11 @@ class BackupRepository(private val context: Context) {
         val body_weights: List<BodyWeight>,
         val chat_messages: List<ChatMessage>,
         val food_library: List<FoodLibrary>,
-        val exercise_library: List<ExerciseLibrary>
+        val exercise_library: List<ExerciseLibrary>,
+        val activity_records: List<ActivityRecord>,
+        val daily_step_counts: List<DailyStepCount>,
+        val advice_logs: List<AdviceLog>,
+        val meal_templates: List<MealTemplate>
     )
 
     /**
@@ -56,7 +64,11 @@ class BackupRepository(private val context: Context) {
             body_weights = db.bodyWeightDao().getAllRecordsOnce(),
             chat_messages = db.chatMessageDao().getAllMessagesOnce(),
             food_library = db.foodLibraryDao().getAllFoodsOnce(),
-            exercise_library = db.exerciseLibraryDao().getAllExercisesOnce()
+            exercise_library = db.exerciseLibraryDao().getAllExercisesOnce(),
+            activity_records = db.activityRecordDao().getAllRecordsOnce(),
+            daily_step_counts = db.dailyStepCountDao().getAllOnce(),
+            advice_logs = db.adviceLogDao().getAllLogsOnce(),
+            meal_templates = db.mealTemplateDao().getAllTemplatesOnce()
         )
 
         val json = gson.toJson(backup)
@@ -88,7 +100,11 @@ class BackupRepository(private val context: Context) {
         val weightCount: Int,
         val chatCount: Int,
         val foodCount: Int,
-        val exerciseCount: Int
+        val exerciseCount: Int,
+        val activityCount: Int,
+        val stepCount: Int,
+        val adviceCount: Int,
+        val templateCount: Int
     )
 
     /**
@@ -125,6 +141,10 @@ class BackupRepository(private val context: Context) {
         val chatMessages: List<ChatMessage> = parseList(map["chat_messages"])
         val foodLibrary: List<FoodLibrary> = parseList(map["food_library"])
         val exerciseLibrary: List<ExerciseLibrary> = parseList(map["exercise_library"])
+        val activityRecords: List<ActivityRecord> = parseList(map["activity_records"])
+        val dailyStepCounts: List<DailyStepCount> = parseList(map["daily_step_counts"])
+        val adviceLogs: List<AdviceLog> = parseList(map["advice_logs"])
+        val mealTemplates: List<MealTemplate> = parseList(map["meal_templates"])
 
         // ── 步骤 2：在事务中清空 + 写入 ──
         db.withTransaction {
@@ -147,6 +167,10 @@ class BackupRepository(private val context: Context) {
             if (customFoods.isNotEmpty()) db.foodLibraryDao().insertAll(customFoods)
             val customExercises = exerciseLibrary.filter { it.isCustom }
             if (customExercises.isNotEmpty()) db.exerciseLibraryDao().insertAll(customExercises)
+            if (activityRecords.isNotEmpty()) db.activityRecordDao().insertAll(activityRecords)
+            if (dailyStepCounts.isNotEmpty()) db.dailyStepCountDao().insertAll(dailyStepCounts)
+            adviceLogs.forEach { db.adviceLogDao().insert(it) }
+            mealTemplates.forEach { db.mealTemplateDao().insert(it) }
         }
 
         ImportResult(
@@ -155,7 +179,11 @@ class BackupRepository(private val context: Context) {
             weightCount = bodyWeights.size,
             chatCount = chatMessages.size,
             foodCount = foodLibrary.count { it.isCustom },
-            exerciseCount = exerciseLibrary.count { it.isCustom }
+            exerciseCount = exerciseLibrary.count { it.isCustom },
+            activityCount = activityRecords.size,
+            stepCount = dailyStepCounts.size,
+            adviceCount = adviceLogs.size,
+            templateCount = mealTemplates.size
         )
     }
 

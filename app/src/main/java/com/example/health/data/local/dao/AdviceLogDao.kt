@@ -16,6 +16,9 @@ interface AdviceLogDao {
     @Query("SELECT * FROM advice_log ORDER BY date DESC")
     fun getAllLogs(): Flow<List<AdviceLog>>
 
+    @Query("SELECT * FROM advice_log ORDER BY date DESC")
+    suspend fun getAllLogsOnce(): List<AdviceLog>
+
     @Query("SELECT * FROM advice_log WHERE date = :date LIMIT 1")
     suspend fun getLogByDate(date: String): AdviceLog?
 
