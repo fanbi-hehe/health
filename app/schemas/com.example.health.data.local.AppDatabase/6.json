@@ -1,0 +1,499 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 6,
+    "identityHash": "6460f28d66bca8b9a41ed5b0f97e93de",
+    "entities": [
+      {
+        "tableName": "diet_record",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `foodName` TEXT NOT NULL, `weightG` INTEGER NOT NULL, `caloriesKcal` INTEGER NOT NULL, `mealType` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `imagePath` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "foodName",
+            "columnName": "foodName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weightG",
+            "columnName": "weightG",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caloriesKcal",
+            "columnName": "caloriesKcal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mealType",
+            "columnName": "mealType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imagePath",
+            "columnName": "imagePath",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "training_record",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `bodyParts` TEXT NOT NULL, `exerciseName` TEXT NOT NULL, `sets` INTEGER NOT NULL, `reps` INTEGER NOT NULL, `weightKg` REAL NOT NULL, `notes` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bodyParts",
+            "columnName": "bodyParts",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exerciseName",
+            "columnName": "exerciseName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sets",
+            "columnName": "sets",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reps",
+            "columnName": "reps",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weightKg",
+            "columnName": "weightKg",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "body_weight",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `weightKg` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weightKg",
+            "columnName": "weightKg",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "chat_message",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `role` TEXT NOT NULL, `content` TEXT NOT NULL, `imagePath` TEXT, `timestamp` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "role",
+            "columnName": "role",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imagePath",
+            "columnName": "imagePath",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "advice_log",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `requestSnapshot` TEXT NOT NULL, `aiResponse` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requestSnapshot",
+            "columnName": "requestSnapshot",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aiResponse",
+            "columnName": "aiResponse",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "activity_record",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `durationMinutes` INTEGER NOT NULL, `avgHeartRate` INTEGER NOT NULL, `maxHeartRate` INTEGER NOT NULL, `caloriesKcal` INTEGER NOT NULL, `distanceMeters` REAL NOT NULL, `avgPace` TEXT, `routeJson` TEXT, `source` TEXT NOT NULL, `note` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTime",
+            "columnName": "startTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationMinutes",
+            "columnName": "durationMinutes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avgHeartRate",
+            "columnName": "avgHeartRate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxHeartRate",
+            "columnName": "maxHeartRate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caloriesKcal",
+            "columnName": "caloriesKcal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "distanceMeters",
+            "columnName": "distanceMeters",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avgPace",
+            "columnName": "avgPace",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "routeJson",
+            "columnName": "routeJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "daily_step_count",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `steps` INTEGER NOT NULL, `caloriesKcal` INTEGER NOT NULL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "steps",
+            "columnName": "steps",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caloriesKcal",
+            "columnName": "caloriesKcal",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date"
+          ]
+        }
+      },
+      {
+        "tableName": "food_library",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `caloriesPer100g` INTEGER NOT NULL, `isCustom` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caloriesPer100g",
+            "columnName": "caloriesPer100g",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCustom",
+            "columnName": "isCustom",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "meal_template",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `templateName` TEXT NOT NULL, `itemsJson` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "templateName",
+            "columnName": "templateName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemsJson",
+            "columnName": "itemsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "exercise_library",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `bodyPart` TEXT NOT NULL, `equipment` TEXT NOT NULL, `muscleGroup` TEXT NOT NULL, `target` TEXT NOT NULL, `secondaryMuscles` TEXT NOT NULL, `instructions` TEXT NOT NULL, `instructionSteps` TEXT NOT NULL, `image` TEXT NOT NULL, `gifUrl` TEXT NOT NULL, `isCustom` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bodyPart",
+            "columnName": "bodyPart",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "equipment",
+            "columnName": "equipment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "muscleGroup",
+            "columnName": "muscleGroup",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "target",
+            "columnName": "target",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "secondaryMuscles",
+            "columnName": "secondaryMuscles",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "instructions",
+            "columnName": "instructions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "instructionSteps",
+            "columnName": "instructionSteps",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gifUrl",
+            "columnName": "gifUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCustom",
+            "columnName": "isCustom",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6460f28d66bca8b9a41ed5b0f97e93de')"
+    ]
+  }
+}

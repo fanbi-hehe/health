@@ -5,16 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.health.data.local.dao.AdviceLogDao
+import com.example.health.data.local.dao.ActivityRecordDao
 import com.example.health.data.local.dao.BodyWeightDao
 import com.example.health.data.local.dao.ChatMessageDao
+import com.example.health.data.local.dao.DailyStepCountDao
 import com.example.health.data.local.dao.DietRecordDao
 import com.example.health.data.local.dao.ExerciseLibraryDao
 import com.example.health.data.local.dao.FoodLibraryDao
 import com.example.health.data.local.dao.MealTemplateDao
 import com.example.health.data.local.dao.TrainingRecordDao
 import com.example.health.data.local.entity.AdviceLog
+import com.example.health.data.local.entity.ActivityRecord
 import com.example.health.data.local.entity.BodyWeight
 import com.example.health.data.local.entity.ChatMessage
+import com.example.health.data.local.entity.DailyStepCount
 import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.ExerciseLibrary
 import com.example.health.data.local.entity.FoodLibrary
@@ -28,11 +32,13 @@ import com.example.health.data.local.entity.TrainingRecord
         BodyWeight::class,
         ChatMessage::class,
         AdviceLog::class,
+        ActivityRecord::class,
+        DailyStepCount::class,
         FoodLibrary::class,
         MealTemplate::class,
         ExerciseLibrary::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -42,6 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun bodyWeightDao(): BodyWeightDao
     abstract fun chatMessageDao(): ChatMessageDao
     abstract fun adviceLogDao(): AdviceLogDao
+    abstract fun activityRecordDao(): ActivityRecordDao
+    abstract fun dailyStepCountDao(): DailyStepCountDao
     abstract fun foodLibraryDao(): FoodLibraryDao
     abstract fun mealTemplateDao(): MealTemplateDao
     abstract fun exerciseLibraryDao(): ExerciseLibraryDao
