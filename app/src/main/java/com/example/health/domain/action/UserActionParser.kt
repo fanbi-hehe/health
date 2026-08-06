@@ -1,5 +1,7 @@
 package com.example.health.domain.action
 
+import kotlin.math.roundToInt
+
 /**
  * 从用户对话中解析 AI 教练可执行的本地操作。
  *
@@ -102,25 +104,48 @@ object UserActionParser {
         val hasTrigger = listOf("添加", "新增", "加入", "加个").any { text.contains(it) }
         if (!hasTrigger) return null
 
-        val match = Regex(
-            "(?:添加|新增|加入|加个)\\s*([^\\d，。,.!！?？]+?)\\s*(\\d+)\\s*(?:kcal|千卡|大卡|卡路里|卡)"
-        ).find(text) ?: return null
+        // 名称：触发词后到第一个数字/标点前
+        val name = Regex(
+            "(?:添加食物|新增食物|添加|新增|加入|加个)\\s*[，,、]?\\s*([^\\d，。,.!！?？\\n]+)"
+        ).find(text)?.groupValues?.get(1)?.replace("食物", "")?.trim() ?: return null
+        if (name.isBlank() || name.length > 20) return null
 
-        val name = match.groupValues[1].replace("食物", "").trim()
-        val calories = match.groupValues[2].toIntOrNull() ?: return null
+        // 能量：数字 + 单位（支持千焦/kJ 自动换算为 kcal，1 kcal = 4.184 kJ）
+        val energy = Regex(
+            "(?:每100g|每百克|每100克|每 100g|每 100克)?\\s*(\\d+(?:\\.\\d+)?)\\s*(千焦|kJ|焦|kcal|千卡|大卡|卡路里|卡)"
+        ).find(text) ?: return null
+        val energyValue = energy.groupValues[1].toDoubleOrNull() ?: return null
+        val unit = energy.groupValues[2]
+        val calories = when {
+            unit in listOf("千焦", "kJ", "焦") -> (energyValue / 4.184).roundToInt()
+            else -> energyValue.roundToInt()
+        }
         if (name.isBlank() || calories <= 0) return null
-        return UserAction.AddFood(name, calories)
+
+        // 蛋白质（可选）："75.7克蛋白质" 或 "蛋白质75.7克"
+        val protein = Regex("(\\d+(?:\\.\\d+)?)\\s*克\\s*蛋白质").find(text)
+            ?.groupValues?.get(1)?.toDoubleOrNull()
+            ?: Regex("蛋白质[^\\d]{0,8}(\\d+(?:\\.\\d+)?)\\s*克").find(text)
+                ?.groupValues?.get(1)?.toDoubleOrNull()
+            ?: 0.0
+
+        return UserAction.AddFood(name, calories, protein)
     }
 
     // ── 修改食物热量 ──
 
     private fun parseUpdateFood(text: String): UserAction.UpdateFood? {
         val match = Regex(
-            "(?:把|将)?\\s*([^\\d，。,.!！?？\\s]+?)\\s*(?:的)?热量(?:改成|改为|调成|设为|调整为)\\s*(\\d+)\\s*(?:kcal|千卡|大卡|卡路里|卡)?"
+            "(?:把|将)?\\s*([^\\d，。,.!！?？\\s]+?)\\s*(?:的)?热量(?:改成|改为|调成|设为|调整为)\\s*(\\d+(?:\\.\\d+)?)\\s*(千焦|kJ|焦|kcal|千卡|大卡|卡路里|卡)?"
         ).find(text) ?: return null
 
         val name = match.groupValues[1].trim()
-        val calories = match.groupValues[2].toIntOrNull() ?: return null
+        val value = match.groupValues[2].toDoubleOrNull() ?: return null
+        val unit = match.groupValues[3]
+        val calories = when {
+            unit in listOf("千焦", "kJ", "焦") -> (value / 4.184).roundToInt()
+            else -> value.roundToInt()
+        }
         if (name.isBlank() || calories <= 0) return null
         return UserAction.UpdateFood(name, calories)
     }

@@ -132,9 +132,10 @@ fun FoodLibraryScreen(
             title = "添加自定义食物",
             initialName = "",
             initialCalories = "",
+            initialProtein = "",
             onDismiss = { showAddDialog = false },
-            onSave = { name, cal ->
-                viewModel.addFood(name, cal)
+            onSave = { name, cal, protein ->
+                viewModel.addFood(name, cal, protein)
                 showAddDialog = false
             }
         )
@@ -146,9 +147,16 @@ fun FoodLibraryScreen(
             title = "编辑食物",
             initialName = food.name,
             initialCalories = food.caloriesPer100g.toString(),
+            initialProtein = if (food.proteinPer100g > 0) food.proteinPer100g.toString() else "",
             onDismiss = { editingFood = null },
-            onSave = { name, cal ->
-                viewModel.updateFood(food.copy(name = name.trim(), caloriesPer100g = cal))
+            onSave = { name, cal, protein ->
+                viewModel.updateFood(
+                    food.copy(
+                        name = name.trim(),
+                        caloriesPer100g = cal,
+                        proteinPer100g = protein
+                    )
+                )
                 editingFood = null
             }
         )
@@ -200,6 +208,7 @@ private fun FoodLibraryRow(
                 )
                 Text(
                     text = "${food.caloriesPer100g} kcal/100g" +
+                        if (food.proteinPer100g > 0) " · 蛋白 ${"%.1f".format(food.proteinPer100g)}g" else "" +
                         if (food.isCustom) " · 自定义" else " · 内置",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -225,11 +234,13 @@ private fun FoodEditDialog(
     title: String,
     initialName: String,
     initialCalories: String,
+    initialProtein: String,
     onDismiss: () -> Unit,
-    onSave: (name: String, caloriesPer100g: Int) -> Unit
+    onSave: (name: String, caloriesPer100g: Int, proteinPer100g: Double) -> Unit
 ) {
     var name by remember { mutableStateOf(initialName) }
     var calories by remember { mutableStateOf(initialCalories) }
+    var protein by remember { mutableStateOf(initialProtein) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -254,14 +265,26 @@ private fun FoodEditDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = protein,
+                    onValueChange = { v ->
+                        if (v.isEmpty() || v.toDoubleOrNull() != null) protein = v
+                    },
+                    label = { Text("蛋白质（g/100g，可选）") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
                     val cal = calories.toIntOrNull()
+                    val proteinValue = protein.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
                     if (name.isNotBlank() && cal != null && cal > 0) {
-                        onSave(name.trim(), cal)
+                        onSave(name.trim(), cal, proteinValue)
                     }
                 },
                 enabled = name.isNotBlank() && (calories.toIntOrNull() ?: 0) > 0

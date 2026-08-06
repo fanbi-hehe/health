@@ -9,5 +9,6 @@ data class FoodLibrary(
     val id: Long = 0,
     val name: String,
     val caloriesPer100g: Int,
+    val proteinPer100g: Double = 0.0,   // 每100g 蛋白质（克），0 = 未填写
     val isCustom: Boolean = true   // true=用户自定义, false=内置
 )

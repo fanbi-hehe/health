@@ -107,6 +107,30 @@ class UserActionParserTest {
     }
 
     @Test
+    fun `添加食物 — 完整营养描述（千焦+蛋白质）`() {
+        val action = UserActionParser.parse(
+            "添加食物，蛋白粉。60克。它的总能量是每百克，1768千焦，75.7克蛋白质。",
+            exercises
+        )
+        assertTrue(action is UserAction.AddFood)
+        action as UserAction.AddFood
+        assertEquals("蛋白粉", action.name)
+        // 1768 kJ ÷ 4.184 ≈ 423 kcal/100g
+        assertEquals(423, action.caloriesPer100g)
+        assertEquals(75.7, action.proteinPer100g, 0.01)
+    }
+
+    @Test
+    fun `添加食物 — 千焦无蛋白质`() {
+        val action = UserActionParser.parse("添加食物 燕麦 1500千焦", exercises)
+        assertTrue(action is UserAction.AddFood)
+        action as UserAction.AddFood
+        assertEquals("燕麦", action.name)
+        assertEquals(359, action.caloriesPer100g)
+        assertEquals(0.0, action.proteinPer100g, 0.01)
+    }
+
+    @Test
     fun `修改食物热量`() {
         val action = UserActionParser.parse("把红烧肉的热量改成 350", exercises)
         assertTrue(action is UserAction.UpdateFood)
@@ -122,6 +146,15 @@ class UserActionParserTest {
         action as UserAction.UpdateFood
         assertEquals("鸡胸肉", action.name)
         assertEquals(250, action.caloriesPer100g)
+    }
+
+    @Test
+    fun `修改食物热量 — 千焦单位`() {
+        val action = UserActionParser.parse("把蛋白粉的热量改成 1500千焦", exercises)
+        assertTrue(action is UserAction.UpdateFood)
+        action as UserAction.UpdateFood
+        assertEquals("蛋白粉", action.name)
+        assertEquals(359, action.caloriesPer100g)
     }
 
     @Test

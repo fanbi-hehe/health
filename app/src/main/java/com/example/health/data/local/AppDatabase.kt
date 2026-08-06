@@ -38,7 +38,7 @@ import com.example.health.data.local.entity.TrainingRecord
         MealTemplate::class,
         ExerciseLibrary::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

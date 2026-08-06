@@ -60,10 +60,14 @@ class UserActionExecutor(private val db: AppDatabase) {
             FoodLibrary(
                 name = action.name,
                 caloriesPer100g = action.caloriesPer100g,
+                proteinPer100g = action.proteinPer100g,
                 isCustom = true
             )
         )
-        return "已添加自定义食物：「${action.name}」${action.caloriesPer100g} kcal/100g。"
+        val proteinText = if (action.proteinPer100g > 0) {
+            "（蛋白质 ${"%.1f".format(action.proteinPer100g)} g/100g）"
+        } else ""
+        return "已添加自定义食物：「${action.name}」${action.caloriesPer100g} kcal/100g$proteinText。"
     }
 
     /** 更新食物热量（模糊匹配名称）。 */

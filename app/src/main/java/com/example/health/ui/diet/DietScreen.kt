@@ -519,7 +519,9 @@ private fun ManualInputDialog(
                                 content = {
                                     Column {
                                         Text(food.name, fontWeight = FontWeight.Medium)
-                                        Text("${food.caloriesPer100g} kcal/100g",
+                                        Text(
+                                            "${food.caloriesPer100g} kcal/100g" +
+                                                if (food.proteinPer100g > 0) " · 蛋白 ${"%.1f".format(food.proteinPer100g)}g" else "",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
@@ -632,7 +634,9 @@ private fun EditDietDialog(
                                 content = {
                                     Column {
                                         Text(food.name, fontWeight = FontWeight.Medium)
-                                        Text("${food.caloriesPer100g} kcal/100g",
+                                        Text(
+                                            "${food.caloriesPer100g} kcal/100g" +
+                                                if (food.proteinPer100g > 0) " · 蛋白 ${"%.1f".format(food.proteinPer100g)}g" else "",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
