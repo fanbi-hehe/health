@@ -29,11 +29,17 @@
 com.example.health/
 ├── HealthApp.kt                  # Application：初始化 DB、Preferences、Repository、WorkManager
 ├── MainActivity.kt               # 单 Activity 入口，enableEdgeToEdge()
+├── domain/
+│   ├── router/
+│   │   ├── IntentQuery.kt        # 意图密封类：DietCalories / ExerciseProgress / OverallSummary / UserProfile / GeneralChat
+│   │   └── IntentRouter.kt       # 关键词/正则意图路由引擎，4 类意图 + 优先级
+│   └── context/
+│       └── UserContextBuilder.kt  # 按意图查询 DAO → 格式化上下文（长短期记忆分层），供给 AI System Prompt
 ├── data/
 │   ├── local/
-│   │   ├── AppDatabase.kt        # Room 数据库 (version=4, destructive migration)
+│   │   ├── AppDatabase.kt        # Room 数据库 (version=5, 开发期 fallbackToDestructiveMigration)
 │   │   ├── converter/Converters.kt
-│   │   ├── dao/                  # 7 个 DAO 接口
+│   │   ├── dao/                  # 7 个 DAO 接口（含意图路由所需的多日统计/动作名查询）
 │   │   └── entity/               # 8 个实体类
 │   ├── preference/
 │   │   └── AppPreferences.kt     # DataStore：AI 配置(视觉/文本分离)、目标、档案、语录
@@ -60,7 +66,7 @@ com.example.health/
 │   │   └── RestTimer.kt          # Canvas 圆环倒计时：±5s 调节 + 结束震动
 │   ├── chat/
 │   │   ├── ChatScreen.kt         # AI 对话：类微信气泡 + 图片上传 + 拍照
-│   │   └── ChatViewModel.kt      # 消息存储 + AI 调用(滑动窗口 10 条) + 图片压缩
+│   │   └── ChatViewModel.kt      # 消息存储 + 意图路由 + 精准数据注入 System Prompt + AI 调用(滑动窗口 10 条) + 图片压缩
 │   ├── dashboard/
 │   │   ├── DashboardScreen.kt    # 看板：热量进度 + 体重趋势(Vico) + 训练概览 + 备份/恢复 + 档案编辑
 │   │   └── DashboardViewModel.kt # 体重/训练/目标数据聚合 + JSON 导入导出
@@ -177,8 +183,9 @@ com.example.health/
 2. **内置数据兜底**：AI 生成计划失败 → 标准 3/4/5 分化方案；食物库 200+ 内置食物；动作库 170+ 内置动作带 GIF
 3. **滑动窗口对话**：AI 对话只发最近 10 条历史，节省 Token
 4. **路径处理**：`/mnt/d/app` 是 WSL 路径，实际 Windows 路径为 `D:\app`
-5. **DB 版本**：version=4，使用 `fallbackToDestructiveMigration(false)` — 改 schema 会清库重建
+5. **DB 版本**：version=5，开发期使用 `fallbackToDestructiveMigration(true)` — 改 schema 会清库重建；发布前需补真实 Migration（schema 已导出至 app/schemas）
 6. **edge-to-edge**：`enableEdgeToEdge()` 已启用，键盘处理用 `windowSoftInputMode="adjustNothing"` + `imePadding()`
+7. **对话意图路由**：ChatViewModel 每次对话经 IntentRouter 识别 4 类意图（热量/动作/趋势/闲聊），按需查询 DAO 注入精准上下文到 System Prompt，实现长短期记忆分层（近 3 天详细 + 7 天以上仅统计）
 
 ## 十、快速上手
 

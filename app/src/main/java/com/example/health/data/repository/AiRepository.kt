@@ -76,15 +76,17 @@ class AiRepository(private val context: Context) {
     // ────────── 文本/对话：AI 聊天 ──────────
 
     /**
-     * @param userText  用户输入文本
-     * @param imageFile 可选图片（如果用户上传了照片）
-     * @param history   最近聊天记录（滑动窗口）
+     * @param userText     用户输入文本
+     * @param imageFile    可选图片（如果用户上传了照片）
+     * @param history      最近聊天记录（滑动窗口）
+     * @param systemPrompt 自定义系统提示（当为空时使用默认提示）
      */
     suspend fun chatCompletion(
         userText: String,
         imageFile: File?,
         history: List<ChatMessage>,
-        maxTokens: Int = 1024
+        maxTokens: Int = 1024,
+        systemPrompt: String = ""
     ): Result<String> {
         return try {
             val model = prefs.textModel.first()
@@ -94,12 +96,14 @@ class AiRepository(private val context: Context) {
             // 构建消息列表
             val messages = mutableListOf<Message>()
 
-            // System prompt
+            // System prompt（优先使用传入的自定义提示）
+            val promptText = systemPrompt.ifBlank {
+                "你是一位专业的私人健康与体能管家（CSCS认证级别）。" +
+                "根据用户提供的数据和问题，给出个性化、具体、可行的建议。" +
+                "回答简洁有力，控制在200字以内。"
+            }
             messages.add(Message(role = "system", content = listOf(
-                ContentPart(type = "text", text =
-                    "你是一位专业的私人健康与体能管家（CSCS认证级别）。" +
-                    "根据用户提供的数据和问题，给出个性化、具体、可行的建议。" +
-                    "回答简洁有力，控制在200字以内。")
+                ContentPart(type = "text", text = promptText)
             )))
 
             // 历史消息（滑动窗口）

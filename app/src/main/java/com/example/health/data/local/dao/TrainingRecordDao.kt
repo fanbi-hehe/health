@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.health.data.local.entity.TrainingRecord
 import kotlinx.coroutines.flow.Flow
 
@@ -19,6 +20,9 @@ interface TrainingRecordDao {
 
     @Delete
     suspend fun delete(record: TrainingRecord)
+
+    @Query("SELECT * FROM training_record WHERE id = :id")
+    suspend fun getRecordById(id: Long): TrainingRecord?
 
     @Query("SELECT * FROM training_record ORDER BY date DESC, id DESC")
     fun getAllRecords(): Flow<List<TrainingRecord>>
@@ -43,6 +47,24 @@ interface TrainingRecordDao {
      */
     @Query("SELECT * FROM training_record WHERE exerciseName LIKE '%' || :exerciseName || '%' ORDER BY date DESC LIMIT :limit")
     suspend fun getRecentRecordsByExercise(exerciseName: String, limit: Int): List<TrainingRecord>
+
+    @Query("SELECT * FROM training_record ORDER BY date DESC, id DESC")
+    suspend fun getAllRecordsOnce(): List<TrainingRecord>
+
+    @Update
+    suspend fun update(record: TrainingRecord)
+
+    /**
+     * 获取用户历史上训练过的所有动作名称（去重），供意图路由使用。
+     */
+    @Query("SELECT DISTINCT exerciseName FROM training_record ORDER BY exerciseName")
+    suspend fun getDistinctExerciseNames(): List<String>
+
+    /**
+     * 查询两个日期之间的所有训练记录，用于整体趋势摘要。
+     */
+    @Query("SELECT * FROM training_record WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC")
+    suspend fun getRecordsBetweenDates(startDate: String, endDate: String): List<TrainingRecord>
 
     @Query("DELETE FROM training_record")
     suspend fun deleteAll()

@@ -6,20 +6,29 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.ChatMessage
+import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.AiRepository
+import com.example.health.domain.context.UserContextBuilder
+import com.example.health.domain.router.IntentQuery
+import com.example.health.domain.router.IntentRouter
 import com.example.health.util.ImageCompressor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val dao = AppDatabase.getInstance(application).chatMessageDao()
+    private val db = AppDatabase.getInstance(application)
+    private val dao = db.chatMessageDao()
+    private val prefs = AppPreferences(application)
     private val aiRepo = AiRepository(application)
+    private val contextBuilder = UserContextBuilder(db, prefs)
 
     // ── 所有聊天消息 ──
     val messages: StateFlow<List<ChatMessage>> = dao.getAllMessages()
@@ -37,6 +46,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * 发送文本消息（不含图片）。
+     *
+     * 流程：保存用户消息 → 意图路由 → 按需查询本地数据 → 组装系统提示
+     * → 调用 AI → 保存回复。
      */
     fun sendMessage(text: String) {
         if (text.isBlank()) return
@@ -53,8 +65,18 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 // 2. 获取最近 10 条历史
                 val history = dao.getRecentMessages(10).reversed()
 
-                // 3. 调用 AI
-                val result = aiRepo.chatCompletion(text.trim(), null, history)
+                // 3. 意图路由 + 查询上下文（IO 线程）
+                val systemPrompt = withContext(Dispatchers.IO) {
+                    buildSystemPromptWithContext(text.trim())
+                }
+
+                // 4. 调用 AI
+                val result = aiRepo.chatCompletion(
+                    userText = text.trim(),
+                    imageFile = null,
+                    history = history,
+                    systemPrompt = systemPrompt
+                )
                 result.fold(
                     onSuccess = { reply ->
                         dao.insert(ChatMessage(role = "assistant", content = reply,
@@ -97,8 +119,18 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 // 3. 获取最近 10 条历史
                 val history = dao.getRecentMessages(10).reversed()
 
-                // 4. 调用 AI（带图片，使用文本模型配置；如果模型支持视觉，会识别图片内容）
-                val result = aiRepo.chatCompletion(text.trim(), compressed, history)
+                // 4. 意图路由 + 查询上下文（图片消息通常与食物识别结合，也做路由）
+                val systemPrompt = withContext(Dispatchers.IO) {
+                    buildSystemPromptWithContext(text.trim())
+                }
+
+                // 5. 调用 AI（带图片）
+                val result = aiRepo.chatCompletion(
+                    userText = text.trim(),
+                    imageFile = compressed,
+                    history = history,
+                    systemPrompt = systemPrompt
+                )
                 result.fold(
                     onSuccess = { reply ->
                         dao.insert(ChatMessage(role = "assistant", content = reply,
@@ -114,5 +146,45 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 _isSending.value = false
             }
         }
+    }
+
+    // ── 系统提示组装 ──
+
+    /**
+     * 根据用户输入文本，完成意图路由 → 数据查询 → 系统提示组装。
+     * 在 IO 线程上运行。
+     */
+    private suspend fun buildSystemPromptWithContext(userText: String): String {
+        // 1. 获取已知动作名
+        val knownExercises = contextBuilder.getKnownExerciseNames()
+
+        // 2. 意图路由
+        val intent = IntentRouter.resolve(userText, knownExercises)
+
+        // 3. 获取用户档案（始终注入）
+        val profileText = contextBuilder.buildProfileText()
+
+        // 4. 根据意图查询上下文数据
+        val contextData = contextBuilder.buildContextForIntent(intent)
+
+        // 5. 组装系统提示
+        return buildString {
+            appendLine("你是一位专业的私人健康与体能管家（CSCS认证级别）。根据用户提供的数据和问题，给出个性化、具体、可行的建议。回答简洁有力，控制在200字以内。")
+            appendLine()
+            appendLine("## 用户档案")
+            appendLine(profileText)
+
+            if (contextData.isNotBlank()) {
+                appendLine()
+                appendLine("## 用户近期数据")
+                appendLine(contextData)
+            }
+
+            // 闲聊时不强制数据回答
+            if (intent is IntentQuery.GeneralChat) {
+                appendLine()
+                appendLine("注意：用户当前是闲聊模式。如果问题与健康/训练无关，正常友好回答即可，不需要强行分析数据。")
+            }
+        }.trim()
     }
 }
