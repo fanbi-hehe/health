@@ -97,12 +97,12 @@ fun DietScreen(
         }
     }
 
-    // ── 相册多选 launcher（最多 4 张） ──
+    // ── 相册单张 launcher ──
     val galleryLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickMultipleVisualMedia(4)
-    ) { uris ->
-        if (uris.isNotEmpty()) {
-            viewModel.onGalleryImagesSelected(uris)
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            viewModel.onGalleryImageSelected(uri)
         }
     }
 

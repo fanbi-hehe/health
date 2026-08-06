@@ -11,7 +11,6 @@ import com.example.health.data.remote.dto.ContentPart
 import com.example.health.data.remote.dto.FoodRecognitionResult
 import com.example.health.data.remote.dto.ImageUrl
 import com.example.health.data.remote.dto.Message
-import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.data.remote.dto.Tool
 import com.example.health.domain.action.ToolExecutor
 import com.example.health.util.ImageCompressor
@@ -43,95 +42,41 @@ class AiRepository(private val context: Context) {
 
     // ────────── 视觉：食物识别 ──────────
 
-    /** 单张图片识别（兼容旧调用）。 */
     suspend fun recognizeFood(imageFile: File): Result<FoodRecognitionResult> {
-        return recognizeFood(listOf(imageFile))
-    }
-
-    /**
-     * 多张图片识别：
-     * 1. 优先一次请求带多图（部分模型支持）；
-     * 2. 模型不支持时自动降级为逐张识别并合并结果。
-     */
-    suspend fun recognizeFood(imageFiles: List<File>): Result<FoodRecognitionResult> {
-        if (imageFiles.isEmpty()) return Result.failure(Exception("没有可识别的图片"))
         return try {
             val model = prefs.visionModel.first()
             val apiKey = prefs.visionApiKey.first()
             val baseUrl = prefs.visionApiBaseUrl.first()
 
-            // 1. 多图一次请求
-            val multiResult = requestFoodRecognition(model, apiKey, baseUrl, imageFiles)
-            if (multiResult != null) {
-                return Result.success(multiResult)
-            }
+            val base64 = ImageCompressor.fileToBase64(imageFile)
+            val dataUrl = "data:image/jpeg;base64,$base64"
 
-            // 2. 降级：逐张识别并合并
-            val allFoods = mutableListOf<RecognizedFood>()
-            var total = 0
-            var anyFailed = false
-            for (file in imageFiles) {
-                val single = requestFoodRecognition(model, apiKey, baseUrl, listOf(file))
-                if (single == null) {
-                    anyFailed = true
-                    continue
-                }
-                allFoods += single.foods
-                total += single.totalCalories
+            val request = ChatRequest(
+                model = model,
+                messages = listOf(Message(role = "user", content = listOf(
+                    ContentPart(type = "text", text =
+                        "识别图中食物。估算每种食物的重量(g)和热量(kcal)。" +
+                        "同时估算宏量营养素（蛋白质/碳水化合物/脂肪，单位g，按估算重量计算）。" +
+                        "只返回纯JSON，不要任何解释。" +
+                        "格式：{\"foods\":[{\"name\":\"食物名\",\"weight_g\":数值,\"calories_kcal\":数值," +
+                        "\"protein_g\":数值,\"carbs_g\":数值,\"fat_g\":数值}],\"total_calories\":数值}"
+                    ),
+                    ContentPart(type = "image_url", imageUrl = ImageUrl(url = dataUrl))
+                )))
+            )
+
+            val url = baseUrl.trimEnd('/') + "/chat/completions"
+            val response = api.chatCompletion(url, mapOf("Authorization" to "Bearer $apiKey"), request)
+
+            if (response.isSuccessful) {
+                val content = response.body()?.choices?.firstOrNull()?.message?.content ?: ""
+                Result.success(parseFoodJson(content))
+            } else {
+                Result.failure(Exception("API 请求失败: ${response.code()} ${response.message()}"))
             }
-            if (allFoods.isEmpty()) {
-                return Result.failure(
-                    Exception(if (anyFailed) "图片识别失败，请检查 API 配置后重试" else "未识别到食物")
-                )
-            }
-            Result.success(FoodRecognitionResult(foods = allFoods, totalCalories = total))
         } catch (e: Exception) {
             Result.failure(e)
         }
-    }
-
-    /** 单次识别请求；失败返回 null（供上层降级）。 */
-    private suspend fun requestFoodRecognition(
-        model: String,
-        apiKey: String,
-        baseUrl: String,
-        imageFiles: List<File>
-    ): FoodRecognitionResult? {
-        val parts = mutableListOf<ContentPart>()
-        val isMulti = imageFiles.size > 1
-        parts.add(
-            ContentPart(
-                type = "text",
-                text =
-                    "识别图片中的食物。${if (isMulti) "以下是同一餐的多张照片，请合并识别所有食物；某张没有食物可忽略。" else ""}" +
-                    "估算每种食物的重量(g)和热量(kcal)。" +
-                    "同时估算宏量营养素（蛋白质/碳水化合物/脂肪，单位g，按估算重量计算）。" +
-                    "只返回纯JSON，不要任何解释。" +
-                    "格式：{\"foods\":[{\"name\":\"食物名\",\"weight_g\":数值,\"calories_kcal\":数值," +
-                    "\"protein_g\":数值,\"carbs_g\":数值,\"fat_g\":数值}],\"total_calories\":数值}"
-            )
-        )
-        imageFiles.forEach { file ->
-            val base64 = ImageCompressor.fileToBase64(file)
-            parts.add(
-                ContentPart(
-                    type = "image_url",
-                    imageUrl = ImageUrl(url = "data:image/jpeg;base64,$base64")
-                )
-            )
-        }
-
-        val request = ChatRequest(
-            model = model,
-            messages = listOf(Message(role = "user", content = parts))
-        )
-        val url = baseUrl.trimEnd('/') + "/chat/completions"
-        val response = api.chatCompletion(
-            url, mapOf("Authorization" to "Bearer $apiKey"), request
-        )
-        if (!response.isSuccessful) return null
-        val content = response.body()?.choices?.firstOrNull()?.message?.content ?: ""
-        return parseFoodJson(content)
     }
 
     // ────────── 文本/对话：AI 聊天 ──────────
