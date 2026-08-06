@@ -124,38 +124,6 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** 从相册选择单张图片识别：压缩 → AI 识别 → 跳转确认页。 */
-    fun onGalleryImageSelected(uri: Uri) {
-        val context = getApplication<Application>()
-        _recognitionState.value = RecognitionState.Compressing
-        viewModelScope.launch {
-            try {
-                // 1. 压缩图片
-                val compressed = com.example.health.util.ImageCompressor.compress(context, uri)
-
-                // 2. AI 识别
-                _recognitionState.value = RecognitionState.Recognizing
-                val result = aiRepo.recognizeFood(compressed)
-
-                result.fold(
-                    onSuccess = { foods ->
-                        _recognitionState.value = RecognitionState.Idle
-                        _lastRecognitionResult.value = foods
-                        _currentPhotoPath.value = compressed.absolutePath
-                        _navigateToConfirm.emit(foods)
-                    },
-                    onFailure = { error ->
-                        _recognitionState.value = RecognitionState.Error(
-                            error.message ?: "识别失败，请重试或手动录入"
-                        )
-                    }
-                )
-            } catch (e: Exception) {
-                _recognitionState.value = RecognitionState.Error(e.message ?: "未知错误")
-            }
-        }
-    }
-
     fun clearRecognitionError() {
         _recognitionState.value = RecognitionState.Idle
     }
