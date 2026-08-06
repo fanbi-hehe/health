@@ -4,14 +4,19 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.health.data.local.AppDatabase
+import com.example.health.data.local.entity.AdviceLog
 import com.example.health.data.local.entity.BodyWeight
 import com.example.health.data.preference.AppPreferences
+import com.example.health.data.repository.AiRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -20,6 +25,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private val db = AppDatabase.getInstance(application)
     private val prefs = AppPreferences(application)
     private val backupRepo = com.example.health.data.repository.BackupRepository(application)
+    private val aiRepo = AiRepository(application)
     private val today = LocalDate.now()
 
     // ── 体重记录 ──
@@ -51,6 +57,113 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     // ── 备份状态 ──
     private val _backupStatus = MutableStateFlow<String?>(null)
     val backupStatus: StateFlow<String?> = _backupStatus.asStateFlow()
+
+    // ── AI 每日评估 ──
+    val adviceLogs: StateFlow<List<AdviceLog>> = db.adviceLogDao().getAllLogs()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val _reviewState = MutableStateFlow<ReviewState>(ReviewState.Idle)
+    val reviewState: StateFlow<ReviewState> = _reviewState.asStateFlow()
+
+    fun clearReviewState() {
+        _reviewState.value = ReviewState.Idle
+    }
+
+    /**
+     * 生成今日综合评估：
+     * 本地组装今日饮食/训练 + 近3天摄入 + 体重趋势 → 调用文本模型 → 存入 AdviceLog。
+     */
+    fun generateDailyReview() {
+        viewModelScope.launch {
+            _reviewState.value = ReviewState.Generating
+            try {
+                val contextText = withContext(Dispatchers.IO) { buildDailyReviewContext() }
+                val result = aiRepo.chatCompletion(
+                    userText = "请根据以上用户今日数据进行综合评估：先点出做得好的地方，再指出需要改进的地方，最后给出明天可执行的具体建议。",
+                    imageFile = null,
+                    history = emptyList(),
+                    systemPrompt = "你是一位专业的私人健康与体能管家（CSCS认证级别）。" +
+                        "根据用户提供的数据和问题，给出个性化、具体、可行的建议。" +
+                        "回答简洁有力，控制在200字以内。\n\n## 用户今日数据\n$contextText"
+                )
+                result.fold(
+                    onSuccess = { reply ->
+                        val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                        db.adviceLogDao().insert(
+                            AdviceLog(
+                                date = todayStr,
+                                requestSnapshot = contextText,
+                                aiResponse = reply
+                            )
+                        )
+                        _reviewState.value = ReviewState.Success(reply)
+                    },
+                    onFailure = { e ->
+                        _reviewState.value = ReviewState.Error(e.message ?: "评估失败，请检查 API 配置")
+                    }
+                )
+            } catch (e: Exception) {
+                _reviewState.value = ReviewState.Error(e.message ?: "评估失败")
+            }
+        }
+    }
+
+    /** 组装每日评估上下文：今日明细 + 近3天摄入 + 体重趋势（仅统计值）。 */
+    private suspend fun buildDailyReviewContext(): String {
+        val fmt = DateTimeFormatter.ISO_LOCAL_DATE
+        val todayStr = LocalDate.now().format(fmt)
+        val sb = StringBuilder()
+
+        // ── 今日饮食（明细） ──
+        val dietRecords = db.dietRecordDao().getRecordsByDate(todayStr)
+        val dietCal = db.dietRecordDao().getTotalCaloriesByDate(todayStr) ?: 0
+        sb.appendLine("【今日饮食】")
+        if (dietRecords.isEmpty()) {
+            sb.appendLine("- 无记录")
+        } else {
+            dietRecords.forEach {
+                sb.appendLine("- ${it.mealType} ${it.foodName} ${it.weightG}g ${it.caloriesKcal}kcal")
+            }
+        }
+        sb.appendLine("- 合计：$dietCal kcal")
+        val targetCal = prefs.targetDailyCalories.first()
+        sb.appendLine("- 每日目标：$targetCal kcal（差额 ${targetCal - dietCal} kcal）")
+
+        // ── 今日训练（明细） ──
+        val trainingRecords = db.trainingRecordDao().getRecordsByDate(todayStr)
+        sb.appendLine("【今日训练】")
+        if (trainingRecords.isEmpty()) {
+            sb.appendLine("- 无记录")
+        } else {
+            trainingRecords.forEach {
+                sb.appendLine("- ${it.exerciseName} ${it.sets}组×${it.reps}次 ${it.weightKg}kg")
+            }
+        }
+
+        // ── 近3天摄入（统计） ──
+        sb.appendLine("【近3天摄入】")
+        for (i in 0..2) {
+            val d = LocalDate.now().minusDays(i.toLong()).format(fmt)
+            val cal = db.dietRecordDao().getTotalCaloriesByDate(d) ?: 0
+            sb.appendLine("- $d: $cal kcal")
+        }
+
+        // ── 体重趋势（统计值，不传原始数据） ──
+        val thirtyDaysAgo = LocalDate.now().minusDays(29).format(fmt)
+        val avgWeight = db.bodyWeightDao().getAverageWeightBetween(thirtyDaysAgo, todayStr)
+        val latestWeight = db.bodyWeightDao().getLatestWeight()
+        if (avgWeight != null && latestWeight != null) {
+            val change = latestWeight - avgWeight
+            val sign = if (change >= 0) "+" else ""
+            sb.appendLine("【30天体重】平均 ${"%.1f".format(avgWeight)} kg，最新 $latestWeight kg，较平均${sign}${"%.1f".format(change)} kg")
+        } else if (latestWeight != null) {
+            sb.appendLine("【体重】最新 $latestWeight kg")
+        } else {
+            sb.appendLine("【体重】暂无记录")
+        }
+
+        return sb.toString()
+    }
 
     // ── 今日摄入 ──
     val todayCalories: StateFlow<Int> = db.dietRecordDao().getAllRecords()
@@ -147,4 +260,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
     fun clearBackupStatus() { _backupStatus.value = null }
+}
+
+// ── AI 每日评估状态 ──
+sealed class ReviewState {
+    data object Idle : ReviewState()
+    data object Generating : ReviewState()
+    data class Success(val response: String) : ReviewState()
+    data class Error(val message: String) : ReviewState()
 }

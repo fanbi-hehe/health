@@ -9,8 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -21,8 +25,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -49,6 +55,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.health.data.local.entity.AdviceLog
 import com.example.health.data.local.entity.BodyWeight
 import androidx.compose.ui.graphics.Color
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -76,11 +83,14 @@ fun DashboardScreen(
     val sevenDayCals by viewModel.sevenDayCalories.collectAsState()
     val trainingRecords by viewModel.trainingRecords.collectAsState()
     val backupStatus by viewModel.backupStatus.collectAsState()
+    val reviewState by viewModel.reviewState.collectAsState()
+    val adviceLogs by viewModel.adviceLogs.collectAsState()
 
     var showWeightDialog by remember { mutableStateOf(false) }
     var weightDays by remember { mutableIntStateOf(30) }
     var showImportDialog by remember { mutableStateOf(false) }
     var importJson by remember { mutableStateOf("") }
+    var showReviewHistory by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -265,6 +275,53 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // ── AI 每日复盘 ──
+            Text("AI 每日复盘", style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = "基于今日饮食、训练与体重趋势生成个性化建议",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()) {
+                        Button(
+                            onClick = { viewModel.generateDailyReview() },
+                            enabled = reviewState !is ReviewState.Generating,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            if (reviewState is ReviewState.Generating) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                            }
+                            Text(
+                                if (reviewState is ReviewState.Generating) "生成中..."
+                                else "生成今日评估"
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = { showReviewHistory = true },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("历史评估")
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // ── 备份/恢复 ──
             Text("数据管理", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(8.dp))
@@ -358,6 +415,77 @@ fun DashboardScreen(
                 }) { Text("导入") }
             },
             dismissButton = { TextButton(onClick = { showImportDialog = false }) { Text("取消") } }
+        )
+    }
+
+    // ── 今日评估结果 ──
+    when (val rs = reviewState) {
+        is ReviewState.Success -> {
+            AlertDialog(
+                onDismissRequest = { viewModel.clearReviewState() },
+                title = { Text("今日评估") },
+                text = {
+                    Text(
+                        text = rs.response,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.clearReviewState() }) { Text("关闭") }
+                }
+            )
+        }
+        is ReviewState.Error -> {
+            AlertDialog(
+                onDismissRequest = { viewModel.clearReviewState() },
+                title = { Text("评估失败") },
+                text = { Text(rs.message) },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.clearReviewState() }) { Text("关闭") }
+                }
+            )
+        }
+        else -> {}
+    }
+
+    // ── 历史评估 ──
+    if (showReviewHistory) {
+        AlertDialog(
+            onDismissRequest = { showReviewHistory = false },
+            title = { Text("历史评估") },
+            text = {
+                if (adviceLogs.isEmpty()) {
+                    Text(
+                        text = "暂无历史评估",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
+                        items(adviceLogs, key = { it.id }) { log ->
+                            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                Text(
+                                    text = log.date,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = log.aiResponse,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                            HorizontalDivider()
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showReviewHistory = false }) { Text("关闭") }
+            }
         )
     }
 }
