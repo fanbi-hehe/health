@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -92,6 +94,15 @@ fun DietScreen(
     ) { success ->
         if (success) {
             viewModel.onPhotoTaken()
+        }
+    }
+
+    // ── 相册多选 launcher（最多 4 张） ──
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(4)
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            viewModel.onGalleryImagesSelected(uris)
         }
     }
 
@@ -207,6 +218,18 @@ fun DietScreen(
                         }
                     }
                 }
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        galleryLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                    icon = { Icon(Icons.Default.AddPhotoAlternate, contentDescription = "相册") },
+                    text = { Text("相册识别") },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 ExtendedFloatingActionButton(
                     onClick = { takePhoto() },
                     icon = { Icon(Icons.Default.CameraAlt, contentDescription = "拍照") },
