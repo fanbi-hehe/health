@@ -37,10 +37,9 @@ com.example.health/
 │       └── UserContextBuilder.kt  # 按意图查询 DAO → 格式化上下文（长短期记忆分层），供给 AI System Prompt
 ├── data/
 │   ├── local/
-│   │   ├── AppDatabase.kt        # Room 数据库 (version=5, 开发期 fallbackToDestructiveMigration)
-│   │   ├── converter/Converters.kt
-│   │   ├── dao/                  # 7 个 DAO 接口（含意图路由所需的多日统计/动作名查询）
-│   │   └── entity/               # 8 个实体类
+│   │   ├── AppDatabase.kt        # Room 数据库 (version=6, 开发期 fallbackToDestructiveMigration)
+│   │   ├── dao/                  # 10 个 DAO 接口（含意图路由所需的多日统计/动作名查询）
+│   │   └── entity/               # 10 个实体类
 │   ├── preference/
 │   │   └── AppPreferences.kt     # DataStore：AI 配置(视觉/文本分离)、目标、档案、语录
 │   ├── remote/
@@ -183,7 +182,7 @@ com.example.health/
 2. **内置数据兜底**：AI 生成计划失败 → 标准 3/4/5 分化方案；食物库 200+ 内置食物；动作库 170+ 内置动作带 GIF
 3. **滑动窗口对话**：AI 对话只发最近 10 条历史，节省 Token
 4. **路径处理**：`/mnt/d/app` 是 WSL 路径，实际 Windows 路径为 `D:\app`
-5. **DB 版本**：version=5，开发期使用 `fallbackToDestructiveMigration(true)` — 改 schema 会清库重建；发布前需补真实 Migration（schema 已导出至 app/schemas）
+5. **DB 版本**：version=6，开发期使用 `fallbackToDestructiveMigration(true)` — 改 schema 会清库重建；发布前需补真实 Migration（schema 已导出至 app/schemas）
 6. **edge-to-edge**：`enableEdgeToEdge()` 已启用，键盘处理用 `windowSoftInputMode="adjustNothing"` + `imePadding()`
 7. **对话意图路由**：ChatViewModel 每次对话经 IntentRouter 识别 4 类意图（热量/动作/趋势/闲聊），按需查询 DAO 注入精准上下文到 System Prompt，实现长短期记忆分层（近 3 天详细 + 7 天以上仅统计）
 
