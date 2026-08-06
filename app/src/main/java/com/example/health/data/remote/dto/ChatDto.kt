@@ -8,12 +8,39 @@ data class ChatRequest(
     val model: String,
     val messages: List<Message>,
     @SerializedName("max_tokens") val maxTokens: Int = 1024,
-    val temperature: Double = 0.3
+    val temperature: Double = 0.3,
+    val tools: List<Tool>? = null
+)
+
+// ── 工具调用（function calling） ──
+
+data class Tool(
+    val type: String = "function",
+    val function: FunctionSpec
+)
+
+data class FunctionSpec(
+    val name: String,
+    val description: String,
+    val parameters: Map<String, Any>
+)
+
+data class ToolCall(
+    val id: String? = null,
+    val type: String? = null,
+    val function: FunctionCall? = null
+)
+
+data class FunctionCall(
+    val name: String? = null,
+    val arguments: String? = null
 )
 
 data class Message(
     val role: String,       // "user" | "system"
-    val content: List<ContentPart>
+    val content: List<ContentPart>,
+    @SerializedName("tool_calls") val toolCalls: List<ToolCall>? = null,
+    @SerializedName("tool_call_id") val toolCallId: String? = null
 )
 
 data class ContentPart(
@@ -41,7 +68,8 @@ data class Choice(
 
 data class ResponseMessage(
     val role: String? = null,
-    val content: String? = null
+    val content: String? = null,
+    @SerializedName("tool_calls") val toolCalls: List<ToolCall>? = null
 )
 
 // ── AI 识别结果（从 content JSON 解析） ──

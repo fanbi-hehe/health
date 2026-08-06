@@ -1,0 +1,83 @@
+package com.example.health.domain.action
+
+import com.example.health.data.local.AppDatabase
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+/**
+ * 执行 AI 模型返回的工具调用。
+ *
+ * 只接受白名单内的工具名与合法参数，其余一律拒绝（不提供删除能力）。
+ */
+class ToolExecutor(private val db: AppDatabase) {
+
+    private val gson = Gson()
+
+    suspend fun execute(name: String, argumentsJson: String): String {
+        val args = try {
+            gson.fromJson<Map<String, Any>>(
+                argumentsJson,
+                object : TypeToken<Map<String, Any>>() {}.type
+            ) ?: emptyMap()
+        } catch (_: Exception) {
+            return "操作参数解析失败，未执行任何写入。"
+        }
+
+        return when (name) {
+            "record_training" -> recordTraining(args)
+            "add_food" -> addFood(args)
+            "update_food" -> updateFood(args)
+            else -> "未知操作类型，已拒绝执行。"
+        }
+    }
+
+    private suspend fun recordTraining(args: Map<String, Any>): String {
+        val exerciseName = stringArg(args, "exercise_name") ?: return "参数错误：缺少动作名称。"
+        val sets = intArg(args, "sets") ?: return "参数错误：组数无效。"
+        val reps = intArg(args, "reps") ?: return "参数错误：次数无效。"
+        if (sets !in 1..50 || reps !in 0..200) return "参数超出合理范围（组数 1-50、次数 0-200），未写入。"
+        val weightKg = doubleArg(args, "weight_kg") ?: 0.0
+        if (weightKg !in 0.0..1000.0) return "重量参数超出合理范围，未写入。"
+
+        return UserActionExecutor(db).execute(
+            UserAction.RecordTraining(exerciseName, sets, reps, weightKg)
+        )
+    }
+
+    private suspend fun addFood(args: Map<String, Any>): String {
+        val name = stringArg(args, "name") ?: return "参数错误：缺少食物名称。"
+        val calories = intArg(args, "calories_per_100g") ?: return "参数错误：缺少每 100 克热量。"
+        if (calories !in 1..2000) return "热量超出合理范围（1-2000 kcal/100g），未写入。"
+        val protein = doubleArg(args, "protein_per_100g") ?: 0.0
+        val carbs = doubleArg(args, "carbs_per_100g") ?: 0.0
+        val fat = doubleArg(args, "fat_per_100g") ?: 0.0
+
+        return UserActionExecutor(db).execute(
+            UserAction.AddFood(name, calories, protein, carbs, fat)
+        )
+    }
+
+    private suspend fun updateFood(args: Map<String, Any>): String {
+        val name = stringArg(args, "name") ?: return "参数错误：缺少食物名称。"
+        val calories = intArg(args, "calories_per_100g") ?: return "参数错误：缺少热量。"
+        if (calories !in 1..2000) return "热量超出合理范围，未修改。"
+
+        return UserActionExecutor(db).execute(
+            UserAction.UpdateFood(name, calories)
+        )
+    }
+
+    private fun stringArg(args: Map<String, Any>, key: String): String? {
+        return (args[key] as? String)?.trim()?.takeIf { it.isNotBlank() }
+    }
+
+    private fun intArg(args: Map<String, Any>, key: String): Int? {
+        return (args[key] as? Double)?.toInt()
+            ?: (args[key] as? String)?.toIntOrNull()
+    }
+
+    private fun doubleArg(args: Map<String, Any>, key: String): Double? {
+        return (args[key] as? Double)
+            ?: (args[key] as? String)?.toDoubleOrNull()
+    }
+}

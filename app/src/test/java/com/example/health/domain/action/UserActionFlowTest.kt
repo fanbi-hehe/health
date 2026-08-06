@@ -128,7 +128,7 @@ class UserActionFlowTest {
 
 // ── 内存假实现（仅测试用） ──
 
-private class FakeAppDatabase : AppDatabase() {
+internal class FakeAppDatabase : AppDatabase() {
     val trainingDao = FakeTrainingRecordDao()
     val foodDao = FakeFoodLibraryDao()
     val exerciseDao = FakeExerciseLibraryDao()
@@ -153,7 +153,7 @@ private class FakeAppDatabase : AppDatabase() {
         throw UnsupportedOperationException("fake")
 }
 
-private class FakeTrainingRecordDao : TrainingRecordDao {
+internal class FakeTrainingRecordDao : TrainingRecordDao {
     val records = mutableListOf<TrainingRecord>()
     private var nextId = 1L
 
@@ -186,7 +186,7 @@ private class FakeTrainingRecordDao : TrainingRecordDao {
     override suspend fun deleteAll() { records.clear() }
 }
 
-private class FakeFoodLibraryDao : FoodLibraryDao {
+internal class FakeFoodLibraryDao : FoodLibraryDao {
     val foods = mutableListOf<FoodLibrary>()
     private var nextId = 1L
 
@@ -209,7 +209,7 @@ private class FakeFoodLibraryDao : FoodLibraryDao {
     override suspend fun deleteAllCustom() { foods.removeAll { it.isCustom } }
 }
 
-private class FakeExerciseLibraryDao : ExerciseLibraryDao {
+internal class FakeExerciseLibraryDao : ExerciseLibraryDao {
     override fun getAllExercises(): Flow<List<ExerciseLibrary>> = flowOf(emptyList())
     override suspend fun getAllExercisesOnce(): List<ExerciseLibrary> = emptyList()
     override fun searchExercises(query: String): Flow<List<ExerciseLibrary>> = flowOf(emptyList())

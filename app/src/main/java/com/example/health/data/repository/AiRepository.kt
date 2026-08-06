@@ -1,14 +1,18 @@
 package com.example.health.data.repository
 
 import android.content.Context
+import com.example.health.data.local.AppDatabase
 import com.example.health.data.local.entity.ChatMessage
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.remote.api.ApiService
 import com.example.health.data.remote.dto.ChatRequest
+import com.example.health.data.remote.dto.ChatResponse
 import com.example.health.data.remote.dto.ContentPart
 import com.example.health.data.remote.dto.FoodRecognitionResult
 import com.example.health.data.remote.dto.ImageUrl
 import com.example.health.data.remote.dto.Message
+import com.example.health.data.remote.dto.Tool
+import com.example.health.domain.action.ToolExecutor
 import com.example.health.util.ImageCompressor
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.first
@@ -96,39 +100,7 @@ class AiRepository(private val context: Context) {
             val baseUrl = prefs.textApiBaseUrl.first()
 
             // 构建消息列表
-            val messages = mutableListOf<Message>()
-
-            // System prompt（优先使用传入的自定义提示）
-            val promptText = systemPrompt.ifBlank {
-                "你是一位专业的私人健康与体能管家（CSCS认证级别）。" +
-                "根据用户提供的数据和问题，给出个性化、具体、可行的建议。" +
-                "回答简洁有力，控制在200字以内。"
-            }
-            messages.add(Message(role = "system", content = listOf(
-                ContentPart(type = "text", text = promptText)
-            )))
-
-            // 历史消息（滑动窗口）
-            history.forEach { msg ->
-                val role = if (msg.role == "assistant") "assistant" else "user"
-                val parts = mutableListOf<ContentPart>()
-                if (msg.content.isNotBlank()) {
-                    parts.add(ContentPart(type = "text", text = msg.content))
-                }
-                if (parts.isNotEmpty()) {
-                    messages.add(Message(role = role, content = parts))
-                }
-            }
-
-            // 当前用户消息
-            val userParts = mutableListOf<ContentPart>()
-            userParts.add(ContentPart(type = "text", text = userText))
-            if (imageFile != null) {
-                val base64 = ImageCompressor.fileToBase64(imageFile)
-                userParts.add(ContentPart(type = "image_url",
-                    imageUrl = ImageUrl(url = "data:image/jpeg;base64,$base64")))
-            }
-            messages.add(Message(role = "user", content = userParts))
+            val messages = buildChatMessages(userText, imageFile, history, systemPrompt)
 
             val request = ChatRequest(model = model, messages = messages, maxTokens = maxTokens)
 
@@ -145,6 +117,165 @@ class AiRepository(private val context: Context) {
             Result.failure(e)
         }
     }
+
+    // ────────── 带工具调用的对话（function calling） ──────────
+
+    data class AiChatResult(
+        val content: String,
+        val toolFeedback: String? = null,
+        val toolsSucceeded: Boolean = true
+    )
+
+    /**
+     * 带工具调用的聊天：
+     * 1. 请求时携带工具定义；
+     * 2. 模型返回 tool_calls 则在本地白名单校验后执行；
+     * 3. 把执行结果作为 tool 消息回传，再取最终回复。
+     * 模型不支持 tools 时自动降级为普通对话。
+     */
+    suspend fun chatCompletionWithTools(
+        userText: String,
+        imageFile: File?,
+        history: List<ChatMessage>,
+        systemPrompt: String = "",
+        tools: List<Tool> = emptyList()
+    ): Result<AiChatResult> {
+        return try {
+            val model = prefs.textModel.first()
+            val apiKey = prefs.textApiKey.first()
+            val baseUrl = prefs.textApiBaseUrl.first()
+            val url = baseUrl.trimEnd('/') + "/chat/completions"
+            val headers = mapOf("Authorization" to "Bearer $apiKey")
+
+            val messages = buildChatMessages(userText, imageFile, history, systemPrompt)
+
+            // 第一次请求：带工具
+            var response = api.chatCompletion(
+                url, headers,
+                ChatRequest(model = model, messages = messages, maxTokens = 1024, tools = tools)
+            )
+            if (!response.isSuccessful) {
+                // 模型可能不支持 tools：不带工具重试（普通对话）
+                response = api.chatCompletion(url, headers, ChatRequest(model = model, messages = messages))
+                if (!response.isSuccessful) {
+                    return Result.failure(
+                        Exception("API 请求失败: ${response.code()} ${response.message()}")
+                    )
+                }
+                return Result.success(
+                    AiChatResult(content = extractContent(response.body()), toolsSucceeded = false)
+                )
+            }
+
+            val firstBody = response.body()
+            val toolCalls = firstBody?.choices?.firstOrNull()?.message?.toolCalls
+            if (toolCalls.isNullOrEmpty()) {
+                return Result.success(AiChatResult(content = extractContent(firstBody)))
+            }
+
+            // 执行工具调用（白名单校验 + 参数校验）
+            val executor = ToolExecutor(AppDatabase.getInstance(context))
+            val feedbacks = mutableListOf<String>()
+            messages.add(
+                Message(
+                    role = "assistant",
+                    content = listOf(
+                        ContentPart(
+                            type = "text",
+                            text = firstBody?.choices?.firstOrNull()?.message?.content ?: ""
+                        )
+                    ),
+                    toolCalls = toolCalls
+                )
+            )
+            toolCalls.forEach { call ->
+                val feedback = executor.execute(
+                    call.function?.name ?: "",
+                    call.function?.arguments ?: ""
+                )
+                feedbacks.add(feedback)
+                messages.add(
+                    Message(
+                        role = "tool",
+                        content = listOf(ContentPart(type = "text", text = feedback)),
+                        toolCallId = call.id
+                    )
+                )
+            }
+
+            // 第二次请求：拿最终回复
+            val finalResponse = api.chatCompletion(
+                url, headers, ChatRequest(model = model, messages = messages)
+            )
+            if (!finalResponse.isSuccessful) {
+                return Result.failure(
+                    Exception("API 请求失败: ${finalResponse.code()} ${finalResponse.message()}")
+                )
+            }
+            Result.success(
+                AiChatResult(
+                    content = extractContent(finalResponse.body()),
+                    toolFeedback = feedbacks.firstOrNull(),
+                    toolsSucceeded = true
+                )
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /** 构建 OpenAI 兼容消息列表（system + 历史 + 当前消息）。 */
+    private suspend fun buildChatMessages(
+        userText: String,
+        imageFile: File?,
+        history: List<ChatMessage>,
+        systemPrompt: String
+    ): MutableList<Message> {
+        val messages = mutableListOf<Message>()
+
+        // System prompt（优先使用传入的自定义提示）
+        val promptText = systemPrompt.ifBlank {
+            "你是一位专业的私人健康与体能管家（CSCS认证级别）。" +
+                "根据用户提供的数据和问题，给出个性化、具体、可行的建议。" +
+                "回答简洁有力，控制在200字以内。"
+        }
+        messages.add(
+            Message(
+                role = "system",
+                content = listOf(ContentPart(type = "text", text = promptText))
+            )
+        )
+
+        // 历史消息（滑动窗口）
+        history.forEach { msg ->
+            val role = if (msg.role == "assistant") "assistant" else "user"
+            val parts = mutableListOf<ContentPart>()
+            if (msg.content.isNotBlank()) {
+                parts.add(ContentPart(type = "text", text = msg.content))
+            }
+            if (parts.isNotEmpty()) {
+                messages.add(Message(role = role, content = parts))
+            }
+        }
+
+        // 当前用户消息
+        val userParts = mutableListOf<ContentPart>()
+        userParts.add(ContentPart(type = "text", text = userText))
+        if (imageFile != null) {
+            val base64 = ImageCompressor.fileToBase64(imageFile)
+            userParts.add(
+                ContentPart(
+                    type = "image_url",
+                    imageUrl = ImageUrl(url = "data:image/jpeg;base64,$base64")
+                )
+            )
+        }
+        messages.add(Message(role = "user", content = userParts))
+        return messages
+    }
+
+    private fun extractContent(body: ChatResponse?): String =
+        body?.choices?.firstOrNull()?.message?.content?.trim() ?: ""
 
     private fun parseFoodJson(raw: String): FoodRecognitionResult {
         return try {

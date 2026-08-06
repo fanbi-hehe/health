@@ -11,6 +11,7 @@ import com.example.health.data.repository.AiRepository
 import com.example.health.domain.action.UserAction
 import com.example.health.domain.action.UserActionExecutor
 import com.example.health.domain.action.UserActionParser
+import com.example.health.domain.action.ToolDefinitions
 import com.example.health.domain.context.UserContextBuilder
 import com.example.health.domain.router.IntentQuery
 import com.example.health.domain.router.IntentRouter
@@ -74,28 +75,34 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 dao.insert(userMsg)
 
-                // 3. 意图路由 + 查询上下文（IO 线程）
+                // 3. 构建系统提示（意图路由 + 上下文注入）
                 val systemPrompt = withContext(Dispatchers.IO) {
-                    val knownExercises = contextBuilder.getKnownExerciseNames()
-                    // AI 教练可执行动作：训练记录写入 / 食物库添加与修改（删除一律拦截）
-                    val action = UserActionParser.parse(text.trim(), knownExercises)
-                    val actionFeedback = if (action != UserAction.None) {
-                        UserActionExecutor(db).execute(action)
-                    } else ""
-                    _actionFeedback.value = actionFeedback.takeIf { it.isNotBlank() }
-                    buildSystemPromptWithContext(text.trim(), actionFeedback)
+                    buildSystemPromptWithContext(text.trim())
                 }
 
-                // 4. 调用 AI
-                val result = aiRepo.chatCompletion(
+                // 4. 调用 AI（function calling：模型识别动作 → 本地白名单执行）
+                val result = aiRepo.chatCompletionWithTools(
                     userText = text.trim(),
                     imageFile = null,
                     history = history,
-                    systemPrompt = systemPrompt
+                    systemPrompt = systemPrompt,
+                    tools = ToolDefinitions.coachTools
                 )
                 result.fold(
-                    onSuccess = { reply ->
-                        dao.insert(ChatMessage(role = "assistant", content = reply,
+                    onSuccess = { r ->
+                        // 工具执行反馈 → Toast（写没写一眼可见）
+                        r.toolFeedback?.let { _actionFeedback.value = it }
+                        if (!r.toolsSucceeded) {
+                            // 模型不支持 tools 时的降级：本地正则兜底
+                            val fallbackFeedback = withContext(Dispatchers.IO) {
+                                val knownExercises = contextBuilder.getKnownExerciseNames()
+                                val action = UserActionParser.parse(text.trim(), knownExercises)
+                                if (action != UserAction.None) UserActionExecutor(db).execute(action)
+                                else null
+                            }
+                            fallbackFeedback?.let { _actionFeedback.value = it }
+                        }
+                        dao.insert(ChatMessage(role = "assistant", content = r.content,
                             timestamp = System.currentTimeMillis()))
                     },
                     onFailure = { e ->
