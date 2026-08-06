@@ -31,8 +31,6 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private val prefs = AppPreferences(application)
     private val backupRepo = com.example.health.data.repository.BackupRepository(application)
     private val aiRepo = AiRepository(application)
-    private val today = LocalDate.now()
-
     // ── 体重记录 ──
     val weightRecords: StateFlow<List<BodyWeight>> = db.bodyWeightDao().getAllRecords()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -276,7 +274,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     // ── 体重录入 ──
     fun addWeight(weightKg: Double) {
         viewModelScope.launch {
-            val dateStr = today.format(DateTimeFormatter.ISO_LOCAL_DATE)
+            // 动态取当天日期，跨天后体重不再记到昨天
+            val dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
             db.bodyWeightDao().insert(BodyWeight(date = dateStr, weightKg = weightKg))
         }
     }
@@ -306,6 +305,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     append("聊天${result.chatCount}条")
                     if (result.foodCount > 0) append("、食物${result.foodCount}个")
                     if (result.exerciseCount > 0) append("、动作${result.exerciseCount}个")
+                    if (result.activityCount > 0) append("、运动${result.activityCount}条")
+                    if (result.stepCount > 0) append("、步数${result.stepCount}天")
+                    if (result.adviceCount > 0) append("、评估${result.adviceCount}条")
+                    if (result.templateCount > 0) append("、模板${result.templateCount}个")
                 }
             } catch (e: Exception) {
                 _backupStatus.value = "导入失败: ${e.message}"
@@ -329,8 +332,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     val fmt = DateTimeFormatter.ofPattern("MM-dd")
                     val fullFmt = DateTimeFormatter.ISO_LOCAL_DATE
                     val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-                    // 近7天（含今天）
-                    val days = (0..6).map { today.minusDays(it.toLong()) }.reversed()
+                    // 近7天（含今天，动态取日期，跨天窗口自动滑动）
+                    val days = (0..6).map { LocalDate.now().minusDays(it.toLong()) }.reversed()
                     result.value = days.map { day ->
                         val dateStr = day.format(fullFmt)
                         val cals = records

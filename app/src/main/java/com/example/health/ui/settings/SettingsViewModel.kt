@@ -4,8 +4,12 @@ import android.app.Application
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.health.data.local.AppDatabase
 import com.example.health.data.preference.AppPreferences
+import com.example.health.worker.CoachNotificationWorker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +25,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -79,7 +84,24 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setTargetWeightKg(weight: Double) = viewModelScope.launch { prefs.setTargetWeightKg(weight) }
     fun setTargetDailyCalories(calories: Int) = viewModelScope.launch { prefs.setTargetDailyCalories(calories) }
     fun setCoachNotificationEnabled(enabled: Boolean) = viewModelScope.launch { prefs.setCoachNotificationEnabled(enabled) }
-    fun setCoachReminderTime(hour: Int, minute: Int) = viewModelScope.launch { prefs.setCoachReminderTime(hour, minute) }
+    fun setCoachReminderTime(hour: Int, minute: Int) = viewModelScope.launch {
+        prefs.setCoachReminderTime(hour, minute)
+        // 立即重排提醒：取消旧任务，1 分钟后按新时间重新排下一次
+        rescheduleCoachNotification()
+    }
+
+    private fun rescheduleCoachNotification() {
+        val app = getApplication<Application>()
+        val workManager = WorkManager.getInstance(app)
+        workManager.cancelUniqueWork("coach_notification")
+        workManager.enqueueUniqueWork(
+            "coach_notification",
+            ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<CoachNotificationWorker>()
+                .setInitialDelay(1, TimeUnit.MINUTES)
+                .build()
+        )
+    }
 
     // ── 数据导出 ──
     fun exportAllData() {
@@ -110,6 +132,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     append("聊天${result.chatCount}条")
                     if (result.foodCount > 0) append("、食物${result.foodCount}个")
                     if (result.exerciseCount > 0) append("、动作${result.exerciseCount}个")
+                    if (result.activityCount > 0) append("、运动${result.activityCount}条")
+                    if (result.stepCount > 0) append("、步数${result.stepCount}天")
+                    if (result.adviceCount > 0) append("、评估${result.adviceCount}条")
+                    if (result.templateCount > 0) append("、模板${result.templateCount}个")
                 }
             } catch (e: Exception) {
                 _backupStatus.value = "导入失败: ${e.message}"

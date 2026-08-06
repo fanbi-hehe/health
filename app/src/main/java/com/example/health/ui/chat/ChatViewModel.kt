@@ -55,15 +55,15 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _isSending.value = true
             try {
-                // 1. 保存用户消息
+                // 1. 先取历史（不含当前消息，避免同一句发两次）
+                val history = dao.getRecentMessages(10).reversed()
+
+                // 2. 保存用户消息（UI 立即显示）
                 val userMsg = ChatMessage(
                     role = "user", content = text.trim(),
                     imagePath = null, timestamp = System.currentTimeMillis()
                 )
                 dao.insert(userMsg)
-
-                // 2. 获取最近 10 条历史
-                val history = dao.getRecentMessages(10).reversed()
 
                 // 3. 意图路由 + 查询上下文（IO 线程）
                 val systemPrompt = withContext(Dispatchers.IO) {
@@ -107,7 +107,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 val compressed = ImageCompressor.compress(context, imageUri)
                 val imagePath = compressed.absolutePath
 
-                // 2. 保存用户消息（含图片路径）
+                // 2. 先取历史（不含当前消息）
+                val history = dao.getRecentMessages(10).reversed()
+
+                // 3. 保存用户消息（含图片路径，UI 立即显示）
                 val userMsg = ChatMessage(
                     role = "user",
                     content = text.trim().ifBlank { "[图片]" },
@@ -115,9 +118,6 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                     timestamp = System.currentTimeMillis()
                 )
                 dao.insert(userMsg)
-
-                // 3. 获取最近 10 条历史
-                val history = dao.getRecentMessages(10).reversed()
 
                 // 4. 意图路由 + 查询上下文（图片消息通常与食物识别结合，也做路由）
                 val systemPrompt = withContext(Dispatchers.IO) {
