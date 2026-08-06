@@ -51,6 +51,44 @@ class UserActionParserTest {
     }
 
     @Test
+    fun `记录训练 — 记录开头句式`() {
+        val action = UserActionParser.parse("记录深蹲 4组 10次 60kg", exercises)
+        assertTrue(action is UserAction.RecordTraining)
+        action as UserAction.RecordTraining
+        assertEquals("深蹲", action.exerciseName)
+        assertEquals(4, action.sets)
+        assertEquals(10, action.reps)
+        assertEquals(60.0, action.weightKg, 0.01)
+    }
+
+    @Test
+    fun `记录训练 — 无触发词纯句式`() {
+        val action = UserActionParser.parse("深蹲 4组 10次 60kg", exercises)
+        assertTrue(action is UserAction.RecordTraining)
+        action as UserAction.RecordTraining
+        assertEquals("深蹲", action.exerciseName)
+        assertEquals(4, action.sets)
+    }
+
+    @Test
+    fun `记录训练 — 只有动作名也写入默认值`() {
+        val action = UserActionParser.parse("记录一下今天练了深蹲", exercises)
+        assertTrue(action is UserAction.RecordTraining)
+        action as UserAction.RecordTraining
+        assertEquals("深蹲", action.exerciseName)
+        assertEquals(1, action.sets)
+        assertEquals(0, action.reps)
+    }
+
+    @Test
+    fun `记录训练 — 库外动作名无组次`() {
+        val action = UserActionParser.parse("帮我记录仰卧起坐", exercises)
+        assertTrue(action is UserAction.RecordTraining)
+        action as UserAction.RecordTraining
+        assertEquals("仰卧起坐", action.exerciseName)
+    }
+
+    @Test
     fun `添加食物 — kcal`() {
         val action = UserActionParser.parse("添加食物 红烧肉 300kcal", exercises)
         assertTrue(action is UserAction.AddFood)

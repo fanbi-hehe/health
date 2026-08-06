@@ -77,6 +77,7 @@ fun ChatScreen(
     val messages by viewModel.messages.collectAsState()
     val isSending by viewModel.isSending.collectAsState()
     val error by viewModel.error.collectAsState()
+    val actionFeedback by viewModel.actionFeedback.collectAsState()
 
     var inputText by remember { mutableStateOf("") }
     var attachedImageUri by remember { mutableStateOf<android.net.Uri?>(null) }
@@ -89,6 +90,12 @@ fun ChatScreen(
         error?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             viewModel.clearError()
+        }
+    }
+    LaunchedEffect(actionFeedback) {
+        actionFeedback?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            viewModel.clearActionFeedback()
         }
     }
 

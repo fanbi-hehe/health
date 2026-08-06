@@ -45,7 +45,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    /** 系统操作结果（如 AI 教练写入训练/食物库），用于 UI 提示。 */
+    private val _actionFeedback = MutableStateFlow<String?>(null)
+    val actionFeedback: StateFlow<String?> = _actionFeedback.asStateFlow()
+
     fun clearError() { _error.value = null }
+
+    fun clearActionFeedback() { _actionFeedback.value = null }
 
     /**
      * 发送文本消息（不含图片）。
@@ -76,6 +82,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                     val actionFeedback = if (action != UserAction.None) {
                         UserActionExecutor(db).execute(action)
                     } else ""
+                    _actionFeedback.value = actionFeedback.takeIf { it.isNotBlank() }
                     buildSystemPromptWithContext(text.trim(), actionFeedback)
                 }
 

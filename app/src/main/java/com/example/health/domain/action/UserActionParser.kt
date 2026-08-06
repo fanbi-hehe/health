@@ -41,15 +41,6 @@ object UserActionParser {
         text: String,
         knownExercises: List<String>
     ): UserAction.RecordTraining? {
-        val hasTrigger = listOf("做了", "练了", "记录一下", "记录", "练", "做").any { text.contains(it) }
-        if (!hasTrigger) return null
-
-        val exercise = knownExercises
-            .sortedByDescending { it.length }
-            .firstOrNull { text.contains(it) }
-            // 动作库没有的动作名：从触发词后、数字前提取
-            ?: extractUnknownExercise(text) ?: return null
-
         val sets = Regex("(\\d+)\\s*[组組xX×]").find(text)
             ?.groupValues?.get(1)?.toIntOrNull() ?: 1
         // 优先匹配"10次"，其次支持"3x12 / 3×12 / 3组12"写法
@@ -58,27 +49,51 @@ object UserActionParser {
             ?: Regex("[组組xX×]\\s*(\\d+)").find(text)
                 ?.groupValues?.get(1)?.toIntOrNull()
             ?: 0
+
+        val hasGroupInfo = sets > 1 || reps > 0
+        val hasTrigger = listOf(
+            "做了", "练了", "记录一下", "记一下", "记录", "训练", "练", "做"
+        ).any { text.contains(it) }
+        // 没有训练信号（无触发词且无组次信息）不解析，避免误伤普通对话
+        if (!hasTrigger && !hasGroupInfo) return null
+
+        val exercise = knownExercises
+            .sortedByDescending { it.length }
+            .firstOrNull { text.contains(it) }
+            // 动作库没有的动作名：从触发词后、数字前提取
+            ?: extractExerciseName(text) ?: return null
+
         // 重量只匹配带单位（kg/公斤/千克），避免把组数次数当重量
         val weight = Regex("(\\d+(?:\\.\\d+)?)\\s*(?:kg|公斤|千克)")
             .find(text)?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
 
-        if (reps <= 0 && sets <= 1) return null
         return UserAction.RecordTraining(
             exerciseName = exercise,
-            sets = sets.coerceAtLeast(1),
-            reps = reps.coerceAtLeast(1),
+            // 只说"练了深蹲"没有组次时，写入默认值并在备注/回复中提示
+            sets = if (hasGroupInfo) sets.coerceAtLeast(1) else 1,
+            reps = if (hasGroupInfo) reps.coerceAtLeast(1) else 0,
             weightKg = weight
         )
     }
 
-    /** 提取动作库外的动作名（触发词后到第一个数字/标点之间的文字，最多两个词）。 */
-    private fun extractUnknownExercise(text: String): String? {
-        val match = Regex(
-            "(?:做了|练了|记录一下|练|做)\\s*([^\\d，。,.!！?？\\s]+(?:\\s[^\\d，。,.!！?？\\s]+)?)"
-        ).find(text) ?: return null
-        val name = match.groupValues[1].trim()
-        if (name.isBlank() || name.length > 12) return null
-        return name
+    /** 提取动作库外的动作名：优先取最后一个触发词后的文字，其次取句子开头到第一个数字。 */
+    private fun extractExerciseName(text: String): String? {
+        // 1) 最后一个触发词后的文字（"记录一下我做了深蹲"取"做了"后的"深蹲"）
+        val triggerRegex = Regex(
+            "(?:做了|练了|记录一下|记一下|记录|训练|练|做)\\s*([^\\d，。,.!！?？\\s]+(?:\\s[^\\d，。,.!！?？\\s]+)?)"
+        )
+        triggerRegex.findAll(text).lastOrNull()?.let { match ->
+            val name = match.groupValues[1].trim()
+            if (name.isNotBlank() && name.length <= 12) return name
+        }
+
+        // 2) 无触发词的句式："深蹲 4组 10次 60kg" → 取开头到数字前
+        Regex("^\\s*([^\\d，。,.!！?？\\s]+(?:\\s[^\\d，。,.!！?？\\s]+)?)\\s*\\d")
+            .find(text)?.let { match ->
+                val name = match.groupValues[1].trim()
+                if (name.isNotBlank() && name.length <= 12) return name
+            }
+        return null
     }
 
     // ── 添加食物 ──
