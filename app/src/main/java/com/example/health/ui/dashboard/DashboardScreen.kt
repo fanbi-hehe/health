@@ -69,6 +69,7 @@ import androidx.core.content.ContextCompat
 import com.example.health.data.local.entity.AdviceLog
 import com.example.health.data.local.entity.BodyWeight
 import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -111,13 +112,16 @@ fun DashboardScreen(
         ActivityResultContracts.RequestPermission()
     ) { granted -> if (granted) viewModel.syncSteps() }
 
-    // 进入看板时若已授权步数权限，自动同步一次（无需手动点"同步"）
+    // 看板可见期间每 30 秒自动同步步数（离开页面自动停止），避免数字不涨
     LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(
-                context, Manifest.permission.ACTIVITY_RECOGNITION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            viewModel.syncSteps()
+        while (true) {
+            if (ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.ACTIVITY_RECOGNITION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                viewModel.syncSteps()
+            }
+            delay(30_000)
         }
     }
 
