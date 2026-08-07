@@ -56,8 +56,9 @@ class AiRepository(private val context: Context) {
                 model = model,
                 messages = listOf(Message(role = "user", content = listOf(
                     ContentPart(type = "text", text =
-                        "识别图中食物。估算每种食物的重量(g)和热量(kcal)。" +
-                        "同时估算宏量营养素（蛋白质/碳水化合物/脂肪，单位g，按估算重量计算）。" +
+                        "识别图片中的食物。请列出图中所有食物，每种食物单独一项，不要遗漏、不要合并。" +
+                        "估算每种食物的重量(g)和热量(kcal)。" +
+                        "如果能够判断每项食物的蛋白质/碳水化合物/脂肪含量（克，按估算重量计算），请一并返回；无法判断时填 0。" +
                         "只返回纯JSON，不要任何解释。" +
                         "格式：{\"foods\":[{\"name\":\"食物名\",\"weight_g\":数值,\"calories_kcal\":数值," +
                         "\"protein_g\":数值,\"carbs_g\":数值,\"fat_g\":数值}],\"total_calories\":数值}"
