@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -54,6 +55,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,14 +69,6 @@ import androidx.core.content.ContextCompat
 import com.example.health.data.local.entity.AdviceLog
 import com.example.health.data.local.entity.BodyWeight
 import androidx.compose.ui.graphics.Color
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -113,6 +110,16 @@ fun DashboardScreen(
     val stepPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted -> if (granted) viewModel.syncSteps() }
+
+    // 进入看板时若已授权步数权限，自动同步一次（无需手动点"同步"）
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(
+                context, Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            viewModel.syncSteps()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -644,7 +651,7 @@ private fun StatItem(label: String, value: String) {
 }
 
 // ──────────────────────────────────────────────────────────
-// Vico 近7天热量柱状图（橙=摄入，虚线=目标，蓝=消耗预留）
+// 近7天热量柱状图（自绘：圆角柱 + 目标虚线 + 日期标签）
 // ──────────────────────────────────────────────────────────
 @Composable
 private fun CalorieBarChart(
@@ -652,58 +659,103 @@ private fun CalorieBarChart(
     targetCalories: Int,
     modifier: Modifier = Modifier
 ) {
-    val modelProducer = remember { CartesianChartModelProducer() }
+    Column(modifier = modifier) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+        ) {
+            if (dailyData.isEmpty()) return@Canvas
+            val maxCal = maxOf(dailyData.maxOfOrNull { it.calories } ?: 0, targetCalories, 100)
+            val slot = size.width / dailyData.size
+            val barWidth = slot * 0.45f
 
-    LaunchedEffect(dailyData, targetCalories) {
-        modelProducer.runTransaction {
-            // 橙柱：每日实际摄入
-            columnSeries {
-                series(dailyData.map { it.calories.toFloat() })
+            // 目标虚线
+            if (targetCalories > 0) {
+                val targetY = size.height * (1f - targetCalories.toFloat() / maxCal)
+                drawLine(
+                    color = Color(0xFFE91E63).copy(alpha = 0.55f),
+                    start = Offset(0f, targetY),
+                    end = Offset(size.width, targetY),
+                    strokeWidth = 2.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx()))
+                )
             }
-            // 虚线：每日目标
-            lineSeries {
-                series(dailyData.map { targetCalories.toFloat() })
+
+            // 柱子（达标绿色，未达标橙色）
+            dailyData.forEachIndexed { i, d ->
+                val ratio = d.calories.toFloat() / maxCal
+                val barHeight = (size.height * ratio).coerceAtLeast(2.dp.toPx())
+                val left = slot * i + (slot - barWidth) / 2f
+                val color = if (targetCalories > 0 && d.calories >= targetCalories) {
+                    Color(0xFF4CAF50)
+                } else {
+                    Color(0xFFFF9800)
+                }
+                drawRoundRect(
+                    color = color,
+                    topLeft = Offset(left, size.height - barHeight),
+                    size = Size(barWidth, barHeight),
+                    cornerRadius = CornerRadius(barWidth / 2f, barWidth / 2f)
+                )
             }
-            // 蓝线：后期消耗能量（当前为 0，占位）
-            lineSeries {
-                series(dailyData.map { 0f })
+        }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            dailyData.forEach { d ->
+                Text(
+                    text = d.date,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     }
-
-    CartesianChartHost(
-        chart = rememberCartesianChart(
-            rememberColumnCartesianLayer(),
-            rememberLineCartesianLayer(),
-            rememberLineCartesianLayer()
-        ),
-        modelProducer = modelProducer,
-        modifier = modifier,
-        animationSpec = null
-    )
 }
 
 // ──────────────────────────────────────────────────────────
-// Vico 体重折线图
+// 体重折线图（自绘：连线 + 圆点）
 // ──────────────────────────────────────────────────────────
 @Composable
 private fun WeightLineChart(weights: List<BodyWeight>, modifier: Modifier = Modifier) {
-    val modelProducer = remember { CartesianChartModelProducer() }
-
-    LaunchedEffect(weights) {
-        modelProducer.runTransaction {
-            lineSeries {
-                series(weights.map { it.weightKg.toFloat() })
+    Canvas(modifier = modifier) {
+        if (weights.size < 2) {
+            // 单点：画一个圆点
+            if (weights.size == 1) {
+                drawCircle(
+                    color = Color(0xFF2196F3),
+                    radius = 5.dp.toPx(),
+                    center = Offset(size.width / 2f, size.height / 2f)
+                )
             }
+            return@Canvas
+        }
+
+        val minW = weights.minOf { it.weightKg }.toFloat()
+        val maxW = weights.maxOf { it.weightKg }.toFloat()
+        val range = (maxW - minW).coerceAtLeast(0.5f)
+        val points = weights.mapIndexed { i, w ->
+            val x = if (weights.size > 1) size.width * i / (weights.size - 1) else size.width / 2f
+            val y = size.height * (1f - (w.weightKg.toFloat() - minW) / range)
+            Offset(x, y)
+        }
+
+        // 连线
+        for (i in 1 until points.size) {
+            drawLine(
+                color = Color(0xFF2196F3),
+                start = points[i - 1],
+                end = points[i],
+                strokeWidth = 3.dp.toPx()
+            )
+        }
+        // 数据点（白边 + 蓝色实心）
+        points.forEach { p ->
+            drawCircle(Color.White, radius = 5.dp.toPx(), center = p)
+            drawCircle(Color(0xFF2196F3), radius = 3.5.dp.toPx(), center = p)
         }
     }
-
-    CartesianChartHost(
-        chart = rememberCartesianChart(rememberLineCartesianLayer()),
-        modelProducer = modelProducer,
-        modifier = modifier,
-        animationSpec = null
-    )
 }
 
 // ──────────────────────────────────────────────────────────
