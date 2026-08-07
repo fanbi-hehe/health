@@ -9,6 +9,9 @@ import com.example.health.data.local.entity.TrainingRecord
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.AiRepository
 import com.example.health.data.repository.ExerciseRepository
+import com.example.health.domain.plan.DayPlan
+import com.example.health.domain.plan.PlanExercise
+import com.example.health.domain.plan.TrainingPlanGenerator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.MutableStateFlow

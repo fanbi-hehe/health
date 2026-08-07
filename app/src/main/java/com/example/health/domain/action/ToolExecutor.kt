@@ -12,7 +12,10 @@ import kotlin.math.roundToInt
  *
  * 只接受白名单内的工具名与合法参数，其余一律拒绝（不提供删除能力）。
  */
-class ToolExecutor(private val db: AppDatabase) {
+class ToolExecutor(
+    private val db: AppDatabase,
+    private val planGenerator: (suspend (String) -> String)? = null
+) {
 
     private val gson = Gson()
 
@@ -30,8 +33,16 @@ class ToolExecutor(private val db: AppDatabase) {
             "record_training" -> recordTraining(args)
             "add_food" -> addFood(args)
             "update_food" -> updateFood(args)
+            "generate_training_plan" -> generateTrainingPlan(args)
             else -> "未知操作类型，已拒绝执行。"
         }
+    }
+
+    /** 生成并保存训练计划；生成器由调用方注入（依赖 Android 上下文与 AI 仓库）。 */
+    private suspend fun generateTrainingPlan(args: Map<String, Any>): String {
+        val generator = planGenerator ?: return "计划生成功能暂不可用。"
+        val customPrompt = stringArg(args, "custom_prompt") ?: ""
+        return generator(customPrompt)
     }
 
     private suspend fun recordTraining(args: Map<String, Any>): String {

@@ -58,6 +58,21 @@ object ToolDefinitions {
                     "required" to listOf("name", "calories_per_100g")
                 )
             )
+        ),
+        Tool(
+            function = FunctionSpec(
+                name = "generate_training_plan",
+                description = "根据用户档案、训练历史和自定义要求，生成一份 7 天个性化训练计划并保存（用户可在训练页查看）。用户说'设计/制定/生成/换一个健身计划'、'帮我安排训练'等时调用。",
+                parameters = mapOf(
+                    "type" to "object",
+                    "properties" to mapOf(
+                        "custom_prompt" to mapOf(
+                            "type" to "string",
+                            "description" to "用户附加的自定义要求（可选），如：侧重腿部、居家无器械、增肌为主"
+                        )
+                    )
+                )
+            )
         )
     )
 }

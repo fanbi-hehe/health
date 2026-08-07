@@ -97,4 +97,40 @@ class ToolExecutorTest {
         val required = addFood.function.parameters["required"] as? List<String>
         assertTrue(required != null && required.contains("name") && required.contains("calories_per_100g"))
     }
+
+    @Test
+    fun `generate_training_plan 无生成器时提示不可用`() = runBlocking {
+        val db = FakeAppDatabase()
+        val feedback = ToolExecutor(db).execute(
+            "generate_training_plan",
+            """{"custom_prompt":"侧重腿部"}"""
+        )
+        assertTrue(feedback.contains("暂不可用"))
+    }
+
+    @Test
+    fun `generate_training_plan 调用注入的生成器`() = runBlocking {
+        val db = FakeAppDatabase()
+        var called = ""
+        val executor = ToolExecutor(
+            db,
+            planGenerator = { custom ->
+                called = custom
+                "已生成计划（$custom）"
+            }
+        )
+        val feedback = executor.execute(
+            "generate_training_plan",
+            """{"custom_prompt":"侧重腿部"}"""
+        )
+        assertEquals("侧重腿部", called)
+        assertTrue(feedback.contains("已生成计划"))
+    }
+
+    @Test
+    fun `工具集包含计划生成且无删除能力`() {
+        val names = ToolDefinitions.coachTools.map { it.function.name }
+        assertTrue(names.contains("generate_training_plan"))
+        assertTrue(names.none { it.contains("delete") || it.contains("remove") })
+    }
 }

@@ -13,6 +13,7 @@ import com.example.health.data.remote.dto.ImageUrl
 import com.example.health.data.remote.dto.Message
 import com.example.health.data.remote.dto.Tool
 import com.example.health.domain.action.ToolExecutor
+import com.example.health.domain.plan.TrainingPlanGenerator
 import com.example.health.util.ImageCompressor
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.first
@@ -174,7 +175,13 @@ class AiRepository(private val context: Context) {
             }
 
             // 执行工具调用（白名单校验 + 参数校验）
-            val executor = ToolExecutor(AppDatabase.getInstance(context))
+            val executor = ToolExecutor(
+                AppDatabase.getInstance(context),
+                planGenerator = { custom ->
+                    TrainingPlanGenerator(context).generate(custom)
+                        .getOrElse { e -> "计划生成失败：${e.message ?: "未知错误"}" }
+                }
+            )
             val feedbacks = mutableListOf<String>()
             messages.add(
                 Message(

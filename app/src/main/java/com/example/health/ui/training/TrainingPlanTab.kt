@@ -56,25 +56,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.example.health.domain.plan.DayPlan
+import com.example.health.domain.plan.PlanExercise
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
-
-data class DayPlan(
-    val day: String,
-    val date: String,
-    val focus: String,
-    val exercises: List<PlanExercise> = emptyList()
-)
-
-data class PlanExercise(
-    val name: String,
-    val sets: Int,
-    val reps: String,
-    val notes: String? = null
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
