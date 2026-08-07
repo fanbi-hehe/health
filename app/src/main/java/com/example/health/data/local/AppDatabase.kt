@@ -65,7 +65,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "health_assistant.db"
                 )
-                    .fallbackToDestructiveMigration(true) // 开发期清库重建；发布前替换为真实 Migration
+                    // 真实 Migration：升级保留数据；无匹配 Migration 时抛异常而非清库
+                    .addMigrations(*Migrations.ALL)
                     .build()
                     .also { INSTANCE = it }
             }
