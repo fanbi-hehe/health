@@ -40,6 +40,8 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val dietViewModel: DietViewModel = viewModel()
     val trainingViewModel: TrainingViewModel = viewModel()
+    // 看板 ViewModel 提升到 Activity 级：数据常驻预热，切换 Tab 不再重建/重查
+    val dashboardViewModel: DashboardViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -115,7 +117,6 @@ fun AppNavigation() {
                 )
             }
             composable(BottomNavItem.Dashboard.route) {
-                val dashboardViewModel: DashboardViewModel = viewModel()
                 DashboardScreen(
                     viewModel = dashboardViewModel,
                     onNavigateToSettings = { navController.navigate("settings") },

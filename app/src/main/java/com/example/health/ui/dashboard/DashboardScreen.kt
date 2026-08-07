@@ -678,7 +678,8 @@ private fun CalorieBarChart(
             rememberLineCartesianLayer()
         ),
         modelProducer = modelProducer,
-        modifier = modifier
+        modifier = modifier,
+        animationSpec = null
     )
 }
 
@@ -700,7 +701,8 @@ private fun WeightLineChart(weights: List<BodyWeight>, modifier: Modifier = Modi
     CartesianChartHost(
         chart = rememberCartesianChart(rememberLineCartesianLayer()),
         modelProducer = modelProducer,
-        modifier = modifier
+        modifier = modifier,
+        animationSpec = null
     )
 }
 
