@@ -10,6 +10,7 @@ import com.example.health.data.local.entity.DailyStepCount
 import com.example.health.data.preference.AppPreferences
 import com.example.health.data.repository.AiRepository
 import com.example.health.domain.calorie.CalorieCalculator
+import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.util.StepCounterManager
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.Dispatchers
@@ -245,8 +246,42 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val netIntake = dietCal - activityCal - stepCal
         sb.appendLine("【净摄入】$dietCal − $activityCal（运动） − $stepCal（步数） = $netIntake kcal")
         sb.appendLine("- 目标 $targetCal kcal，缺口 ${targetCal - netIntake} kcal（正=还差，负=超出）")
-        val macros = _todayMacros.value
-        sb.appendLine("- 今日宏量：蛋白质 ${macros.proteinG}g · 碳水 ${macros.carbsG}g · 脂肪 ${macros.fatG}g")
+        // 今日宏量：数据库已有 + 缺失项由语言模型估算（仅用于总结，不写库）
+        val missingMacros = dietRecords.filter {
+            it.proteinG == 0 && it.carbsG == 0 && it.fatG == 0
+        }
+        val estimatedMacros = if (missingMacros.isNotEmpty()) {
+            aiRepo.estimateMacros(
+                missingMacros.map { RecognizedFood(it.foodName, it.weightG, it.caloriesKcal) }
+            )
+        } else {
+            emptyList()
+        }
+        var missingIdx = 0
+        val proteinTotal = dietRecords.sumOf { r ->
+            if (r.proteinG == 0 && r.carbsG == 0 && r.fatG == 0) {
+                estimatedMacros.getOrNull(missingIdx++)?.proteinG ?: 0
+            } else {
+                r.proteinG
+            }
+        }
+        missingIdx = 0
+        val carbsTotal = dietRecords.sumOf { r ->
+            if (r.proteinG == 0 && r.carbsG == 0 && r.fatG == 0) {
+                estimatedMacros.getOrNull(missingIdx++)?.carbsG ?: 0
+            } else {
+                r.carbsG
+            }
+        }
+        missingIdx = 0
+        val fatTotal = dietRecords.sumOf { r ->
+            if (r.proteinG == 0 && r.carbsG == 0 && r.fatG == 0) {
+                estimatedMacros.getOrNull(missingIdx++)?.fatG ?: 0
+            } else {
+                r.fatG
+            }
+        }
+        sb.appendLine("- 今日宏量：蛋白质 ${proteinTotal}g · 碳水 ${carbsTotal}g · 脂肪 ${fatTotal}g")
 
         // ── 体重趋势（统计值，不传原始数据） ──
         val thirtyDaysAgo = LocalDate.now().minusDays(29).format(fmt)

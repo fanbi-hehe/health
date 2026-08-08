@@ -108,11 +108,7 @@ class DietViewModel(application: Application) : AndroidViewModel(application) {
                 result.fold(
                     onSuccess = { foods ->
                         // 识别完成后，用语言模型估算宏量（失败则保持 0，不影响主流程）
-                        val foodsWithMacros = if (foods.foods.isNotEmpty()) {
-                            aiRepo.estimateMacros(foods.foods)
-                        } else {
-                            foods.foods
-                        }
+                        val foodsWithMacros = foods.foods
                         val finalResult = FoodRecognitionResult(
                             foods = foodsWithMacros,
                             totalCalories = foods.totalCalories
