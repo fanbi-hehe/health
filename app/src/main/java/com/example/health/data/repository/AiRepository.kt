@@ -11,9 +11,12 @@ import com.example.health.data.remote.dto.ContentPart
 import com.example.health.data.remote.dto.FoodRecognitionResult
 import com.example.health.data.remote.dto.ImageUrl
 import com.example.health.data.remote.dto.Message
+import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.data.remote.dto.Tool
 import com.example.health.domain.action.ToolExecutor
 import com.example.health.domain.plan.TrainingPlanGenerator
+import com.google.gson.reflect.TypeToken
+import com.google.gson.annotations.SerializedName
 import com.example.health.util.ImageCompressor
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.first
@@ -56,12 +59,10 @@ class AiRepository(private val context: Context) {
                 model = model,
                 messages = listOf(Message(role = "user", content = listOf(
                     ContentPart(type = "text", text =
-                        "识别图片中的食物。请列出图中所有食物，每种食物单独一项，不要遗漏、不要合并。" +
-                        "估算每种食物的重量(g)和热量(kcal)。" +
-                        "如果能够判断每项食物的蛋白质/碳水化合物/脂肪含量（克，按估算重量计算），请一并返回；无法判断时填 0。" +
+                        // 与 v0.1 完全一致的识别 Prompt：只识别名称/重量/热量
+                        "识别图中食物。估算每种食物的重量(g)和热量(kcal)。" +
                         "只返回纯JSON，不要任何解释。" +
-                        "格式：{\"foods\":[{\"name\":\"食物名\",\"weight_g\":数值,\"calories_kcal\":数值," +
-                        "\"protein_g\":数值,\"carbs_g\":数值,\"fat_g\":数值}],\"total_calories\":数值}"
+                        "格式：{\"foods\":[{\"name\":\"食物名\",\"weight_g\":数值,\"calories_kcal\":数值}],\"total_calories\":数值}"
                     ),
                     ContentPart(type = "image_url", imageUrl = ImageUrl(url = dataUrl))
                 )))
@@ -80,6 +81,89 @@ class AiRepository(private val context: Context) {
             Result.failure(e)
         }
     }
+
+    // ────────── 宏量营养素估算（识别完成后用语言模型补充） ──────────
+
+    /**
+     * 识别出食物列表后，调用文本模型估算每项食物的蛋白质/碳水/脂肪。
+     * 任何失败都返回原列表（宏量为 0），不影响主流程。
+     */
+    suspend fun estimateMacros(foods: List<RecognizedFood>): List<RecognizedFood> {
+        if (foods.isEmpty()) return foods
+        return try {
+            val model = prefs.textModel.first()
+            val apiKey = prefs.textApiKey.first()
+            val baseUrl = prefs.textApiBaseUrl.first()
+
+            val foodLines = foods.joinToString("\n") {
+                "- ${it.name} ${it.weightG}g 约 ${it.caloriesKcal}kcal"
+            }
+            val prompt = "以下是用户一餐中识别出的食物列表：\n$foodLines\n" +
+                "请估算每项食物的蛋白质、碳水化合物、脂肪含量（克，按列表中的重量估算）。" +
+                "只返回纯JSON数组，不要任何解释：" +
+                "[{\"name\":\"食物名\",\"protein_g\":数值,\"carbs_g\":数值,\"fat_g\":数值}]" +
+                "数量与顺序必须与列表一致，无法判断的项目填 0。"
+
+            val request = ChatRequest(
+                model = model,
+                messages = listOf(
+                    Message(
+                        role = "user",
+                        content = listOf(ContentPart(type = "text", text = prompt))
+                    )
+                ),
+                maxTokens = 1024
+            )
+            val url = baseUrl.trimEnd('/') + "/chat/completions"
+            val response = api.chatCompletion(
+                url, mapOf("Authorization" to "Bearer $apiKey"), request
+            )
+            if (!response.isSuccessful) return foods
+            val content = response.body()?.choices?.firstOrNull()?.message?.content ?: ""
+            mergeMacros(foods, content)
+        } catch (_: Exception) {
+            foods
+        }
+    }
+
+    /** 解析语言模型返回的宏量数组，按顺序合并回食物列表。 */
+    private fun mergeMacros(
+        foods: List<RecognizedFood>,
+        rawJson: String
+    ): List<RecognizedFood> {
+        return try {
+            val cleaned = rawJson
+                .replace("```json", "").replace("```", "").trim()
+            val start = cleaned.indexOf('[')
+            val end = cleaned.lastIndexOf(']')
+            val jsonStr = if (start >= 0 && end > start) cleaned.substring(start, end + 1) else cleaned
+            val type = object : TypeToken<List<MacroEstimate>>() {}.type
+            val estimates = gson.fromJson<List<MacroEstimate>>(jsonStr, type) ?: emptyList()
+
+            foods.mapIndexed { index, food ->
+                val est = estimates.getOrNull(index)
+                if (est != null && est.name.isNotBlank()) {
+                    food.copy(
+                        proteinG = est.proteinG,
+                        carbsG = est.carbsG,
+                        fatG = est.fatG
+                    )
+                } else {
+                    food
+                }
+            }
+        } catch (_: Exception) {
+            foods
+        }
+    }
+
+    /** 语言模型宏量估算结果（JSON 数组元素）。 */
+    private data class MacroEstimate(
+        val name: String = "",
+        @SerializedName("protein_g") val proteinG: Int = 0,
+        @SerializedName("carbs_g") val carbsG: Int = 0,
+        @SerializedName("fat_g") val fatG: Int = 0
+    )
 
     // ────────── 文本/对话：AI 聊天 ──────────
 
