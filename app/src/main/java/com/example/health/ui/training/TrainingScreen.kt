@@ -27,6 +27,9 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -63,6 +66,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.health.data.local.entity.ExerciseLibrary
 import com.example.health.data.local.entity.TrainingRecord
+import com.example.health.ui.components.CalendarPickerDialog
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +93,9 @@ fun TrainingScreen(
     // 折叠状态：已展开的"部位_器械组" key 列表（可保存）
     var expandedGroups by rememberSaveable { mutableStateOf(listOf<String>()) }
     val actionLibraryListState = rememberLazyListState()
+    // 训练记录日期回看（默认今天）
+    var trainingDate by rememberSaveable { mutableStateOf(LocalDate.now().toString()) }
+    var showTrainingCalendar by remember { mutableStateOf(false) }
 
     // 动作库过滤
     val filteredExercises = if (exerciseSearchQuery.isBlank()) {
@@ -185,20 +193,59 @@ fun TrainingScreen(
                 )
             } else if (selectedTab == 1) {
                 // ── 训练记录页 ──
-                if (todayRecords.isEmpty()) {
+                val dayRecords = remember(todayRecords, trainingDate) {
+                    todayRecords.filter { it.date == trainingDate }
+                }
+                val d = LocalDate.parse(trainingDate)
+                val dateLabel = if (trainingDate == LocalDate.now().toString()) {
+                    "${d.monthValue}月${d.dayOfMonth}日（今天）"
+                } else {
+                    "${d.monthValue}月${d.dayOfMonth}日"
+                }
+                // 日期切换条 + 月历
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {
+                        trainingDate = LocalDate.parse(trainingDate).minusDays(1).toString()
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "前一天")
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(dateLabel, style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold)
+                        if (trainingDate != LocalDate.now().toString()) {
+                            TextButton(onClick = { trainingDate = LocalDate.now().toString() }) {
+                                Text("回到今天", style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    }
+                    IconButton(onClick = {
+                        trainingDate = LocalDate.parse(trainingDate).plusDays(1).toString()
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "后一天")
+                    }
+                    IconButton(onClick = { showTrainingCalendar = true }) {
+                        Icon(Icons.Default.DateRange, contentDescription = "打开月历")
+                    }
+                }
+
+                if (dayRecords.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "今天还没有训练记录\n点击右下角开始记录",
+                            text = "$dateLabel 还没有训练记录\n点击右下角开始记录",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
                         )
                     }
                 } else {
-                    val grouped = todayRecords.groupBy { it.bodyParts }
+                    val grouped = dayRecords.groupBy { it.bodyParts }
                     LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
                         grouped.forEach { (bodyParts, records) ->
                             item {
@@ -336,6 +383,18 @@ fun TrainingScreen(
         )
     }
     if (showOnboarding) OnboardingDialog(viewModel, onDismiss = { showOnboarding = false })
+
+    // ── 训练记录月历跳转 ──
+    if (showTrainingCalendar) {
+        CalendarPickerDialog(
+            initialDate = trainingDate,
+            onDismiss = { showTrainingCalendar = false },
+            onDateSelected = { date ->
+                trainingDate = date
+                showTrainingCalendar = false
+            }
+        )
+    }
 }
 
 // ──────────────────────────────────────────────────────────

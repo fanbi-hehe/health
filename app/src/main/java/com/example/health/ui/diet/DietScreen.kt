@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.automirrored.filled.MenuBook
@@ -71,6 +72,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.FoodLibrary
 import com.example.health.data.local.entity.MealTemplate
+import com.example.health.ui.components.CalendarPickerDialog
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -123,6 +125,7 @@ fun DietScreen(
     var showEditDialog by remember { mutableStateOf<DietRecord?>(null) }
     var showTemplatesDialog by remember { mutableStateOf(false) }
     var renamingTemplate by remember { mutableStateOf<MealTemplate?>(null) }
+    var showCalendar by remember { mutableStateOf(false) }
 
     // ── 日期回看（默认今天，可左右切换） ──
     var selectedDate by rememberSaveable { mutableStateOf(LocalDate.now().toString()) }
@@ -244,6 +247,9 @@ fun DietScreen(
                     selectedDate = LocalDate.parse(selectedDate).plusDays(1).toString()
                 }) {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "后一天")
+                }
+                IconButton(onClick = { showCalendar = true }) {
+                    Icon(Icons.Default.DateRange, contentDescription = "打开月历")
                 }
             }
 
@@ -367,6 +373,18 @@ fun DietScreen(
             },
             dismissButton = {
                 TextButton(onClick = { renamingTemplate = null }) { Text("取消") }
+            }
+        )
+    }
+
+    // ── 月历跳转 ──
+    if (showCalendar) {
+        CalendarPickerDialog(
+            initialDate = selectedDate,
+            onDismiss = { showCalendar = false },
+            onDateSelected = { date ->
+                selectedDate = date
+                showCalendar = false
             }
         )
     }
