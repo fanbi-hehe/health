@@ -20,3 +20,21 @@ local.properties
 # Claude Code 本地配置与临时任务
 .claude/
 .claude-tasks/
+
+# IDE 配置（本机专用，不提交）
+/.idea/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 签名与密钥文件（严禁提交）
+*.jks
+*.keystore
+*.p12
+*.pk8
+*.pem
+
+# 密钥/配置文件（如本地 API Key 等）
+secrets.properties
+local.keys

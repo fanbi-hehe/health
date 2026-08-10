@@ -33,3 +33,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "health"
 include(":app")
+include(":calculator")
