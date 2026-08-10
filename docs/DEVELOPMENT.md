@@ -6,7 +6,6 @@
 | 编写日期 | 2026-08-08 |
 | 当前应用版本 | 0.26（versionCode 26） |
 | 数据库版本 | 8（完整 Migration 链 1→8） |
-| 关联文档 | [PRD.md](../PRD.md)、[中期文档](PROJECT_MIDTERM.md)、[后期需求](FUTURE_REQUIREMENTS.md)、[热量评估需求](HEAT_ASSESSMENT_REQUIREMENTS.md)、[CLAUDE.md](../CLAUDE.md) |
 
 ---
 

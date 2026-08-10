@@ -22,7 +22,7 @@ docs/       需求、开发、维护、产品文档
 tools/      内置食物库 / 动作库的构建与数据来源脚本
 ```
 
-主应用代码按 `data / domain / ui / worker / util` 分层，详见 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) 与 [CLAUDE.md](CLAUDE.md)。
+主应用代码按 `data / domain / ui / worker / util` 分层，详见 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
 
 ## 技术栈
 
@@ -83,8 +83,4 @@ rg -n -i "api[_-]?key|secret|password|sk-[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}" --hi
 
 ## 相关文档
 
-- [PRD.md](PRD.md) — 产品需求文档
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) — 开发维护指南
-- [docs/PRODUCT_INTRO.md](docs/PRODUCT_INTRO.md) — 产品介绍
-- [docs/ISSUES_LOG.md](docs/ISSUES_LOG.md) — 用户反馈与问题记录
-- [CLAUDE.md](CLAUDE.md) — 技术约定
