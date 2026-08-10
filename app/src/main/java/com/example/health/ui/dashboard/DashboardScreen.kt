@@ -60,6 +60,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -153,18 +157,8 @@ fun DashboardScreen(
                     Text("今日热量评估", style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(8.dp))
-                    // 代谢消耗（基础代谢）—— 蓝色显眼展示
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("代谢消耗（基础代谢）", style = MaterialTheme.typography.bodyMedium)
-                        Text("$bmr kcal",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2196F3))
-                    }
+
+                    // ── 第 1 块：摄入 / 目标 ──
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -174,43 +168,12 @@ fun DashboardScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium)
                     }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("运动消耗", style = MaterialTheme.typography.bodyMedium)
-                        Text("${todayActivityCals + todayTrainingCals} kcal（含训练估算）",
-                            style = MaterialTheme.typography.bodyMedium)
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("步数消耗", style = MaterialTheme.typography.bodyMedium)
-                        Text("$todayStepCals kcal", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    val netIntake = todayCals - todayActivityCals - todayStepCals
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("净摄入", style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold)
-                        Text("$netIntake kcal", style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary)
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("宏量营养", style = MaterialTheme.typography.bodyMedium)
-                        Text(
-                            "蛋白 ${todayMacros.proteinG}g · 碳水 ${todayMacros.carbsG}g · 脂肪 ${todayMacros.fatG}g",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    val totalExercise = todayActivityCals + todayStepCals + todayTrainingCals
+                    val totalConsume = bmr + totalExercise
+                    val netIntake = todayCals - totalConsume
+                    Text("净摄入 $netIntake kcal（摄入 − 综合消耗）",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.height(8.dp))
                     val progress = if (targetCalories > 0) (netIntake.toFloat() / targetCalories).coerceIn(0f, 1.5f) else 0f
                     LinearProgressIndicator(progress = { if (progress > 1f) 1f else progress },
@@ -225,6 +188,39 @@ fun DashboardScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary)
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // ── 第 2 块：综合消耗 ──
+                    Text("综合消耗", style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("基础代谢 $bmr + 运动 $totalExercise = ",
+                            style = MaterialTheme.typography.bodyMedium)
+                        Text("$totalConsume kcal",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2196F3))
+                    }
+                    Text(
+                        buildList {
+                            if (todayActivityCals > 0) add("GPS/手动 $todayActivityCals")
+                            if (todayStepCals > 0) add("步数 $todayStepCals")
+                            if (todayTrainingCals > 0) add("训练估算 $todayTrainingCals")
+                        }.joinToString(" + "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // ── 第 3 块：营养 ──
+                    Text("营养", style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        "蛋白质 ${todayMacros.proteinG}g · 碳水 ${todayMacros.carbsG}g · 脂肪 ${todayMacros.fatG}g",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
 
@@ -674,20 +670,28 @@ private fun CalorieBarChart(
     targetCalories: Int,
     modifier: Modifier = Modifier
 ) {
+    val textMeasurer = rememberTextMeasurer()
     Column(modifier = modifier) {
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp)
+                .height(150.dp)
         ) {
             if (dailyData.isEmpty()) return@Canvas
-            val maxCal = maxOf(dailyData.maxOfOrNull { it.calories } ?: 0, targetCalories, 100)
+            val maxCal = maxOf(
+                dailyData.maxOfOrNull { it.calories } ?: 0,
+                dailyData.maxOfOrNull { it.consume } ?: 0,
+                targetCalories,
+                100
+            )
             val slot = size.width / dailyData.size
             val barWidth = slot * 0.45f
+            val textZone = 18.dp.toPx()
+            val plotHeight = size.height - textZone
 
             // 目标虚线
             if (targetCalories > 0) {
-                val targetY = size.height * (1f - targetCalories.toFloat() / maxCal)
+                val targetY = size.height - plotHeight * (targetCalories.toFloat() / maxCal)
                 drawLine(
                     color = Color(0xFFE91E63).copy(alpha = 0.55f),
                     start = Offset(0f, targetY),
@@ -697,22 +701,65 @@ private fun CalorieBarChart(
                 )
             }
 
-            // 柱子（达标绿色，未达标橙色）
+            // 柱子：蓝色消耗段（下）+ 橙色摄入段（上）；摄入反超消耗时整柱变灰
             dailyData.forEachIndexed { i, d ->
-                val ratio = d.calories.toFloat() / maxCal
-                val barHeight = (size.height * ratio).coerceAtLeast(2.dp.toPx())
+                val over = d.calories > d.consume
+                val consumeH = plotHeight * (d.consume.toFloat() / maxCal)
+                val intakeH = plotHeight * (d.calories.toFloat() / maxCal)
                 val left = slot * i + (slot - barWidth) / 2f
-                val color = if (targetCalories > 0 && d.calories >= targetCalories) {
-                    Color(0xFF4CAF50)
+                val bottom = size.height
+                val corner = CornerRadius(barWidth / 2f, barWidth / 2f)
+
+                if (over) {
+                    // 反超：整柱灰色，高度取摄入与消耗的较大者
+                    val totalH = maxOf(consumeH, intakeH).coerceAtLeast(2.dp.toPx())
+                    drawRoundRect(
+                        color = Color(0xFF9E9E9E),
+                        topLeft = Offset(left, bottom - totalH),
+                        size = Size(barWidth, totalH),
+                        cornerRadius = corner
+                    )
                 } else {
-                    Color(0xFFFF9800)
+                    val blueH = consumeH.coerceAtLeast(if (d.consume > 0) 2.dp.toPx() else 0f)
+                    if (blueH > 0) {
+                        drawRoundRect(
+                            color = Color(0xFF2196F3),
+                            topLeft = Offset(left, bottom - blueH),
+                            size = Size(barWidth, blueH),
+                            cornerRadius = corner
+                        )
+                    }
+                    val orangeH = intakeH.coerceAtLeast(if (d.calories > 0) 2.dp.toPx() else 0f)
+                    if (orangeH > 0) {
+                        drawRoundRect(
+                            color = Color(0xFFFF9800),
+                            topLeft = Offset(left, bottom - blueH - orangeH),
+                            size = Size(barWidth, orangeH),
+                            cornerRadius = corner
+                        )
+                    }
                 }
-                drawRoundRect(
-                    color = color,
-                    topLeft = Offset(left, size.height - barHeight),
-                    size = Size(barWidth, barHeight),
-                    cornerRadius = CornerRadius(barWidth / 2f, barWidth / 2f)
-                )
+
+                // 柱顶差值标注（摄入 − 消耗）
+                if (d.calories > 0 || d.consume > 0) {
+                    val diff = d.calories - d.consume
+                    val label = if (diff > 0) "+$diff" else "$diff"
+                    val topY = bottom - maxOf(consumeH, intakeH) - 14.dp.toPx()
+                    val layout = textMeasurer.measure(
+                        text = label,
+                        style = TextStyle(
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (over) Color(0xFF9E9E9E)
+                            else if (diff >= 0) Color(0xFF4CAF50)
+                            else Color(0xFFFF9800)
+                        )
+                    )
+                    drawText(
+                        textLayoutResult = layout,
+                        topLeft = Offset(left + (barWidth - layout.size.width) / 2f, topY)
+                    )
+                }
             }
         }
         Row(modifier = Modifier.fillMaxWidth()) {

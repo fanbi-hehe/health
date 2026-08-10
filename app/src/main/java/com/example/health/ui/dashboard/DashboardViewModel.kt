@@ -404,7 +404,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     data class DailyCalorie(
         val date: String,       // "MM-dd"
         val dateFull: String,   // "yyyy-MM-dd"
-        val calories: Int
+        val calories: Int,      // 当日摄入
+        val consume: Int = 0    // 当日综合消耗（BMR + 运动 + 步数 + 训练估算）
     )
 
     val sevenDayCalories: StateFlow<List<DailyCalorie>> = db.dietRecordDao().getAllRecords()
@@ -418,15 +419,35 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
                     // 近7天（含今天，动态取日期，跨天窗口自动滑动）
                     val days = (0..6).map { LocalDate.now().minusDays(it.toLong()) }.reversed()
+                    val activities = db.activityRecordDao().getAllRecordsOnce()
+                    val steps = db.dailyStepCountDao().getAllOnce()
+                    val trainings = db.trainingRecordDao().getAllRecordsOnce()
+                    val weight = prefs.userCurrentWeight.first()
+                    val bmr = CalorieCalculator.bmr(
+                        weightKg = weight,
+                        heightCm = prefs.userHeight.first(),
+                        age = prefs.userAge.first(),
+                        gender = prefs.userGender.first()
+                    ).roundToInt()
                     result.value = days.map { day ->
                         val dateStr = day.format(fullFmt)
                         val cals = records
                             .filter { sdf.format(java.util.Date(it.timestamp)) == dateStr }
                             .sumOf { it.caloriesKcal }
+                        val activityCal = activities
+                            .filter { sdf.format(java.util.Date(it.startTime)) == dateStr }
+                            .sumOf { it.caloriesKcal }
+                        val stepCal = steps.firstOrNull { it.date == dateStr }?.caloriesKcal ?: 0
+                        val trainingSets = trainings.filter { it.date == dateStr }.sumOf { it.sets }
+                        val trainingCal = CalorieCalculator.strengthTrainingCalories(
+                            totalSets = trainingSets,
+                            weightKg = weight
+                        )
                         DailyCalorie(
                             date = day.format(fmt),
                             dateFull = dateStr,
-                            calories = cals
+                            calories = cals,
+                            consume = bmr + activityCal + stepCal + trainingCal
                         )
                     }
                 }

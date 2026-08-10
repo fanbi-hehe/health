@@ -1,8 +1,6 @@
 package com.example.health.ui.navigation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -41,8 +38,6 @@ import com.example.health.ui.training.TrainingViewModel
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val density = LocalDensity.current
-    val imeVisible = WindowInsets.ime.getBottom(density) > 0
     val dietViewModel: DietViewModel = viewModel()
     val trainingViewModel: TrainingViewModel = viewModel()
     // 看板 ViewModel 提升到 Activity 级：数据常驻预热，切换 Tab 不再重建/重查
@@ -52,9 +47,9 @@ fun AppNavigation() {
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-            val onChatWithKeyboard = currentDestination?.hierarchy?.any { it.route == BottomNavItem.Chat.route } == true && imeVisible
-            // 聊天页呼出键盘时隐藏底部导航栏，避免输入框与键盘之间出现空白
-            if (!onChatWithKeyboard) {
+            val isChat = currentDestination?.hierarchy?.any { it.route == BottomNavItem.Chat.route } == true
+            // 聊天页采用微信同款全屏布局（不显示底部栏），键盘行为交给 imePadding，布局恒定不跳动
+            if (!isChat) {
                 NavigationBar {
                     BottomNavItem.items.forEach { item ->
                         NavigationBarItem(
