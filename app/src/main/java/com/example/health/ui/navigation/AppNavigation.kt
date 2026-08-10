@@ -1,6 +1,8 @@
 package com.example.health.ui.navigation
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -9,7 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -38,6 +43,12 @@ import com.example.health.ui.training.TrainingViewModel
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val density = LocalDensity.current
+    val imeInsets = WindowInsets.ime
+    // 键盘可见状态（缓存为 derivedStateOf，减少无关重组）
+    val imeVisible by remember {
+        derivedStateOf { imeInsets.getBottom(density) > 0 }
+    }
     val dietViewModel: DietViewModel = viewModel()
     val trainingViewModel: TrainingViewModel = viewModel()
     // 看板 ViewModel 提升到 Activity 级：数据常驻预热，切换 Tab 不再重建/重查
@@ -48,8 +59,9 @@ fun AppNavigation() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
             val isChat = currentDestination?.hierarchy?.any { it.route == BottomNavItem.Chat.route } == true
-            // 聊天页采用微信同款全屏布局（不显示底部栏），键盘行为交给 imePadding，布局恒定不跳动
-            if (!isChat) {
+            // 聊天页：点击输入框（键盘弹出）时隐藏底栏，平时正常显示
+            val hideForChatKeyboard = isChat && imeVisible
+            if (!hideForChatKeyboard) {
                 NavigationBar {
                     BottomNavItem.items.forEach { item ->
                         NavigationBarItem(

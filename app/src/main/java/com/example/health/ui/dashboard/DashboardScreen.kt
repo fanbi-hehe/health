@@ -701,40 +701,46 @@ private fun CalorieBarChart(
                 )
             }
 
-            // 柱子：蓝色消耗段（下）+ 橙色摄入段（上）；摄入反超消耗时整柱变灰
+            // 重叠柱：底层消耗条（正常蓝/反超灰），顶层摄入条（黄色）叠放遮挡；
+            // 正常 = 下黄上蓝（顶部蓝=消耗差值）；反超 = 下灰上黄（顶部黄=摄入差值）
             dailyData.forEachIndexed { i, d ->
                 val over = d.calories > d.consume
                 val consumeH = plotHeight * (d.consume.toFloat() / maxCal)
                 val intakeH = plotHeight * (d.calories.toFloat() / maxCal)
+                val diffH = kotlin.math.abs(intakeH - consumeH)
+                val totalH = maxOf(consumeH, intakeH)
                 val left = slot * i + (slot - barWidth) / 2f
                 val bottom = size.height
                 val corner = CornerRadius(barWidth / 2f, barWidth / 2f)
 
-                if (over) {
-                    // 反超：整柱灰色，高度取摄入与消耗的较大者
-                    val totalH = maxOf(consumeH, intakeH).coerceAtLeast(2.dp.toPx())
+                // 底层：消耗条（正常蓝色 / 反超灰色）
+                if (d.consume > 0) {
                     drawRoundRect(
-                        color = Color(0xFF9E9E9E),
-                        topLeft = Offset(left, bottom - totalH),
-                        size = Size(barWidth, totalH),
+                        color = if (over) Color(0xFF9E9E9E) else Color(0xFF2196F3),
+                        topLeft = Offset(left, bottom - consumeH),
+                        size = Size(barWidth, consumeH.coerceAtLeast(2.dp.toPx())),
                         cornerRadius = corner
                     )
-                } else {
-                    val blueH = consumeH.coerceAtLeast(if (d.consume > 0) 2.dp.toPx() else 0f)
-                    if (blueH > 0) {
+                }
+
+                // 顶层：
+                if (over) {
+                    // 反超：黄色差值条画在灰色消耗条上方（灰在下、黄差值在上）
+                    if (diffH > 0) {
                         drawRoundRect(
-                            color = Color(0xFF2196F3),
-                            topLeft = Offset(left, bottom - blueH),
-                            size = Size(barWidth, blueH),
+                            color = Color(0xFFFF9800),
+                            topLeft = Offset(left, bottom - totalH),
+                            size = Size(barWidth, diffH.coerceAtLeast(2.dp.toPx())),
                             cornerRadius = corner
                         )
                     }
-                    val orangeH = intakeH.coerceAtLeast(if (d.calories > 0) 2.dp.toPx() else 0f)
-                    if (orangeH > 0) {
+                } else {
+                    // 正常：黄色摄入条底部对齐叠在蓝色之上（顶部露出蓝色差值）
+                    if (d.calories > 0) {
                         drawRoundRect(
                             color = Color(0xFFFF9800),
-                            topLeft = Offset(left, bottom - blueH - orangeH),
-                            size = Size(barWidth, orangeH),
+                            topLeft = Offset(left, bottom - intakeH),
+                            size = Size(barWidth, intakeH.coerceAtLeast(2.dp.toPx())),
                             cornerRadius = corner
                         )
                     }
