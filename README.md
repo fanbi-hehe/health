@@ -84,3 +84,9 @@ rg -n -i "api[_-]?key|secret|password|sk-[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}" --hi
 ## 相关文档
 
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) — 开发维护指南
+
+## 许可证
+
+版权所有 © 2026 haizai，保留所有权利。
+
+本仓库源代码公开可见，允许个人学习、研究与个人非商业用途免费使用；未经授权不得用于任何商业用途。完整条款见 [LICENSE](LICENSE)。
