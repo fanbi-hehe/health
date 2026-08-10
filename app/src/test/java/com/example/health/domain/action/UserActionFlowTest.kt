@@ -15,6 +15,7 @@ import com.example.health.data.local.dao.FoodLibraryDao
 import com.example.health.data.local.dao.MealTemplateDao
 import com.example.health.data.local.dao.TrainingRecordDao
 import com.example.health.data.local.entity.ExerciseLibrary
+import com.example.health.data.local.entity.ActivityRecord
 import com.example.health.data.local.entity.DietRecord
 import com.example.health.data.local.entity.FoodLibrary
 import com.example.health.data.local.entity.TrainingRecord
@@ -134,17 +135,18 @@ internal class FakeAppDatabase : AppDatabase() {
     val foodDao = FakeFoodLibraryDao()
     val exerciseDao = FakeExerciseLibraryDao()
     val dietDao = FakeDietRecordDao()
+    val activityDao = FakeActivityRecordDao()
 
     override fun trainingRecordDao(): TrainingRecordDao = trainingDao
     override fun foodLibraryDao(): FoodLibraryDao = foodDao
     override fun exerciseLibraryDao(): ExerciseLibraryDao = exerciseDao
     override fun dietRecordDao(): DietRecordDao = dietDao
+    override fun activityRecordDao(): ActivityRecordDao = activityDao
 
     override fun bodyWeightDao(): BodyWeightDao = throw UnsupportedOperationException()
     override fun chatMessageDao(): ChatMessageDao = throw UnsupportedOperationException()
     override fun adviceLogDao(): AdviceLogDao = throw UnsupportedOperationException()
     override fun mealTemplateDao(): MealTemplateDao = throw UnsupportedOperationException()
-    override fun activityRecordDao(): ActivityRecordDao = throw UnsupportedOperationException()
     override fun dailyStepCountDao(): DailyStepCountDao = throw UnsupportedOperationException()
 
     override fun clearAllTables() {}
@@ -249,5 +251,26 @@ internal class FakeDietRecordDao : DietRecordDao {
         val idx = records.indexOfFirst { it.id == record.id }
         if (idx >= 0) records[idx] = record
     }
+    override suspend fun deleteAll() { records.clear() }
+}
+
+internal class FakeActivityRecordDao : ActivityRecordDao {
+    val records = mutableListOf<ActivityRecord>()
+    private var nextId = 1L
+
+    override suspend fun insert(record: ActivityRecord): Long {
+        val withId = record.copy(id = nextId++)
+        records.add(withId)
+        return withId.id
+    }
+
+    override suspend fun insertAll(records: List<ActivityRecord>) { records.forEach { insert(it) } }
+    override suspend fun delete(record: ActivityRecord) { records.remove(record) }
+    override fun getAllRecords(): Flow<List<ActivityRecord>> = flowOf(records.toList())
+    override suspend fun getRecordsByDate(date: String): List<ActivityRecord> = emptyList()
+    override suspend fun getRecordsBetweenDates(startDate: String, endDate: String): List<ActivityRecord> = emptyList()
+    override suspend fun getTotalCaloriesByDate(date: String): Int = records.sumOf { it.caloriesKcal }
+    override suspend fun getTotalCaloriesBetweenDates(startDate: String, endDate: String): Int = 0
+    override suspend fun getAllRecordsOnce(): List<ActivityRecord> = records.toList()
     override suspend fun deleteAll() { records.clear() }
 }

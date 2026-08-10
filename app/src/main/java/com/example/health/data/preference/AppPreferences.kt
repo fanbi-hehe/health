@@ -27,6 +27,7 @@ class AppPreferences(private val context: Context) {
         val TEXT_API_BASE_URL = stringPreferencesKey("text_api_base_url")
         val TEXT_API_KEY = stringPreferencesKey("text_api_key")
         val TEXT_MODEL = stringPreferencesKey("text_model")
+        val TAVILY_API_KEY = stringPreferencesKey("tavily_api_key")
 
         // ── 目标设定 ──
         val TARGET_WEIGHT_KG = doublePreferencesKey("target_weight_kg")
@@ -92,6 +93,9 @@ class AppPreferences(private val context: Context) {
     val textModel: Flow<String> = context.dataStore.data.map { prefs ->
         prefs[TEXT_MODEL] ?: DEFAULT_TEXT_MODEL
     }
+    val tavilyApiKey: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[TAVILY_API_KEY] ?: ""
+    }
 
     // ────────── 目标 ──────────
     val targetWeightKg: Flow<Double> = context.dataStore.data.map { prefs ->
@@ -147,6 +151,7 @@ class AppPreferences(private val context: Context) {
     suspend fun setTextApiBaseUrl(url: String) { context.dataStore.edit { it[TEXT_API_BASE_URL] = url } }
     suspend fun setTextApiKey(key: String) { context.dataStore.edit { it[TEXT_API_KEY] = key } }
     suspend fun setTextModel(model: String) { context.dataStore.edit { it[TEXT_MODEL] = model } }
+    suspend fun setTavilyApiKey(key: String) { context.dataStore.edit { it[TAVILY_API_KEY] = key } }
     suspend fun setTargetWeightKg(weight: Double) { context.dataStore.edit { it[TARGET_WEIGHT_KG] = weight } }
     suspend fun setTargetDailyCalories(calories: Int) { context.dataStore.edit { it[TARGET_DAILY_CALORIES] = calories } }
     suspend fun setCoachNotificationEnabled(enabled: Boolean) { context.dataStore.edit { it[COACH_NOTIFICATION_ENABLED] = enabled } }

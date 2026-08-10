@@ -52,6 +52,17 @@ object CalorieCalculator {
         return (met * 3.5 * weightKg / 200 * minutes).roundToInt()
     }
 
+    /**
+     * 力量训练消耗估算：
+     * 训练时长 = 总组数 × 45 秒（含组间休息），MET ≈ 6.0（力量训练）。
+     * kcal = MET × 3.5 × 体重(kg) / 200 × 分钟
+     */
+    fun strengthTrainingCalories(totalSets: Int, weightKg: Double): Int {
+        if (totalSets <= 0 || weightKg <= 0) return 0
+        val minutes = totalSets * 45.0 / 60.0
+        return (6.0 * 3.5 * weightKg / 200 * minutes).roundToInt()
+    }
+
     /** 最大心率（220 − 年龄）。 */
     fun maxHeartRate(age: Int): Int = 220 - age
 

@@ -44,6 +44,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private val _todayActivityCalories = MutableStateFlow(0)
     val todayActivityCalories: StateFlow<Int> = _todayActivityCalories.asStateFlow()
 
+    /** 今日力量训练消耗（按组数估算，仅统计）。 */
+    private val _todayTrainingCalories = MutableStateFlow(0)
+    val todayTrainingCalories: StateFlow<Int> = _todayTrainingCalories.asStateFlow()
+
     private val _todayStepCalories = MutableStateFlow(0)
     val todayStepCalories: StateFlow<Int> = _todayStepCalories.asStateFlow()
 
@@ -70,6 +74,17 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             stepCounts.collect { list ->
                 val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 _todayStepCalories.value = list.firstOrNull { it.date == todayStr }?.caloriesKcal ?: 0
+            }
+        }
+        viewModelScope.launch {
+            db.trainingRecordDao().getAllRecords().collect { list ->
+                val todayStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val todayRecords = list.filter { it.date == todayStr }
+                val totalSets = todayRecords.sumOf { it.sets }
+                _todayTrainingCalories.value = CalorieCalculator.strengthTrainingCalories(
+                    totalSets = totalSets,
+                    weightKg = prefs.userCurrentWeight.first()
+                )
             }
         }
         viewModelScope.launch {
@@ -234,7 +249,18 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 sb.appendLine("- ${it.typeLabel()} ${it.durationMinutes} 分钟$dist，约 ${it.caloriesKcal} kcal")
             }
         }
-        sb.appendLine("- 运动消耗合计：$activityCal kcal")
+        // 力量训练消耗估算（按组数）
+        val todayTraining = db.trainingRecordDao().getRecordsByDate(todayStr)
+        val trainingSets = todayTraining.sumOf { it.sets }
+        val trainingCal = CalorieCalculator.strengthTrainingCalories(
+            totalSets = trainingSets,
+            weightKg = prefs.userCurrentWeight.first()
+        )
+        if (trainingSets > 0) {
+            sb.appendLine("- 力量训练估算：$trainingCal kcal（$trainingSets 组）")
+        }
+        val totalActivityCal = activityCal + trainingCal
+        sb.appendLine("- 运动消耗合计（含训练估算）：$totalActivityCal kcal")
 
         val stepToday = db.dailyStepCountDao().getByDate(todayStr)
         val stepCal = stepToday?.caloriesKcal ?: 0
@@ -243,8 +269,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         // ── 净摄入与缺口 ──
-        val netIntake = dietCal - activityCal - stepCal
-        sb.appendLine("【净摄入】$dietCal − $activityCal（运动） − $stepCal（步数） = $netIntake kcal")
+        val netIntake = dietCal - totalActivityCal - stepCal
+        sb.appendLine("【净摄入】$dietCal − $totalActivityCal（运动） − $stepCal（步数） = $netIntake kcal")
         sb.appendLine("- 目标 $targetCal kcal，缺口 ${targetCal - netIntake} kcal（正=还差，负=超出）")
         // 今日宏量：数据库已有 + 缺失项由语言模型估算（仅用于总结，不写库）
         val missingMacros = dietRecords.filter {

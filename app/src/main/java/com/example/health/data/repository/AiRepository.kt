@@ -15,6 +15,7 @@ import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.data.remote.dto.Tool
 import com.example.health.domain.action.ToolExecutor
 import com.example.health.domain.action.TextToolCallParser
+import com.example.health.domain.action.TavilySearch
 import com.example.health.domain.plan.TrainingPlanGenerator
 import com.google.gson.reflect.TypeToken
 import com.google.gson.annotations.SerializedName
@@ -261,13 +262,7 @@ class AiRepository(private val context: Context) {
             // ── 标准 JSON tool_calls ──
             if (!toolCalls.isNullOrEmpty()) {
                 // 执行工具调用（白名单校验 + 参数校验）
-                val executor = ToolExecutor(
-                    AppDatabase.getInstance(context),
-                    planGenerator = { custom ->
-                        TrainingPlanGenerator(context).generate(custom)
-                            .getOrElse { e -> "计划生成失败：${e.message ?: "未知错误"}" }
-                    }
-                )
+                val executor = buildToolExecutor()
                 val feedbacks = mutableListOf<String>()
                 messages.add(
                     Message(
@@ -317,13 +312,7 @@ class AiRepository(private val context: Context) {
             // ── 文本工具调用（DSML/XML 风格，模型把调用写进了回复内容） ──
             val textCalls = TextToolCallParser.extractToolCalls(firstContent)
             if (textCalls.isNotEmpty()) {
-                val executor = ToolExecutor(
-                    AppDatabase.getInstance(context),
-                    planGenerator = { custom ->
-                        TrainingPlanGenerator(context).generate(custom)
-                            .getOrElse { e -> "计划生成失败：${e.message ?: "未知错误"}" }
-                    }
-                )
+                val executor = buildToolExecutor()
                 val feedbacks = textCalls.map { call ->
                     executor.execute(call.name, gson.toJson(call.arguments))
                 }
@@ -421,6 +410,16 @@ class AiRepository(private val context: Context) {
 
     private fun extractContent(body: ChatResponse?): String =
         body?.choices?.firstOrNull()?.message?.content?.trim() ?: ""
+
+    /** 统一的工具执行器：训练计划生成 + Tavily 联网搜索。 */
+    private fun buildToolExecutor(): ToolExecutor = ToolExecutor(
+        AppDatabase.getInstance(context),
+        planGenerator = { custom ->
+            TrainingPlanGenerator(context).generate(custom)
+                .getOrElse { e -> "计划生成失败：${e.message ?: "未知错误"}" }
+        },
+        searchExecutor = { query -> TavilySearch(context).search(query) }
+    )
 
     private fun parseFoodJson(raw: String): FoodRecognitionResult {
         return try {

@@ -1,6 +1,7 @@
 package com.example.health.domain.action
 
 import com.example.health.data.local.AppDatabase
+import com.example.health.data.local.entity.ActivityRecord
 import com.example.health.data.local.entity.DietRecord
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -14,7 +15,8 @@ import kotlin.math.roundToInt
  */
 class ToolExecutor(
     private val db: AppDatabase,
-    private val planGenerator: (suspend (String) -> String)? = null
+    private val planGenerator: (suspend (String) -> String)? = null,
+    private val searchExecutor: (suspend (String) -> String)? = null
 ) {
 
     private val gson = Gson()
@@ -34,6 +36,8 @@ class ToolExecutor(
             "add_food" -> addFood(args)
             "update_food" -> updateFood(args)
             "generate_training_plan" -> generateTrainingPlan(args)
+            "record_activity_calories" -> recordActivityCalories(args)
+            "web_search" -> webSearch(args)
             else -> "未知操作类型，已拒绝执行。"
         }
     }
@@ -43,6 +47,36 @@ class ToolExecutor(
         val generator = planGenerator ?: return "计划生成功能暂不可用。"
         val customPrompt = stringArg(args, "custom_prompt") ?: ""
         return generator(customPrompt)
+    }
+
+    /** 手动记录今日运动消耗（source=manual，逐条累加）。 */
+    private suspend fun recordActivityCalories(args: Map<String, Any>): String {
+        val type = stringArg(args, "type") ?: return "参数错误：缺少运动类型。"
+        val calories = intArg(args, "calories_kcal") ?: return "参数错误：缺少消耗热量。"
+        if (calories !in 1..5000) return "热量超出合理范围（1-5000 kcal），未写入。"
+        val duration = intArg(args, "duration_minutes") ?: 0
+        if (duration !in 0..600) return "时长超出合理范围，未写入。"
+        val note = stringArg(args, "note")
+
+        db.activityRecordDao().insert(
+            ActivityRecord(
+                type = type,
+                startTime = System.currentTimeMillis(),
+                durationMinutes = duration,
+                caloriesKcal = calories,
+                source = "manual",
+                note = note
+            )
+        )
+        val durationText = if (duration > 0) "，$duration 分钟" else ""
+        return "已记录运动消耗：$type $calories kcal$durationText。"
+    }
+
+    /** 联网搜索；执行器由调用方注入（依赖网络与 API Key）。 */
+    private suspend fun webSearch(args: Map<String, Any>): String {
+        val executor = searchExecutor ?: return "搜索功能暂不可用。"
+        val query = stringArg(args, "query") ?: return "参数错误：缺少搜索关键词。"
+        return executor(query)
     }
 
     private suspend fun recordTraining(args: Map<String, Any>): String {

@@ -99,6 +99,56 @@ class ToolExecutorTest {
     }
 
     @Test
+    fun `record_activity_calories 写入手动运动消耗`() = runBlocking {
+        val db = FakeAppDatabase()
+        val feedback = ToolExecutor(db).execute(
+            "record_activity_calories",
+            """{"type":"跑步","calories_kcal":300,"duration_minutes":30}"""
+        )
+        assertTrue(feedback, feedback.contains("已记录运动消耗"))
+        val saved = db.activityDao.getAllRecordsOnce()
+        assertEquals(1, saved.size)
+        assertEquals("跑步", saved[0].type)
+        assertEquals(300, saved[0].caloriesKcal)
+        assertEquals(30, saved[0].durationMinutes)
+        assertEquals("manual", saved[0].source)
+    }
+
+    @Test
+    fun `record_activity_calories 非法消耗被拒绝`() = runBlocking {
+        val db = FakeAppDatabase()
+        val feedback = ToolExecutor(db).execute(
+            "record_activity_calories",
+            """{"type":"跑步","calories_kcal":99999}"""
+        )
+        assertTrue(feedback.contains("合理范围"))
+        assertEquals(0, db.activityDao.getAllRecordsOnce().size)
+    }
+
+    @Test
+    fun `web_search 无执行器时提示不可用`() = runBlocking {
+        val db = FakeAppDatabase()
+        val feedback = ToolExecutor(db).execute("web_search", """{"query":"蛋白粉 摄入量"}""")
+        assertTrue(feedback.contains("暂不可用"))
+    }
+
+    @Test
+    fun `web_search 调用注入的搜索执行器`() = runBlocking {
+        val db = FakeAppDatabase()
+        var queried = ""
+        val executor = ToolExecutor(
+            db,
+            searchExecutor = { query ->
+                queried = query
+                "【权威资料】蛋白粉每日摄入建议：每公斤体重 1.6-2.2g"
+            }
+        )
+        val feedback = executor.execute("web_search", """{"query":"蛋白粉 摄入量"}""")
+        assertEquals("蛋白粉 摄入量", queried)
+        assertTrue(feedback.contains("权威资料"))
+    }
+
+    @Test
     fun `未知工具被拒绝`() = runBlocking {
         val db = FakeAppDatabase()
         val feedback = ToolExecutor(db).execute("delete_food", """{"name":"红烧肉"}""")

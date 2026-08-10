@@ -73,6 +73,35 @@ object ToolDefinitions {
                     )
                 )
             )
+        ),
+        Tool(
+            function = FunctionSpec(
+                name = "record_activity_calories",
+                description = "手动记录用户今日的运动消耗热量（如用户说'今天跑步消耗了300大卡'）。多条记录会逐条累加。",
+                parameters = mapOf(
+                    "type" to "object",
+                    "properties" to mapOf(
+                        "type" to mapOf("type" to "string", "description" to "运动类型，如：跑步/骑行/步行/力量训练/其他"),
+                        "calories_kcal" to mapOf("type" to "integer", "description" to "本次运动消耗热量（kcal，1-5000）"),
+                        "duration_minutes" to mapOf("type" to "integer", "description" to "时长分钟（可选）"),
+                        "note" to mapOf("type" to "string", "description" to "备注（可选）")
+                    ),
+                    "required" to listOf("type", "calories_kcal")
+                )
+            )
+        ),
+        Tool(
+            function = FunctionSpec(
+                name = "web_search",
+                description = "联网搜索权威信息（营养、运动、健康类问题需要查证时调用）。返回搜索结果摘要与链接。",
+                parameters = mapOf(
+                    "type" to "object",
+                    "properties" to mapOf(
+                        "query" to mapOf("type" to "string", "description" to "搜索关键词")
+                    ),
+                    "required" to listOf("query")
+                )
+            )
         )
     )
 }

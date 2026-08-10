@@ -61,6 +61,7 @@ fun SettingsScreen(
     val textUrl by viewModel.textApiBaseUrl.collectAsState()
     val textKey by viewModel.textApiKey.collectAsState()
     val textModel by viewModel.textModel.collectAsState()
+    val tavilyApiKey by viewModel.tavilyApiKey.collectAsState()
     // ── 目标 ──
     val targetWeight by viewModel.targetWeightKg.collectAsState()
     val targetCalories by viewModel.targetDailyCalories.collectAsState()
@@ -82,6 +83,7 @@ fun SettingsScreen(
     var showTextUrl by remember { mutableStateOf(false) }
     var showTextKey by remember { mutableStateOf(false) }
     var showTextModel by remember { mutableStateOf(false) }
+    var showTavilyKey by remember { mutableStateOf(false) }
     var showTargetWeight by remember { mutableStateOf(false) }
     var showTargetCalories by remember { mutableStateOf(false) }
     var showReminderTime by remember { mutableStateOf(false) }
@@ -117,6 +119,7 @@ fun SettingsScreen(
                 SettingsRow("API Base URL", textUrl) { showTextUrl = true }
                 SettingsRow("API Key", if (textKey.isNotEmpty()) "●●●● (已设置)" else "点击配置") { showTextKey = true }
                 SettingsRow("模型名称", textModel) { showTextModel = true }
+                SettingsRow("搜索 API Key（Tavily）", if (tavilyApiKey.isNotEmpty()) "●●●● (已设置)" else "点击配置（AI 联网搜索）") { showTavilyKey = true }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -175,6 +178,8 @@ fun SettingsScreen(
         onDismiss = { showTextKey = false }, onConfirm = { viewModel.setTextApiKey(it); showTextKey = false })
     if (showTextModel) EditTextDialog("文本模型", textModel, AppPreferences.DEFAULT_TEXT_MODEL,
         onDismiss = { showTextModel = false }, onConfirm = { viewModel.setTextModel(it); showTextModel = false })
+    if (showTavilyKey) EditTextDialog("搜索 API Key（Tavily）", tavilyApiKey, "输入 Tavily API Key", isPassword = true,
+        onDismiss = { showTavilyKey = false }, onConfirm = { viewModel.setTavilyApiKey(it); showTavilyKey = false })
     if (showTargetWeight) EditNumberDialog("目标体重 (kg)", targetWeight.toString(),
         onDismiss = { showTargetWeight = false },
         onConfirm = { it.toDoubleOrNull()?.let { w -> viewModel.setTargetWeightKg(w) }; showTargetWeight = false })

@@ -61,6 +61,19 @@ class CalorieCalculatorTest {
     }
 
     @Test
+    fun `strength training calories estimate`() {
+        // 10 组 × 45 秒 = 7.5 分钟；6.0 × 3.5 × 70 / 200 × 7.5 ≈ 55 kcal
+        val result = CalorieCalculator.strengthTrainingCalories(totalSets = 10, weightKg = 70.0)
+        assertEquals(55, result)
+    }
+
+    @Test
+    fun `strength training zero sets`() {
+        assertEquals(0, CalorieCalculator.strengthTrainingCalories(0, 70.0))
+        assertEquals(0, CalorieCalculator.strengthTrainingCalories(10, 0.0))
+    }
+
+    @Test
     fun `max heart rate`() {
         assertEquals(190, CalorieCalculator.maxHeartRate(30))
     }

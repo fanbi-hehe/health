@@ -88,6 +88,7 @@ fun DashboardScreen(
     val targetCalories by viewModel.targetDailyCalories.collectAsState()
     val todayCals by viewModel.todayCalories.collectAsState()
     val todayActivityCals by viewModel.todayActivityCalories.collectAsState()
+    val todayTrainingCals by viewModel.todayTrainingCalories.collectAsState()
     val todayStepCals by viewModel.todayStepCalories.collectAsState()
     val todayMacros by viewModel.todayMacros.collectAsState()
     val bmr by viewModel.bmr.collectAsState()
@@ -152,6 +153,18 @@ fun DashboardScreen(
                     Text("今日热量评估", style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold)
                     Spacer(modifier = Modifier.height(8.dp))
+                    // 代谢消耗（基础代谢）—— 蓝色显眼展示
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("代谢消耗（基础代谢）", style = MaterialTheme.typography.bodyMedium)
+                        Text("$bmr kcal",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2196F3))
+                    }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -166,7 +179,8 @@ fun DashboardScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("运动消耗", style = MaterialTheme.typography.bodyMedium)
-                        Text("$todayActivityCals kcal", style = MaterialTheme.typography.bodyMedium)
+                        Text("${todayActivityCals + todayTrainingCals} kcal（含训练估算）",
+                            style = MaterialTheme.typography.bodyMedium)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -197,9 +211,6 @@ fun DashboardScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    Text("基础代谢约 $bmr kcal/天", style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                     val progress = if (targetCalories > 0) (netIntake.toFloat() / targetCalories).coerceIn(0f, 1.5f) else 0f
                     LinearProgressIndicator(progress = { if (progress > 1f) 1f else progress },

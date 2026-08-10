@@ -59,6 +59,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         .stateIn(viewModelScope, SharingStarted.Eagerly, "")
     val textModel: StateFlow<String> = prefs.textModel
         .stateIn(viewModelScope, SharingStarted.Eagerly, AppPreferences.DEFAULT_TEXT_MODEL)
+    val tavilyApiKey: StateFlow<String> = prefs.tavilyApiKey
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
     // ── 目标设定 ──
     val targetWeightKg: StateFlow<Double> = prefs.targetWeightKg
@@ -81,6 +83,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setTextApiBaseUrl(url: String) = viewModelScope.launch { prefs.setTextApiBaseUrl(url) }
     fun setTextApiKey(key: String) = viewModelScope.launch { prefs.setTextApiKey(key) }
     fun setTextModel(model: String) = viewModelScope.launch { prefs.setTextModel(model) }
+    fun setTavilyApiKey(key: String) = viewModelScope.launch { prefs.setTavilyApiKey(key) }
     fun setTargetWeightKg(weight: Double) = viewModelScope.launch { prefs.setTargetWeightKg(weight) }
     fun setTargetDailyCalories(calories: Int) = viewModelScope.launch { prefs.setTargetDailyCalories(calories) }
     fun setCoachNotificationEnabled(enabled: Boolean) = viewModelScope.launch { prefs.setCoachNotificationEnabled(enabled) }
