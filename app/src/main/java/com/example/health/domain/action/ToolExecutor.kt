@@ -48,7 +48,12 @@ class ToolExecutor(
     private suspend fun recordTraining(args: Map<String, Any>): String {
         val exerciseName = stringArg(args, "exercise_name") ?: return "参数错误：缺少动作名称。"
         val sets = intArg(args, "sets") ?: return "参数错误：组数无效。"
-        val reps = intArg(args, "reps") ?: return "参数错误：次数无效。"
+        // "力竭" 没有数字次数：映射为 0 表示力竭
+        val reps = when (val raw = args["reps"]) {
+            is Double -> raw.toInt()
+            is String -> if (raw.trim() == "力竭") 0 else raw.toIntOrNull()
+            else -> null
+        } ?: return "参数错误：次数无效。"
         if (sets !in 1..50 || reps !in 0..200) return "参数超出合理范围（组数 1-50、次数 0-200），未写入。"
         val weightKg = doubleArg(args, "weight_kg") ?: 0.0
         if (weightKg !in 0.0..1000.0) return "重量参数超出合理范围，未写入。"

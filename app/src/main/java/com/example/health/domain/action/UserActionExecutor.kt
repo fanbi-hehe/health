@@ -47,7 +47,8 @@ class UserActionExecutor(private val db: AppDatabase) {
                 notes = "AI 教练记录"
             )
         )
-        return "已写入今日训练记录：${action.exerciseName} ${action.sets}组×${action.reps}次 ${action.weightKg}kg。"
+        val repsText = if (action.reps == 0) "力竭" else "${action.reps}次"
+        return "已写入今日训练记录：${action.exerciseName} ${action.sets}组×$repsText ${action.weightKg}kg。"
     }
 
     /** 添加自定义食物；同名已存在则不重复添加。 */

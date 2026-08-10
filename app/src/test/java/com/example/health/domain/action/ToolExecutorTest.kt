@@ -75,6 +75,30 @@ class ToolExecutorTest {
     }
 
     @Test
+    fun `record_training 支持力竭次数`() = runBlocking {
+        val db = FakeAppDatabase()
+        val feedback = ToolExecutor(db).execute(
+            "record_training",
+            """{"exercise_name":"反手引体向上","sets":3,"reps":"力竭"}"""
+        )
+        assertTrue(feedback, feedback.contains("已写入"))
+        val saved = db.trainingDao.getAllRecordsOnce()[0]
+        assertEquals(0, saved.reps)
+        assertTrue(feedback.contains("力竭"))
+    }
+
+    @Test
+    fun `record_training 忽略未知参数`() = runBlocking {
+        val db = FakeAppDatabase()
+        val feedback = ToolExecutor(db).execute(
+            "record_training",
+            """{"exercise_name":"死悬垂","sets":2,"reps":0,"duration_minutes":0.75}"""
+        )
+        assertTrue(feedback, feedback.contains("已写入"))
+        assertEquals(1, db.trainingDao.getAllRecordsOnce().size)
+    }
+
+    @Test
     fun `未知工具被拒绝`() = runBlocking {
         val db = FakeAppDatabase()
         val feedback = ToolExecutor(db).execute("delete_food", """{"name":"红烧肉"}""")

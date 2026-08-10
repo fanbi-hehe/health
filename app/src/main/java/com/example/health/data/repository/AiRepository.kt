@@ -14,6 +14,7 @@ import com.example.health.data.remote.dto.Message
 import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.data.remote.dto.Tool
 import com.example.health.domain.action.ToolExecutor
+import com.example.health.domain.action.TextToolCallParser
 import com.example.health.domain.plan.TrainingPlanGenerator
 import com.google.gson.reflect.TypeToken
 import com.google.gson.annotations.SerializedName
@@ -255,61 +256,113 @@ class AiRepository(private val context: Context) {
 
             val firstBody = response.body()
             val toolCalls = firstBody?.choices?.firstOrNull()?.message?.toolCalls
-            if (toolCalls.isNullOrEmpty()) {
-                return Result.success(AiChatResult(content = extractContent(firstBody)))
-            }
+            val firstContent = extractContent(firstBody)
 
-            // 执行工具调用（白名单校验 + 参数校验）
-            val executor = ToolExecutor(
-                AppDatabase.getInstance(context),
-                planGenerator = { custom ->
-                    TrainingPlanGenerator(context).generate(custom)
-                        .getOrElse { e -> "计划生成失败：${e.message ?: "未知错误"}" }
-                }
-            )
-            val feedbacks = mutableListOf<String>()
-            messages.add(
-                Message(
-                    role = "assistant",
-                    content = listOf(
-                        ContentPart(
-                            type = "text",
-                            text = firstBody?.choices?.firstOrNull()?.message?.content ?: ""
-                        )
-                    ),
-                    toolCalls = toolCalls
+            // ── 标准 JSON tool_calls ──
+            if (!toolCalls.isNullOrEmpty()) {
+                // 执行工具调用（白名单校验 + 参数校验）
+                val executor = ToolExecutor(
+                    AppDatabase.getInstance(context),
+                    planGenerator = { custom ->
+                        TrainingPlanGenerator(context).generate(custom)
+                            .getOrElse { e -> "计划生成失败：${e.message ?: "未知错误"}" }
+                    }
                 )
-            )
-            toolCalls.forEach { call ->
-                val feedback = executor.execute(
-                    call.function?.name ?: "",
-                    call.function?.arguments ?: ""
-                )
-                feedbacks.add(feedback)
+                val feedbacks = mutableListOf<String>()
                 messages.add(
                     Message(
-                        role = "tool",
-                        content = listOf(ContentPart(type = "text", text = feedback)),
-                        toolCallId = call.id
+                        role = "assistant",
+                        content = listOf(
+                            ContentPart(
+                                type = "text",
+                                text = firstBody?.choices?.firstOrNull()?.message?.content ?: ""
+                            )
+                        ),
+                        toolCalls = toolCalls
+                    )
+                )
+                toolCalls.forEach { call ->
+                    val feedback = executor.execute(
+                        call.function?.name ?: "",
+                        call.function?.arguments ?: ""
+                    )
+                    feedbacks.add(feedback)
+                    messages.add(
+                        Message(
+                            role = "tool",
+                            content = listOf(ContentPart(type = "text", text = feedback)),
+                            toolCallId = call.id
+                        )
+                    )
+                }
+
+                // 第二次请求：拿最终回复
+                val finalResponse = api.chatCompletion(
+                    url, headers, ChatRequest(model = model, messages = messages)
+                )
+                if (!finalResponse.isSuccessful) {
+                    return Result.failure(
+                        Exception("API 请求失败: ${finalResponse.code()} ${finalResponse.message()}")
+                    )
+                }
+                return Result.success(
+                    AiChatResult(
+                        content = TextToolCallParser.stripToolCalls(extractContent(finalResponse.body())),
+                        toolFeedback = feedbacks.firstOrNull(),
+                        toolsSucceeded = true
                     )
                 )
             }
 
-            // 第二次请求：拿最终回复
-            val finalResponse = api.chatCompletion(
-                url, headers, ChatRequest(model = model, messages = messages)
-            )
-            if (!finalResponse.isSuccessful) {
-                return Result.failure(
-                    Exception("API 请求失败: ${finalResponse.code()} ${finalResponse.message()}")
+            // ── 文本工具调用（DSML/XML 风格，模型把调用写进了回复内容） ──
+            val textCalls = TextToolCallParser.extractToolCalls(firstContent)
+            if (textCalls.isNotEmpty()) {
+                val executor = ToolExecutor(
+                    AppDatabase.getInstance(context),
+                    planGenerator = { custom ->
+                        TrainingPlanGenerator(context).generate(custom)
+                            .getOrElse { e -> "计划生成失败：${e.message ?: "未知错误"}" }
+                    }
+                )
+                val feedbacks = textCalls.map { call ->
+                    executor.execute(call.name, gson.toJson(call.arguments))
+                }
+                val resultMsg = feedbacks.joinToString("\n")
+
+                // 二次请求：把执行结果作为 system 消息交给模型，生成用户可读回复
+                val finalMessages = messages.toMutableList()
+                finalMessages.add(
+                    Message(
+                        role = "system",
+                        content = listOf(
+                            ContentPart(
+                                type = "text",
+                                text = "系统已执行以下操作：\n$resultMsg\n" +
+                                    "请基于执行结果用自然语言简洁回复用户，不要输出任何标签或内部格式。"
+                            )
+                        )
+                    )
+                )
+                val finalResponse = api.chatCompletion(
+                    url, headers, ChatRequest(model = model, messages = finalMessages)
+                )
+                if (!finalResponse.isSuccessful) {
+                    return Result.failure(
+                        Exception("API 请求失败: ${finalResponse.code()} ${finalResponse.message()}")
+                    )
+                }
+                return Result.success(
+                    AiChatResult(
+                        content = TextToolCallParser.stripToolCalls(extractContent(finalResponse.body())),
+                        toolFeedback = feedbacks.firstOrNull(),
+                        toolsSucceeded = true
+                    )
                 )
             }
+
+            // ── 普通回复：剥离可能的残留标签后返回 ──
             Result.success(
-                AiChatResult(
-                    content = extractContent(finalResponse.body()),
-                    toolFeedback = feedbacks.firstOrNull(),
-                    toolsSucceeded = true
-                )
+                AiChatResult(content = TextToolCallParser.stripToolCalls(firstContent))
             )
         } catch (e: Exception) {
             Result.failure(e)
