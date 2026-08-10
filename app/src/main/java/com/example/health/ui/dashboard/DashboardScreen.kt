@@ -36,7 +36,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -175,18 +174,29 @@ fun DashboardScreen(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.height(8.dp))
-                    val progress = if (targetCalories > 0) (netIntake.toFloat() / targetCalories).coerceIn(0f, 1.5f) else 0f
-                    LinearProgressIndicator(progress = { if (progress > 1f) 1f else progress },
-                        modifier = Modifier.fillMaxWidth().height(10.dp))
-                    val deficit = targetCalories - netIntake
-                    if (deficit > 0) {
-                        Text("还差 $deficit kcal 达目标，建议加餐",
+                    // 横向叠加条：底层消耗（蓝/反超灰）+ 上层摄入（黄），条尾标注差值
+                    ConsumeOverlayBar(
+                        intake = todayCals,
+                        consume = totalConsume,
+                        target = targetCalories,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    if (netIntake < 0) {
+                        Text("消耗已超过摄入 ${-netIntake} kcal",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error)
                     } else {
-                        Text("热量盈余 ${-deficit} kcal",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary)
+                        val deficit = targetCalories - netIntake
+                        if (deficit > 0) {
+                            Text("还差 $deficit kcal 达目标，建议加餐",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error)
+                        } else {
+                            Text("热量盈余 ${-deficit} kcal",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary)
+                        }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -658,6 +668,82 @@ private fun StatItem(label: String, value: String) {
             color = MaterialTheme.colorScheme.primary)
         Text(label, style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+// ──────────────────────────────────────────────────────────
+// 摄入 vs 消耗 横向叠加条（与柱状图同构：蓝=消耗、黄=摄入、灰=反超）
+// ──────────────────────────────────────────────────────────
+@Composable
+private fun ConsumeOverlayBar(
+    intake: Int,
+    consume: Int,
+    target: Int,
+    modifier: Modifier = Modifier
+) {
+    val over = intake > consume
+    val diff = intake - consume
+
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Canvas(
+            modifier = Modifier
+                .weight(1f)
+                .height(10.dp)
+        ) {
+            val trackW = size.width
+            val consumeW = if (target > 0) trackW * (consume.toFloat() / target).coerceIn(0f, 1f) else 0f
+            val intakeW = if (target > 0) trackW * (intake.toFloat() / target).coerceIn(0f, 1f) else 0f
+            val radius = CornerRadius(size.height / 2f, size.height / 2f)
+
+            // 背景轨道
+            drawRoundRect(
+                color = Color(0xFFE0E0E0),
+                topLeft = Offset.Zero,
+                size = Size(trackW, size.height),
+                cornerRadius = radius
+            )
+            // 底层：消耗段（正常蓝 / 反超灰）
+            if (consumeW > 0f) {
+                drawRoundRect(
+                    color = if (over) Color(0xFF9E9E9E) else Color(0xFF2196F3),
+                    topLeft = Offset.Zero,
+                    size = Size(consumeW, size.height),
+                    cornerRadius = radius
+                )
+            }
+            // 上层：
+            if (over) {
+                // 反超：黄色差值段接在灰色消耗段右侧（左灰、右黄差）
+                val diffW = (intakeW - consumeW).coerceAtLeast(0f)
+                if (diffW > 0f) {
+                    drawRoundRect(
+                        color = Color(0xFFFF9800),
+                        topLeft = Offset(consumeW, 0f),
+                        size = Size(diffW, size.height),
+                        cornerRadius = radius
+                    )
+                }
+            } else {
+                // 正常：黄色摄入段左对齐叠在蓝色之上（蓝色右侧露出 = 消耗差值）
+                if (intakeW > 0f) {
+                    drawRoundRect(
+                        color = Color(0xFFFF9800),
+                        topLeft = Offset.Zero,
+                        size = Size(intakeW, size.height),
+                        cornerRadius = radius
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = if (diff > 0) "+$diff" else "$diff",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = if (over) Color(0xFF9E9E9E)
+            else if (diff >= 0) Color(0xFF4CAF50)
+            else Color(0xFFFF9800)
+        )
     }
 }
 
