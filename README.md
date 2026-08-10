@@ -18,7 +18,7 @@
 ```
 app/        健康助手主应用（Compose 单 Activity）
 calculator/ 独立计算器模块
-docs/       需求、开发、维护、产品文档
+docs/       开发维护文档
 tools/      内置食物库 / 动作库的构建与数据来源脚本
 ```
 
