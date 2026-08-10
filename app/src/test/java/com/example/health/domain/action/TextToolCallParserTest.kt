@@ -62,4 +62,27 @@ class TextToolCallParserTest {
         assertTrue(stripped.contains("好了，已完成"))
         assertFalse(stripped.contains("invoke"))
     }
+
+    @Test
+    fun `残留 parameter 块被清理`() {
+        val content = "结果：<parameter name=\"sets\">4</parameter><parameter name=\"reps\">10</parameter>"
+        val stripped = TextToolCallParser.stripToolCalls(content)
+        assertFalse(stripped.contains("parameter"))
+        assertTrue(stripped.contains("结果"))
+    }
+
+    @Test
+    fun `DSML 标签变体被清理`() {
+        val variants = listOf(
+            "<|DSML|I tool_calls>开头",
+            "</|DSML|I tool_calls>结尾",
+            "<|I DSML| tool_calls>变体",
+            "<|dsml|i tool_calls>小写"
+        )
+        variants.forEach { v ->
+            val stripped = TextToolCallParser.stripToolCalls(v)
+            assertFalse("应清理: $v", stripped.contains("DSML", ignoreCase = true))
+            assertFalse(stripped.contains("|"))
+        }
+    }
 }

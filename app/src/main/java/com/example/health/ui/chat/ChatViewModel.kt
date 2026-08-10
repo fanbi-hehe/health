@@ -101,6 +101,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                     onSuccess = { r ->
                         // 工具执行反馈 → Toast（写没写一眼可见）
                         r.toolFeedback?.let { _actionFeedback.value = it }
+                        var finalContent = r.content
                         if (!r.toolsSucceeded) {
                             // 模型不支持 tools 时的降级：本地正则兜底
                             val fallbackFeedback = withContext(Dispatchers.IO) {
@@ -109,9 +110,23 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                                 if (action != UserAction.None) UserActionExecutor(db).execute(action)
                                 else null
                             }
-                            fallbackFeedback?.let { _actionFeedback.value = it }
+                            if (fallbackFeedback != null) {
+                                _actionFeedback.value = fallbackFeedback
+                                // 反馈闭环：把执行结果告诉模型，用基于结果的回复替换原回复
+                                val followUp = aiRepo.chatCompletion(
+                                    userText = text.trim(),
+                                    imageFile = null,
+                                    history = history,
+                                    systemPrompt = "系统已执行以下操作：\n$fallbackFeedback\n" +
+                                        "请基于执行结果用自然语言简洁回复用户。"
+                                )
+                                followUp.fold(
+                                    onSuccess = { finalContent = it },
+                                    onFailure = { /* 保留原回复 */ }
+                                )
+                            }
                         }
-                        dao.insert(ChatMessage(role = "assistant", content = r.content,
+                        dao.insert(ChatMessage(role = "assistant", content = finalContent,
                             timestamp = System.currentTimeMillis()))
                     },
                     onFailure = { e ->

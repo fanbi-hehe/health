@@ -126,6 +126,33 @@ class ToolExecutorTest {
     }
 
     @Test
+    fun `record_activity_calories 同日同类型同热量去重`() = runBlocking {
+        val db = FakeAppDatabase()
+        val executor = ToolExecutor(db)
+        val first = executor.execute(
+            "record_activity_calories",
+            """{"type":"跑步","calories_kcal":300}"""
+        )
+        assertTrue(first.contains("已记录"))
+        val second = executor.execute(
+            "record_activity_calories",
+            """{"type":"跑步","calories_kcal":300}"""
+        )
+        assertTrue(second.contains("未重复添加"))
+        assertEquals(1, db.activityDao.getAllRecordsOnce().size)
+    }
+
+    @Test
+    fun `record_activity_calories 不同热量仍可累加`() = runBlocking {
+        val db = FakeAppDatabase()
+        val executor = ToolExecutor(db)
+        executor.execute("record_activity_calories", """{"type":"跑步","calories_kcal":300}""")
+        val second = executor.execute("record_activity_calories", """{"type":"跑步","calories_kcal":400}""")
+        assertTrue(second.contains("已记录"))
+        assertEquals(2, db.activityDao.getAllRecordsOnce().size)
+    }
+
+    @Test
     fun `web_search 无执行器时提示不可用`() = runBlocking {
         val db = FakeAppDatabase()
         val feedback = ToolExecutor(db).execute("web_search", """{"query":"蛋白粉 摄入量"}""")

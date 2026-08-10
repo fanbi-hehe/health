@@ -54,8 +54,10 @@ object TextToolCallParser {
         if (content.isBlank()) return content
         return content
             .replace(invokeRegex, "")
-            // DSML 包裹标签（含开头/结尾、可能带空白）
-            .replace(Regex("</?\\|?DSML[^>]*>", RegexOption.IGNORE_CASE), "")
+            // 残留的 parameter 块
+            .replace(parameterRegex, "")
+            // DSML 包裹标签变体（含 |、空格、大小写、前后字符）
+            .replace(Regex("</?\\|?[^>]*DSML[^>]*>", RegexOption.IGNORE_CASE), "")
             .trim()
     }
 

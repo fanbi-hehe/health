@@ -8,11 +8,13 @@ import com.example.health.data.remote.api.ApiService
 import com.example.health.data.remote.dto.ChatRequest
 import com.example.health.data.remote.dto.ChatResponse
 import com.example.health.data.remote.dto.ContentPart
+import com.example.health.data.remote.dto.FunctionCall
 import com.example.health.data.remote.dto.FoodRecognitionResult
 import com.example.health.data.remote.dto.ImageUrl
 import com.example.health.data.remote.dto.Message
 import com.example.health.data.remote.dto.RecognizedFood
 import com.example.health.data.remote.dto.Tool
+import com.example.health.data.remote.dto.ToolCall
 import com.example.health.domain.action.ToolExecutor
 import com.example.health.domain.action.TextToolCallParser
 import com.example.health.domain.action.TavilySearch
@@ -197,7 +199,7 @@ class AiRepository(private val context: Context) {
 
             if (response.isSuccessful) {
                 val content = response.body()?.choices?.firstOrNull()?.message?.content ?: ""
-                Result.success(content.trim())
+                Result.success(TextToolCallParser.stripToolCalls(content.trim()))
             } else {
                 Result.failure(Exception("API 请求失败: ${response.code()} ${response.message()}"))
             }
@@ -251,7 +253,10 @@ class AiRepository(private val context: Context) {
                     )
                 }
                 return Result.success(
-                    AiChatResult(content = extractContent(response.body()), toolsSucceeded = false)
+                    AiChatResult(
+                        content = TextToolCallParser.stripToolCalls(extractContent(response.body())),
+                        toolsSucceeded = false
+                    )
                 )
             }
 
@@ -264,6 +269,7 @@ class AiRepository(private val context: Context) {
                 // 执行工具调用（白名单校验 + 参数校验）
                 val executor = buildToolExecutor()
                 val feedbacks = mutableListOf<String>()
+                val seen = mutableSetOf<String>()
                 messages.add(
                     Message(
                         role = "assistant",
@@ -277,10 +283,15 @@ class AiRepository(private val context: Context) {
                     )
                 )
                 toolCalls.forEach { call ->
-                    val feedback = executor.execute(
-                        call.function?.name ?: "",
-                        call.function?.arguments ?: ""
-                    )
+                    val key = "${call.function?.name}|${call.function?.arguments}"
+                    val feedback = if (seen.add(key)) {
+                        executor.execute(
+                            call.function?.name ?: "",
+                            call.function?.arguments ?: ""
+                        )
+                    } else {
+                        "该操作已在本轮执行过，跳过重复。"
+                    }
                     feedbacks.add(feedback)
                     messages.add(
                         Message(
@@ -313,27 +324,55 @@ class AiRepository(private val context: Context) {
             val textCalls = TextToolCallParser.extractToolCalls(firstContent)
             if (textCalls.isNotEmpty()) {
                 val executor = buildToolExecutor()
-                val feedbacks = textCalls.map { call ->
-                    executor.execute(call.name, gson.toJson(call.arguments))
+                // 转换为标准 tool_calls（生成 id），让模型通过 assistant+tool 消息链看到执行结果
+                val convertedCalls = textCalls.mapIndexed { i, call ->
+                    ToolCall(
+                        id = "call_${System.currentTimeMillis()}_$i",
+                        type = "function",
+                        function = FunctionCall(
+                            name = call.name,
+                            arguments = gson.toJson(call.arguments)
+                        )
+                    )
                 }
-                val resultMsg = feedbacks.joinToString("\n")
-
-                // 二次请求：把执行结果作为 system 消息交给模型，生成用户可读回复
-                val finalMessages = messages.toMutableList()
-                finalMessages.add(
+                messages.add(
                     Message(
-                        role = "system",
+                        role = "assistant",
                         content = listOf(
                             ContentPart(
                                 type = "text",
-                                text = "系统已执行以下操作：\n$resultMsg\n" +
-                                    "请基于执行结果用自然语言简洁回复用户，不要输出任何标签或内部格式。"
+                                text = TextToolCallParser.stripToolCalls(firstContent)
                             )
-                        )
+                        ),
+                        toolCalls = convertedCalls
                     )
                 )
+                // 执行工具并追加 role="tool" 结果消息（标准反馈链 + 响应级幂等）
+                val seen = mutableSetOf<String>()
+                val feedbacks = mutableListOf<String>()
+                convertedCalls.forEach { call ->
+                    val key = "${call.function?.name}|${call.function?.arguments}"
+                    val feedback = if (seen.add(key)) {
+                        executor.execute(
+                            call.function?.name ?: "",
+                            call.function?.arguments ?: ""
+                        )
+                    } else {
+                        "该操作已在本轮执行过，跳过重复。"
+                    }
+                    feedbacks.add(feedback)
+                    messages.add(
+                        Message(
+                            role = "tool",
+                            content = listOf(ContentPart(type = "text", text = feedback)),
+                            toolCallId = call.id
+                        )
+                    )
+                }
+
+                // 二次请求：携带完整消息链（模型明确这些工具已执行及结果）
                 val finalResponse = api.chatCompletion(
-                    url, headers, ChatRequest(model = model, messages = finalMessages)
+                    url, headers, ChatRequest(model = model, messages = messages)
                 )
                 if (!finalResponse.isSuccessful) {
                     return Result.failure(

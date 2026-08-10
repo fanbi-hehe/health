@@ -267,7 +267,10 @@ internal class FakeActivityRecordDao : ActivityRecordDao {
     override suspend fun insertAll(records: List<ActivityRecord>) { records.forEach { insert(it) } }
     override suspend fun delete(record: ActivityRecord) { records.remove(record) }
     override fun getAllRecords(): Flow<List<ActivityRecord>> = flowOf(records.toList())
-    override suspend fun getRecordsByDate(date: String): List<ActivityRecord> = emptyList()
+    override suspend fun getRecordsByDate(date: String): List<ActivityRecord> {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        return records.filter { sdf.format(java.util.Date(it.startTime)) == date }
+    }
     override suspend fun getRecordsBetweenDates(startDate: String, endDate: String): List<ActivityRecord> = emptyList()
     override suspend fun getTotalCaloriesByDate(date: String): Int = records.sumOf { it.caloriesKcal }
     override suspend fun getTotalCaloriesBetweenDates(startDate: String, endDate: String): Int = 0

@@ -6,6 +6,8 @@ import com.example.health.data.local.entity.DietRecord
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalTime
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 /**
@@ -57,6 +59,13 @@ class ToolExecutor(
         val duration = intArg(args, "duration_minutes") ?: 0
         if (duration !in 0..600) return "时长超出合理范围，未写入。"
         val note = stringArg(args, "note")
+
+        // 同日 + 同类型 + 同热量去重，避免模型重复调用导致累加
+        val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+        val todayRecords = db.activityRecordDao().getRecordsByDate(today)
+        if (todayRecords.any { it.type == type && it.caloriesKcal == calories }) {
+            return "今日已有相同运动消耗记录（$type $calories kcal），未重复添加。"
+        }
 
         db.activityRecordDao().insert(
             ActivityRecord(
