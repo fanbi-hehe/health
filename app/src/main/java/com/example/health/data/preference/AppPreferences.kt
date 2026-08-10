@@ -45,6 +45,10 @@ class AppPreferences(private val context: Context) {
         val USER_ONBOARDED = booleanPreferencesKey("user_onboarded")
         val TRAINING_PLAN_JSON = stringPreferencesKey("training_plan_json")
 
+        // ── AI 对话滚动摘要 / 每日重置 ──
+        val CHAT_SUMMARY = stringPreferencesKey("chat_summary")
+        val LAST_CHAT_DATE = stringPreferencesKey("last_chat_date")
+
         // ── 步数基线（轻量档：传感器只给累计值，App 按天记账） ──
         val STEP_BASE_TOTAL = longPreferencesKey("step_base_total")
         val STEP_BASE_DATE = stringPreferencesKey("step_base_date")
@@ -120,6 +124,8 @@ class AppPreferences(private val context: Context) {
     val userTrainingDays: Flow<Int> = context.dataStore.data.map { prefs -> prefs[USER_TRAINING_DAYS] ?: 4 }
     val userOnboarded: Flow<Boolean> = context.dataStore.data.map { prefs -> prefs[USER_ONBOARDED] ?: false }
     val trainingPlanJson: Flow<String> = context.dataStore.data.map { prefs -> prefs[TRAINING_PLAN_JSON] ?: "" }
+    val chatSummary: Flow<String> = context.dataStore.data.map { prefs -> prefs[CHAT_SUMMARY] ?: "" }
+    val lastChatDate: Flow<String> = context.dataStore.data.map { prefs -> prefs[LAST_CHAT_DATE] ?: "" }
     val stepBaseTotal: Flow<Long> = context.dataStore.data.map { prefs -> prefs[STEP_BASE_TOTAL] ?: 0L }
     val stepBaseDate: Flow<String> = context.dataStore.data.map { prefs -> prefs[STEP_BASE_DATE] ?: "" }
 
@@ -181,6 +187,8 @@ class AppPreferences(private val context: Context) {
         }
     }
     suspend fun setTrainingPlanJson(json: String) { context.dataStore.edit { it[TRAINING_PLAN_JSON] = json } }
+    suspend fun setChatSummary(summary: String) { context.dataStore.edit { it[CHAT_SUMMARY] = summary } }
+    suspend fun setLastChatDate(date: String) { context.dataStore.edit { it[LAST_CHAT_DATE] = date } }
 
     /** 更新步数基线（传感器累计值 + 所属日期）。 */
     suspend fun setStepBase(total: Long, date: String) {

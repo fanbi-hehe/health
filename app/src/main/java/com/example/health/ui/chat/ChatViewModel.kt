@@ -17,6 +17,7 @@ import com.example.health.domain.router.IntentQuery
 import com.example.health.domain.router.IntentRouter
 import com.example.health.util.ImageCompressor
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -75,9 +79,14 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 dao.insert(userMsg)
 
-                // 3. 构建系统提示（意图路由 + 上下文注入）
+                // 3. 每日重置检测 + 历史压缩 + 构建全量上下文（IO 线程）
                 val systemPrompt = withContext(Dispatchers.IO) {
-                    buildSystemPromptWithContext(text.trim())
+                    val todayStr = LocalDate.now().toString()
+                    if (prefs.lastChatDate.first() != todayStr) {
+                        prefs.setLastChatDate(todayStr)
+                    }
+                    maybeCompactHistory()
+                    buildSystemPromptWithContext()
                 }
 
                 // 4. 调用 AI（function calling：模型识别动作 → 本地白名单执行）
@@ -144,7 +153,12 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
                 // 4. 意图路由 + 查询上下文（图片消息通常与食物识别结合，也做路由）
                 val systemPrompt = withContext(Dispatchers.IO) {
-                    buildSystemPromptWithContext(text.trim())
+                    val todayStr = LocalDate.now().toString()
+                    if (prefs.lastChatDate.first() != todayStr) {
+                        prefs.setLastChatDate(todayStr)
+                    }
+                    maybeCompactHistory()
+                    buildSystemPromptWithContext()
                 }
 
                 // 5. 调用 AI（带图片）
@@ -177,33 +191,39 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
      * 根据用户输入文本，完成意图路由 → 数据查询 → 系统提示组装。
      * 在 IO 线程上运行。
      */
-    private suspend fun buildSystemPromptWithContext(
-        userText: String,
-        actionFeedback: String = ""
-    ): String {
-        // 1. 获取已知动作名
-        val knownExercises = contextBuilder.getKnownExerciseNames()
-
-        // 2. 意图路由
-        val intent = IntentRouter.resolve(userText, knownExercises)
-
-        // 3. 获取用户档案（始终注入）
+    private suspend fun buildSystemPromptWithContext(actionFeedback: String = ""): String {
+        // 1. 用户档案
         val profileText = contextBuilder.buildProfileText()
 
-        // 4. 根据意图查询上下文数据
-        val contextData = contextBuilder.buildContextForIntent(intent)
+        // 2. 全量数据注入（今日/本周/本月，带日期时间）
+        val fullContext = contextBuilder.buildFullContext()
 
-        // 5. 组装系统提示
+        // 3. 历史滚动摘要 + 每日重置提示
+        val summary = prefs.chatSummary.first()
+        val newDay = isNewDay(prefs.lastChatDate.first())
+
+        // 4. 组装系统提示
         return buildString {
             appendLine("你是一位专业的私人健康与体能管家（CSCS认证级别）。根据用户提供的数据和问题，给出个性化、具体、可行的建议。回答简洁有力，控制在200字以内。")
             appendLine()
             appendLine("## 用户档案")
             appendLine(profileText)
 
-            if (contextData.isNotBlank()) {
+            if (summary.isNotBlank()) {
                 appendLine()
-                appendLine("## 用户近期数据")
-                appendLine(contextData)
+                appendLine("## 历史摘要")
+                appendLine(summary)
+            }
+
+            if (newDay) {
+                appendLine()
+                appendLine("注意：今天是 ${LocalDate.now()}（${weekLabelNow()}），这是新的一天。请以今天的数据为准，不要使用旧日期数据回答今天的问题。")
+            }
+
+            if (fullContext.isNotBlank()) {
+                appendLine()
+                appendLine("## 用户数据")
+                appendLine(fullContext)
             }
 
             // 已执行的本地操作结果（让 AI 基于事实回复）
@@ -213,11 +233,56 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 appendLine(actionFeedback)
             }
 
-            // 闲聊时不强制数据回答
-            if (intent is IntentQuery.GeneralChat) {
-                appendLine()
-                appendLine("注意：用户当前是闲聊模式。如果问题与健康/训练无关，正常友好回答即可，不需要强行分析数据。")
-            }
         }.trim()
+    }
+
+    // ── 滚动摘要（auto-compact） ──
+
+    /** 历史 token 达到阈值时：先让 AI 压缩为摘要 → 清空历史，之后只带摘要 + 最近消息。 */
+    private suspend fun maybeCompactHistory() {
+        val summary = prefs.chatSummary.first()
+        val history = dao.getAllMessagesOnce()
+        if (shouldCompact(summary, history)) {
+            compactHistory(summary, history)
+        }
+    }
+
+    private suspend fun compactHistory(oldSummary: String, history: List<ChatMessage>) {
+        if (history.isEmpty()) return
+        val historyText = history.joinToString("\n") { "${it.role}：${it.content}" }
+        val prompt = buildString {
+            append("请把以下对话压缩成一段不超过500字的中文摘要，保留：用户目标、关键数据结论、最近状态、未完成事项。")
+            append("\n\n")
+            if (oldSummary.isNotBlank()) {
+                append("旧摘要：\n$oldSummary\n\n")
+            }
+            append("对话记录：\n$historyText")
+        }
+        val result = aiRepo.chatCompletion(prompt, null, emptyList(), maxTokens = 700)
+        result.fold(
+            onSuccess = { summary ->
+                prefs.setChatSummary(summary.trim())
+                dao.deleteAll()
+            },
+            onFailure = { /* 压缩失败本次跳过，下次再试 */ }
+        )
+    }
+
+    private fun weekLabelNow(): String =
+        LocalDate.now().dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINESE).replace("星期", "周")
+
+    companion object {
+        /** 历史压缩阈值（token；字符按 1/4 估算，默认 8000） */
+        internal const val MAX_HISTORY_TOKENS = 8000
+
+        internal fun estimateTokens(text: String): Int = text.length / 4
+
+        internal fun isNewDay(lastDate: String): Boolean =
+            lastDate != LocalDate.now().toString()
+
+        internal fun shouldCompact(summary: String, history: List<ChatMessage>): Boolean {
+            val totalChars = summary.length + history.sumOf { it.content.length }
+            return totalChars / 4 > MAX_HISTORY_TOKENS
+        }
     }
 }

@@ -5,7 +5,13 @@ import com.example.health.data.preference.AppPreferences
 import com.example.health.domain.router.IntentQuery
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.DayOfWeek
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * 用户上下文构建器。
@@ -111,6 +117,96 @@ class UserContextBuilder(
         val fromRecords = trainingDao.getDistinctExerciseNames()
         return if (fromRecords.isNotEmpty()) fromRecords
         else exerciseLibDao.getAllExercises().first().map { it.name }
+    }
+
+    /**
+     * 全量数据注入（不再按意图选择）：
+     * 当前时间 + 今日饮食/运动/步数 + 本周训练 + 本月运动明细与饮食统计，全部带日期时间。
+     */
+    suspend fun buildFullContext(): String {
+        val sb = StringBuilder()
+        val now = LocalDateTime.now()
+        val nowLabel = "${now.year}年${now.monthValue}月${now.dayOfMonth}日 " +
+            "${now.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINESE)} " +
+            "%02d:%02d".format(now.hour, now.minute)
+        sb.appendLine("当前时间：$nowLabel")
+        sb.appendLine("（以下数据均已标注日期时间；回答今天的问题请只使用今天的数据，历史数据仅作参考。）")
+
+        val todayStr = today()
+        val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val dateTimeFmt = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
+
+        // ── 今日饮食 ──
+        val diet = dietDao.getRecordsByDate(todayStr)
+        sb.appendLine()
+        sb.appendLine("【今日饮食】")
+        if (diet.isEmpty()) {
+            sb.appendLine("- 无记录")
+        } else {
+            diet.forEach {
+                val t = timeFmt.format(Date(it.timestamp))
+                sb.appendLine("- $t ${it.mealType} ${it.foodName} ${it.weightG}g ${it.caloriesKcal}kcal" +
+                    "（蛋白${it.proteinG}g 碳水${it.carbsG}g 脂肪${it.fatG}g）")
+            }
+        }
+
+        // ── 今日运动 / 步数 ──
+        val activities = activityDao.getRecordsByDate(todayStr)
+        sb.appendLine()
+        sb.appendLine("【今日运动】")
+        if (activities.isEmpty()) {
+            sb.appendLine("- 无记录")
+        } else {
+            activities.forEach {
+                val t = timeFmt.format(Date(it.startTime))
+                val dist = if (it.distanceMeters > 0) "，${"%.2f".format(it.distanceMeters / 1000)}km" else ""
+                sb.appendLine("- $t ${it.typeLabel()} ${it.durationMinutes}分钟$dist，约${it.caloriesKcal}kcal")
+            }
+        }
+        val stepToday = stepDao.getByDate(todayStr)
+        sb.appendLine("- 今日步数：${stepToday?.steps ?: 0} 步（约 ${stepToday?.caloriesKcal ?: 0} kcal）")
+
+        // ── 本周训练（周一到今天） ──
+        val weekStart = LocalDate.now().with(DayOfWeek.MONDAY).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        val weekTrainings = trainingDao.getRecordsBetweenDates(weekStart, todayStr)
+        sb.appendLine()
+        sb.appendLine("【本周训练】")
+        if (weekTrainings.isEmpty()) {
+            sb.appendLine("- 无记录")
+        } else {
+            weekTrainings.groupBy { it.date }.toSortedMap(compareByDescending { it }).forEach { (date, list) ->
+                sb.appendLine("- $date（${weekLabel(date)}）")
+                list.forEach {
+                    val note = it.notes?.takeIf { n -> n.isNotBlank() }?.let { n -> "（$n）" } ?: ""
+                    sb.appendLine("  · ${it.exerciseName} ${it.sets}组×${it.reps}次 ${it.weightKg}kg$note")
+                }
+            }
+        }
+
+        // ── 本月运动 ──
+        val monthStart = LocalDate.now().withDayOfMonth(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
+        val monthActivities = activityDao.getRecordsBetweenDates(monthStart, todayStr)
+        sb.appendLine()
+        sb.appendLine("【本月运动】")
+        if (monthActivities.isEmpty()) {
+            sb.appendLine("- 无记录")
+        } else {
+            monthActivities.forEach {
+                val t = dateTimeFmt.format(Date(it.startTime))
+                sb.appendLine("- $t ${it.typeLabel()} ${it.durationMinutes}分钟，约${it.caloriesKcal}kcal")
+            }
+        }
+
+        // ── 本月饮食统计 ──
+        val monthDiet = dietDao.getRecordsBetweenDates(monthStart, todayStr)
+        val monthTotal = monthDiet.sumOf { it.caloriesKcal }
+        val monthDays = LocalDate.now().dayOfMonth
+        sb.appendLine()
+        sb.appendLine("【本月饮食统计】")
+        sb.appendLine("- 总摄入 $monthTotal kcal，日均 ${monthTotal / monthDays} kcal（$monthDays 天）")
+        sb.appendLine("- 蛋白质 ${monthDiet.sumOf { it.proteinG }}g · 碳水 ${monthDiet.sumOf { it.carbsG }}g · 脂肪 ${monthDiet.sumOf { it.fatG }}g")
+
+        return sb.toString().trim()
     }
 
     // ── 三大聚合模块 ──
@@ -264,6 +360,11 @@ class UserContextBuilder(
 
     private fun today(): String = LocalDate.now().format(dateFmt)
     private fun daysAgo(n: Int): String = LocalDate.now().minusDays(n.toLong()).format(dateFmt)
+    private fun weekLabel(dateStr: String): String {
+        return LocalDate.parse(dateStr)
+            .dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINESE)
+            .replace("星期", "周")
+    }
 
     private fun dateLabel(dateStr: String): String {
         val today = today()
