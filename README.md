@@ -87,6 +87,6 @@ rg -n -i "api[_-]?key|secret|password|sk-[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}" --hi
 
 ## 许可证
 
-版权所有 © 2026 haizai，保留所有权利。
+Copyright (C) 2026 haizai
 
-本仓库源代码公开可见，允许个人学习、研究与个人非商业用途免费使用；未经授权不得用于任何商业用途。完整条款见 [LICENSE](LICENSE)。
+本项目基于 [GNU General Public License v3.0](LICENSE) 发布：你可以自由使用、修改和分发，但任何衍生作品也必须以 GPL-3.0 开源，并保留版权声明；不允许将其以闭源或专有形式商业化。
