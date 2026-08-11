@@ -22,7 +22,7 @@ Android 本地优先的增重/健身助手：AI 拍照识别食物、饮食记�
 - 饮食：拍照识别（v0.1 Prompt）、手动录入（含宏量）、食物自动补全、餐食模板、日期回看 + 月历跳转、宏量显示
 - 训练：结构化记录、历史动作推荐、组间休息前台服务（提示音/震动/常驻通知）、动作库（170+ 动作 + GIF 教学）、AI 生成 7 天训练计划、记录日期回看、reps 支持"力竭"
 - 运动：GPS 跑步/骑行/步行（前台服务、距离/配速/轨迹入库）、系统步数（传感器按天记账）、运动统计独立 Tab、手动补录
-- AI 对话：意图路由 + 全上下文注入（滚动摘要、每日重置）、function calling 工具（记录训练/添加修改食物/生成计划/记录运动消耗/联网搜索，只写不删）、文本工具调用兜底（DSML/XML）、工具反馈闭环、图片消息
+- AI 对话：全量数据注入（今日/本周/本月）+ 历史滚动摘要（每日重置）、function calling 工具（记录训练/添加修改食物/生成计划/记录运动消耗/联网搜索，只写不删）、文本工具调用兜底（DSML/XML）、工具反馈闭环、图片消息
 - 看板：3 块数据（消耗/摄入/反向）+ 堆叠消耗柱状图 + 摄入条 overlay（差额标签）、BMR 高亮、热量评估（含力量训练消耗估算）、体重折线、AI 每日复盘（含语言模型宏量估算）、备份恢复、训练档案
 - 其他：自定义食物库管理、暴躁教练通知（时间/语录可配）、Glance 桌面小组件、日历组件、聊天全屏键盘布局、输入时自动隐藏底部栏
 
@@ -80,7 +80,7 @@ com.example.health/
 │   ├── calorie/CalorieCalculator.kt   # BMR(Mifflin-St Jeor)/Keytel/MET/步数估算/心率区间
 │   ├── context/UserContextBuilder.kt  # 意图→精准数据注入（长短期记忆分层）
 │   ├── plan/               # 训练计划模型 + TrainingPlanGenerator（训练页与 AI 对话共用）
-│   └── router/             # IntentQuery / IntentRouter（关键词意图路由）
+│   └── router/             # IntentQuery / IntentRouter（遗留：对话主链路已不使用，仅测试覆盖）
 ├── ui/
 │   ├── navigation/         # AppNavigation（5 Tab）+ BottomNavItem
 │   ├── diet/               # 饮食主页/确认页/ViewModel（含模板、日期回看）
@@ -156,9 +156,16 @@ com.example.health/
 5. **文本工具调用兜底（v0.27）**：模型不支持 tools 或输出 DSML/XML 文本时，`TextToolCallParser` 解析/剥离并复用同一 `ToolExecutor`；`UserActionParser` 仅作最终兜底
 6. **工具反馈闭环（v0.33）**：assistant `tool_calls` 与 tool result 成对回填对话，失败有兜底反馈；工具消息去重与 DSML 清理
 
-### 5.2 意图路由
+### 5.2 对话上下文（v0.32 起：全量注入）
 
-`IntentRouter` 把用户问题映射为 6 类：动作进度 > 运动/步数 > 热量 > 整体趋势 > 档案 > 闲聊；`UserContextBuilder` 按意图查询 DAO 并注入"用户近期数据"（近 3 天详细、7 天以上仅统计）。v0.32 起对话上下文改为全量注入 + 滚动摘要：超限自动压缩历史（`chat_summary`），按日重置。
+对话主链路**已不使用意图路由**。`ChatViewModel.buildSystemPromptWithContext()` 每次对话固定注入：
+
+1. **用户档案**（`buildProfileText`：目标/体重/身高/经验/器械等）
+2. **历史滚动摘要**（`chat_summary`；累计超 8000 token 时由 AI 自动压缩历史，`last_chat_date` 按日重置）
+3. **全量数据**（`buildFullContext`：当前日期时间 + 今日饮食/运动/步数 + 本周训练 + 本月运动明细 + 本月饮食统计）
+4. **工具执行反馈**（如有，让 AI 基于事实回复）
+
+`IntentRouter` / `IntentQuery` / `buildContextForIntent` 代码与 `IntentRouterTest`（21 例）仍保留，但对话主链路已不再调用，属遗留代码，后续可清理。
 
 ### 5.3 训练计划生成
 
@@ -202,7 +209,7 @@ $env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
 ```
 
 - APK 输出：`app/build/outputs/apk/debug/app-debug.apk`；发布副本放 `dist/health-vX.Y.apk`（`dist/` 已 gitignore）
-- 测试覆盖：热量计算、意图路由、工具执行器、文本工具调用解析、动作解析、对话上下文压缩、迁移（脚本校验）
+- 测试覆盖：热量计算、意图路由（遗留模块）、工具执行器、文本工具调用解析、动作解析、对话上下文压缩、迁移（脚本校验）
 - 仓库公开：clone 后首次构建需 JDK 17+（Android Studio JBR）与 Android SDK（compileSdk 37 / minSdk 30）；`local.properties` 由本机生成、不入库
 - **发布前待办**：release 签名 + R8、数据库再验证一轮真机升级、lint/ktlint 接入
 

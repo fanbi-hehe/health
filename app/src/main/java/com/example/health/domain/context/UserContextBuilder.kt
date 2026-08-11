@@ -16,10 +16,9 @@ import java.util.Locale
 /**
  * 用户上下文构建器。
  *
- * 根据 [IntentQuery] 意图，按需查询 DAO 并将结果格式化为 AI 可读的文本块。
- * 实现长短期记忆分层：
- * - 近3天：详细数据（具体食物名/动作/组数/重量）
- * - 7天以上：仅统计值（平均值/总量/频率）
+ * 构建 AI 可读的用户上下文。
+ * 当前对话主链路使用全量注入（[buildFullContext]）；
+ * [buildContextForIntent] 为遗留的按需查询实现，暂无调用方。
  */
 class UserContextBuilder(
     private val db: AppDatabase,
@@ -112,7 +111,7 @@ class UserContextBuilder(
         return sb.toString().trim()
     }
 
-    /** 获取用户历史训练过的所有动作名称，供 IntentRouter 使用。 */
+    /** 获取用户历史训练过的所有动作名称，供 UserActionParser 兜底与测试使用。 */
     suspend fun getKnownExerciseNames(): List<String> {
         val fromRecords = trainingDao.getDistinctExerciseNames()
         return if (fromRecords.isNotEmpty()) fromRecords

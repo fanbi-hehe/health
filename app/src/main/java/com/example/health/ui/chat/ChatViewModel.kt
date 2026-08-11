@@ -13,8 +13,6 @@ import com.example.health.domain.action.UserActionExecutor
 import com.example.health.domain.action.UserActionParser
 import com.example.health.domain.action.ToolDefinitions
 import com.example.health.domain.context.UserContextBuilder
-import com.example.health.domain.router.IntentQuery
-import com.example.health.domain.router.IntentRouter
 import com.example.health.util.ImageCompressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -61,7 +59,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 发送文本消息（不含图片）。
      *
-     * 流程：保存用户消息 → 意图路由 → 按需查询本地数据 → 组装系统提示
+     * 流程：保存用户消息 → 每日重置/历史压缩 → 全量上下文注入 → 组装系统提示
      * → 调用 AI → 保存回复。
      */
     fun sendMessage(text: String) {
@@ -166,7 +164,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 dao.insert(userMsg)
 
-                // 4. 意图路由 + 查询上下文（图片消息通常与食物识别结合，也做路由）
+                // 4. 每日重置/历史压缩 + 全量上下文注入
                 val systemPrompt = withContext(Dispatchers.IO) {
                     val todayStr = LocalDate.now().toString()
                     if (prefs.lastChatDate.first() != todayStr) {
@@ -203,7 +201,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     // ── 系统提示组装 ──
 
     /**
-     * 根据用户输入文本，完成意图路由 → 数据查询 → 系统提示组装。
+     * 构建全量系统提示：用户档案 + 全量数据 + 滚动摘要 + 新日提示。
      * 在 IO 线程上运行。
      */
     private suspend fun buildSystemPromptWithContext(actionFeedback: String = ""): String {
