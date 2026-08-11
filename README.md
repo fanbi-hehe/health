@@ -79,6 +79,8 @@ rg -n -i "api[_-]?key|secret|password|sk-[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}" --hi
 ## 相关文档
 
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) — 开发维护指南
+## QQ群
+490237083
 
 ## 许可证
 
