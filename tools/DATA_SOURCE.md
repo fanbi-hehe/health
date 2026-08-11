@@ -16,7 +16,7 @@
 # 2. 解析全部食物热量数据
 python tools/build_food_db.py <20_2.csv> tools/all_foods_raw.json
 
-# 3. 筛选 346 种常见食物并输出内置库 + 审计文件
+# 3. 筛选 345 种常见食物并输出内置库 + 审计文件
 python tools/select_foods.py tools/all_foods_raw.json tools/builtin_foods_final.json
 ```
 
