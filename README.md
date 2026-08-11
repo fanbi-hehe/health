@@ -11,13 +11,11 @@
 - **AI 对话教练**：说话即可记录训练、管理食物库、生成计划；按需查询本地数据精准回答；function calling 只写不删
 - **运动与热量**：GPS 跑步 / 骑行 / 步行（前台服务）、系统步数统计、热量缺口评估、AI 每日复盘
 - **看板与小组件**：热量进度、体重折线、近 7 天热量柱状图、一键备份 / 恢复、Glance 桌面小组件
-- **附带模块**：独立计算器 App（calculator/，极简风格，含历史记录与多套配色）
 
 ## 模块结构
 
 ```
 app/        健康助手主应用（Compose 单 Activity）
-calculator/ 独立计算器模块
 docs/       开发维护文档
 tools/      内置食物库 / 动作库的构建与数据来源脚本
 ```
@@ -47,9 +45,6 @@ tools/      内置食物库 / 动作库的构建与数据来源脚本
 ```bash
 # 构建 Debug APK
 ./gradlew :app:assembleDebug
-
-# 构建计算器模块
-./gradlew :calculator:assembleDebug
 
 # 运行单元测试
 ./gradlew test

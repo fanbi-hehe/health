@@ -47,3 +47,6 @@ local.keys
 /docs/ISSUES_LOG.md
 /docs/PRODUCT_INTRO.md
 /docs/PROJECT_MIDTERM.md
+
+# 本地独立项目（与仓库无关，不随仓库分发）
+/calculator/
